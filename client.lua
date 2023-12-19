@@ -63,6 +63,14 @@ local Character = {
 	['glasses'] = 0,
 }
 
+function SetLbgCharacterProp(prop, value)
+	Character[prop] = value
+end
+
+function SetLbgMdhash(newMdhash)
+	mdhash = newMdhash
+end
+
 if GetResourceKvpString('lbg-char-info') ~= nil then
 	Character = json.decode(GetResourceKvpString('lbg-char-info'))
 end
