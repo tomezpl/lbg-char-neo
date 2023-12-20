@@ -71,9 +71,9 @@ function SetLbgMdhash(newMdhash)
 	mdhash = newMdhash
 end
 
-if GetResourceKvpString('lbg-char-info') ~= nil then
-	Character = json.decode(GetResourceKvpString('lbg-char-info'))
-end
+-- if GetResourceKvpString('lbg-char-info') ~= nil then
+-- 	Character = json.decode(GetResourceKvpString('lbg-char-info'))
+-- end
 
 if Character["gender"] == "Female" then
 	mdhash = GetHashKey("mp_f_freemode_01")
