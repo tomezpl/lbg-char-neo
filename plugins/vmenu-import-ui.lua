@@ -12,10 +12,9 @@ function ApplyvMenuCharacter(character)
         SetLbgCharacterProp("ogd", "F")
         SetLbgCharacterProp("lcgd", "f")
         mdHash = "mp_f_freemode_01"
-        SetLbgMdhash(mdHash)
     end
 
-    RequestModel(mdHash)
+    SetLbgMdhash(mdHash)
 
     -- these fields come from PedHeadBlendData serialized in vMenu mp_ped_ KVP strings
     local headBlend = character.PedHeadBlendData
@@ -93,7 +92,7 @@ function ApplyvMenuCharacter(character)
     -- TODO: add vMenu clothing import
     SetLbgCharacterProp("outfit", 1)
 
-    RefreshModel()
+    RefreshModel(true)
 end
 
 function AddvMenuCharacterList()

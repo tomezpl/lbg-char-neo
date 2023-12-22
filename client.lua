@@ -329,10 +329,10 @@ function ChangeComponents(shouldChangeModel)
 		end
 	end
 end
-function RefreshModel()
+function RefreshModel(force)
 	Citizen.CreateThread(function()
 		--replaces the player's current model if it wasn't the supposed one already
-		if GetEntityModel(PlayerPedId()) ~= mdhash then
+		if force or GetEntityModel(PlayerPedId()) ~= mdhash then
 			while not HasModelLoaded(mdhash) do
 				RequestModel(mdhash)
 				Wait(0)
