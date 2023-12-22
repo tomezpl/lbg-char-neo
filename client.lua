@@ -71,6 +71,7 @@ function SetLbgMdhash(newMdhash)
 	mdhash = newMdhash
 end
 
+-- FIXME: add checks for nil values and discard the stored character if something is nil - otherwise crashes the script!
 -- if GetResourceKvpString('lbg-char-info') ~= nil then
 -- 	Character = json.decode(GetResourceKvpString('lbg-char-info'))
 -- end
