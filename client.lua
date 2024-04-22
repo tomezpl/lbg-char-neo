@@ -63,9 +63,18 @@ local Character = {
 	['glasses'] = 0,
 }
 
-if GetResourceKvpString('lbg-char-info') ~= nil then
-	Character = json.decode(GetResourceKvpString('lbg-char-info'))
+function SetLbgCharacterProp(prop, value)
+	Character[prop] = value
 end
+
+function SetLbgMdhash(newMdhash)
+	mdhash = newMdhash
+end
+
+-- FIXME: add checks for nil values and discard the stored character if something is nil - otherwise crashes the script!
+-- if GetResourceKvpString('lbg-char-info') ~= nil then
+-- 	Character = json.decode(GetResourceKvpString('lbg-char-info'))
+-- end
 
 if Character["gender"] == "Female" then
 	mdhash = GetHashKey("mp_f_freemode_01")
@@ -320,10 +329,10 @@ function ChangeComponents(shouldChangeModel)
 		end
 	end
 end
-function RefreshModel()
+function RefreshModel(force)
 	Citizen.CreateThread(function()
 		--replaces the player's current model if it wasn't the supposed one already
-		if GetEntityModel(PlayerPedId()) ~= mdhash then
+		if force or GetEntityModel(PlayerPedId()) ~= mdhash then
 			while not HasModelLoaded(mdhash) do
 				RequestModel(mdhash)
 				Wait(0)
