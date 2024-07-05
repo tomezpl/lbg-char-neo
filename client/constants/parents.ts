@@ -1,0 +1,53 @@
+export const FemaleParents = Object.freeze([
+    "Hannah",
+    "Audrey",
+    "Jasmine",
+    "Giselle",
+    "Amelia",
+    "Isabella",
+    "Zoe",
+    "Ava",
+    "Camila",
+    "Violet",
+    "Sophia",
+    "Evelyn",
+    "Nicole",
+    "Ashley",
+    "Grace",
+    "Brianna",
+    "Natalie",
+    "Olivia",
+    "Elizabeth",
+    "Charlotte",
+    "Emma",
+    "Misty"
+] as const);
+
+export const MaleParents = Object.freeze([
+    "Benjamin",
+    "Daniel",
+    "Joshua",
+    "Noah",
+    "Andrew",
+    "Juan",
+    "Alex",
+    "Isaac",
+    "Evan",
+    "Ethan",
+    "Vincent",
+    "Angel",
+    "Diego",
+    "Adrian",
+    "Gabriel",
+    "Michael",
+    "Santiago",
+    "Kevin",
+    "Louis",
+    "Samuel",
+    "Anthony",
+    "Claude",
+    "Niko",
+    "John"
+] as const);
+
+export type Parent = typeof MaleParents[number] | typeof FemaleParents[number];

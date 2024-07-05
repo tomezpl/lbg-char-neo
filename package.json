@@ -1,0 +1,17 @@
+{
+  "name": "lbg-char",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "you",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.js --mode=production",
+    "watch": "node build.js"
+  },
+  "devDependencies": {
+    "@citizenfx/client": "latest",
+    "@citizenfx/server": "latest",
+    "@types/node": "^16.3.1",
+    "esbuild": "^0.20.2"
+  }
+}

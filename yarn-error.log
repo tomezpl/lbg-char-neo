@@ -1,0 +1,42 @@
+Arguments: 
+  C:\Users\Tom\AppData\Local\citizenfx\sdk-storage\server\latest\FXServer.exe C:\Users\Tom\AppData\Local\citizenfx\sdk-storage\system-resources\resources\[system]\[builders]\yarn\yarn_cli.js install --ignore-scripts --cache-folder F:\Code\char-creator\char-creator\.fxdk\fxserver\cache\yarn-cache --mutex file:F:\Code\char-creator\char-creator\.fxdk\fxserver\cache\yarn-mutex
+
+PATH: 
+  C:\Users\Tom\AppData\Local\FiveM\FiveM.app\bin\crt;C:\Users\Tom\AppData\Local\FiveM\FiveM.app\bin;C:\Users\Tom\AppData\Local\FiveM\FiveM.app\;I:\SteamLibrary\steamapps\common\Grand Theft Auto V\; C:\Program Files\Oculus\Support\oculus-runtime;C:\Program Files (x86)\Razer Chroma SDK\bin;C:\Program Files\Razer Chroma SDK\bin;C:\Program Files (x86)\Razer\ChromaBroadcast\bin;C:\Program Files\Razer\ChromaBroadcast\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\VULKANSDK\1.2.135.0\BIN;C:\PROGRAM FILES\NVIDIA GPU COMPUTING TOOLKIT\CUDA\V10.2\BIN;C:\PROGRAM FILES\NVIDIA GPU COMPUTING TOOLKIT\CUDA\V10.2\LIBNVVP;C:\PROGRAM FILES (X86)\COMMON FILES\ORACLE\JAVA\JAVAPATH;C:\WINDOWS\SYSTEM32;C:\WINDOWS;C:\WINDOWS\SYSTEM32\WBEM;C:\WINDOWS\SYSTEM32\WINDOWSPOWERSHELL\V1.0\;C:\WINDOWS\SYSTEM32\OPENSSH\;C:\PROGRAM FILES\NVIDIA CORPORATION\NVIDIA NVDLISR;C:\PROGRAM FILES\MICROSOFT SQL SERVER\130\TOOLS\BINN\;C:\PROGRAM FILES\MICROSOFT SQL SERVER\CLIENT SDK\ODBC\170\TOOLS\BINN\;C:\PROGRAM FILES\GIT\CMD;C:\PROGRAM FILES\TORTOISESVN\BIN;C:\PROGRAM FILES\DOXYGEN\BIN;C:\PROGRAM FILES\PERFORCE;C:\PROGRAM FILES\PERFORCE\;C:\PROGRAM FILES\NVIDIA CORPORATION\NSIGHT COMPUTE 2019.5.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\QuickTime\QTSystem\;C:\WINDOWS\system32;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\WINDOWS\system32\config\systemprofile\AppData\Local\Microsoft\WindowsApps;C:\Users\Tom\.cargo\bin;C:\Users\Tom\AppData\Local\Programs\Python\Python37-32\Scripts\;C:\Users\Tom\AppData\Local\Programs\Python\Python37-32\;C:\Users\Tom\AppData\Local\Microsoft\WindowsApps;C:\Users\Tom\Downloads\Software\GENie\;C:\Users\Tom\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\CMake\bin;E:\Code\GraphicsCodex\g3d\\G3D10\build\bin;C:\Users\Tom\AppData\Local\GitHubDesktop\bin;C:\Users\Tom\Downloads\Software\ffmpeg-20191004-e6625ca-win64-static\bin;C:\Users\Tom\Downloads\Software\libav-11.3-win64\win64\usr\bin;C:\Users\Tom\Downloads\Software\gradle-5.6.3-bin\gradle-5.6.3\bin;C:\Users\Tom\AppData\Local\atom\bin;C:\Users\Tom\Downloads\Software\php-7.4.4-Win32-vc15-x64\;C:\Users\Tom\AppData\Roaming\npm;F:\Perforce;C:\Users\Tom\.dotnet\tools;C:\Users\Tom\Downloads\Software\ninja-win\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet\;C:\Program Files\Mullvad VPN\resources;C:\Program Files\nodejs\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\LLVM\bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\Tom\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\Tom\AppData\Local\Programs\Python\Python310\;C:\Users\Tom\.cargo\bin;C:\Users\Tom\AppData\Local\Microsoft\WindowsApps;C:\Users\Tom\Downloads\Software\GENie\;C:\Users\Tom\AppData\Local\Programs\Microsoft VS Code\bin;E:\Code\GraphicsCodex\g3d\\G3D10\build\bin;C:\Users\Tom\AppData\Local\GitHubDesktop\bin;C:\Users\Tom\Downloads\Software\ffmpeg-20191004-e6625ca-win64-static\bin;C:\Users\Tom\Downloads\Software\libav-11.3-win64\win64\usr\bin;C:\Users\Tom\Downloads\Software\gradle-5.6.3-bin\gradle-5.6.3\bin;C:\Users\Tom\AppData\Local\atom\bin;C:\Users\Tom\Downloads\Software\php-7.4.4-Win32-vc15-x64\;F:\Perforce;C:\Users\Tom\.dotnet\tools;C:\Users\Tom\Downloads\Software\ninja-win\;C:\Users\Tom\source\repos\vcpkg;C:\Users\Tom\AppData\Roaming\npm;C:\Users\Tom\AppData\Local\Microsoft\WindowsApps;
+
+Yarn version: 
+  1.22.5
+
+Node version: 
+  16.9.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'F:\Code\char-creator\char-creator\lbg-char\node_modules\@esbuild\win32-x64\esbuild.exe'
+
+npm manifest: 
+  {
+    "name": "lbg-char",
+    "version": "1.0.0",
+    "main": "index.js",
+    "author": "you",
+    "license": "MIT",
+    "scripts": {
+      "build": "node build.js --mode=production",
+      "watch": "node build.js"
+    },
+    "devDependencies": {
+      "@citizenfx/client": "latest",
+      "@citizenfx/server": "latest",
+      "@types/node": "^16.3.1",
+      "esbuild": "^0.20.2"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
