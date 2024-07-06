@@ -63,10 +63,14 @@ const defaultCharacter = Object.freeze({
 	glasses: 0,
 });
 
-export type Character = Omit<typeof defaultCharacter, "gender" | "ogd" | "lcgd"> & {
+type Writable<T> = {
+	-readonly [K in keyof T]: T[K];
+}
+
+export type Character = Writable<Omit<typeof defaultCharacter, "gender" | "ogd" | "lcgd">> & {
     gender: "Male" | "Female";
     ogd: "M" | "F";
     lcgd: "male" | "female";
 };
 
-export const DefaultCharacter : Character = (defaultCharacter as Character);
+export const DefaultCharacter : Readonly<Character> = defaultCharacter as Readonly<Character>;

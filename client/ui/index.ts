@@ -1,3 +1,5 @@
+import { store } from 'state';
+import { addMenuGender } from './menus/gender';
 import {Menu, MenuPool, NativeUI} from './native-ui-wrapper';
 export * from './native-ui-wrapper';
 
@@ -17,6 +19,7 @@ export function RunUI() {
         UIContext.menuPool = menuPool;
 
         NativeUI.MenuPool.Add(menuPool, mainMenu);
+        addMenuGender(mainMenu, store);
         setTick(() =>  {
             NativeUI.MenuPool.ProcessMenus(menuPool);
         });
