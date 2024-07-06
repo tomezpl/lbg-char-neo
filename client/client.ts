@@ -9,7 +9,9 @@ setTick(() => {
 })
 
 on('lbg-openChar', () => {
-    setImmediate(() => {NativeUI["Menu:Visible"](UIContext.mainMenu, true);});
+    setImmediate(() => {
+        NativeUI.Menu.Visible(UIContext.mainMenu, true);
+    });
 });
 
 RegisterCommand("charedit", () => {

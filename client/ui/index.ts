@@ -1,26 +1,5 @@
-type Menu = unknown;
-
-type MenuPool = unknown;
-
-interface MenuPoolGlobal  {
-    Add(menuPool: MenuPool, menu: Menu): void;
-    ProcessMenus(menuPool: MenuPool): void;
-}
-
-interface MenuGlobal {
-    Visible(menu: Menu, visible: boolean): void;
-}
-
-interface INativeUI {
-    CreatePool() : MenuPool;
-    CreateMenu(name: string, colour: string, width: number, height: number): Menu;
-    MenuPool: MenuPoolGlobal;
-    Menu: MenuGlobal;
-    [k: string]: any;
-    "Menu:Visible": MenuGlobal["Visible"];
-};
-
-export const NativeUI: INativeUI = exports.NativeUI as unknown as INativeUI;
+import {Menu, MenuPool, NativeUI} from './native-ui-wrapper';
+export * from './native-ui-wrapper';
 
 export const UIContext = {
     menuPool: undefined as MenuPool,
@@ -37,10 +16,9 @@ export function RunUI() {
         UIContext.mainMenu = mainMenu;
         UIContext.menuPool = menuPool;
 
-        (NativeUI["MenuPool.Add"] as MenuPoolGlobal["Add"])(menuPool, mainMenu);
+        NativeUI.MenuPool.Add(menuPool, mainMenu);
         setTick(() =>  {
-            const NativeUI: INativeUI = exports.NativeUI as unknown as INativeUI;
-            (NativeUI["MenuPool:ProcessMenus"] as MenuPoolGlobal["ProcessMenus"])(menuPool);
+            NativeUI.MenuPool.ProcessMenus(menuPool);
         });
 
         // if(immediate) {
