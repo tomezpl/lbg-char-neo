@@ -20,9 +20,7 @@ export function addMenuGender(parentMenu: Menu, store: CharacterStore) {
         if(typeof index === 'number') {
             index -= 1;
         }
-        console.log('OnListChange', item, genderItem, index);
         if(item === genderItem) {
-            console.log('OnListChange', genders[index]);
             store.actions.setGender(genders[index]);
             store.actions.setOgd(genders[index].substring(0, 1) as "M" | "F");
             store.actions.setLcgd(genders[index].toLowerCase() as Lowercase<typeof genders[number]>)

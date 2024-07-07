@@ -62,7 +62,6 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 					component = PedComponents[component as keyof typeof PedComponents];
 				}
 
-				console.log(component, drawable, texture);
 				SetPedComponentVariation(PlayerPedId(), Number(component), drawable, texture, 2);
 			});
 		}
@@ -94,6 +93,7 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 	});
 }
 export function RefreshModel(force = false, character = store.character) {
+	console.log('Refreshmodel')
 	const { mdhash } = store;
 	const { mom, dad, resemblance, skintone } = character || store.character;
 	const tickerHandle = setTick(() => {
