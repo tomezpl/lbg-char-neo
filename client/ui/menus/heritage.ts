@@ -18,6 +18,7 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
     const dadItem = NativeUI.CreateListItem("Dad", MaleParents, Character["ddad"] + 1, "Select your Dad.");
     NativeUI.Menu.AddItem(submenu, dadItem);
 
+    
     NativeUI.setEventListener(submenu, 'OnListChange', (sender, item, index) => {
         if(item === dadItem) {
             store.actions.setDdad(index - 1);
@@ -32,6 +33,7 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
             clearImmediate(immediate);
         });
     })
+    
 	
     // array  that counts from 0 to 1 with decimals
 	const ZtO = new Array<number>(10);
@@ -61,13 +63,13 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
         }
     });
 	
-    /*NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
+    NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
         if(menu === submenu) {
             // CreateSkinCam('face')
             NativeUI.MenuItem.Index(resemblanceItem, Character.resemblance * 10 + 1);
             NativeUI.MenuItem.Index(skintoneItem, Character.skintone * 10 + 1);
         }
-    });*/
+    });
     NativeUI.setEventListener(submenu, 'OnMenuClosed', () => {
         // CreateSkinCam('body')
     });

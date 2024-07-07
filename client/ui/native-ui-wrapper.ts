@@ -18,7 +18,7 @@ interface MenuGlobal {
 }
 
 interface MenuItemGlobal {
-    Index(menuItem: MenuItem, ...indices: ReadonlyArray<number>): void;
+    Index(menuItem: MenuItem, index: number): void;
 }
 
 interface WindowGlobal {
