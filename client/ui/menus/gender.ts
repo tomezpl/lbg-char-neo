@@ -1,6 +1,7 @@
 import { CharacterStore } from "state/character-store";
 import { Menu, NativeUI } from "ui"
 import type { Character } from "constants/character";
+import { RefreshModel } from "ped";
 
 export function addMenuGender(parentMenu: Menu, store: CharacterStore) {
     const genders: readonly [Character['gender'], Character['gender']] = [
@@ -15,11 +16,16 @@ export function addMenuGender(parentMenu: Menu, store: CharacterStore) {
     NativeUI.Menu.AddItem(parentMenu, genderItem)
 
     NativeUI.setEventListener(parentMenu, 'OnListChange', (sender, item, index) => {
-        console.log('OnListChange', ...arguments);
+        // Lua is 1-indexed
+        if(typeof index === 'number') {
+            index -= 1;
+        }
+        console.log('OnListChange', item, genderItem, index);
         if(item === genderItem) {
-            character["gender"] = genders[index]
-            character["ogd"] = genders[index].substring(0, 1) as "M" | "F";
-            character["lcgd"] = genders[index].toLowerCase() as Lowercase<typeof genders[number]>;
+            console.log('OnListChange', genders[index]);
+            store.actions.setGender(genders[index]);
+            store.actions.setOgd(genders[index].substring(0, 1) as "M" | "F");
+            store.actions.setLcgd(genders[index].toLowerCase() as Lowercase<typeof genders[number]>)
             // oldmdhash = mdhash
             if(genders[index as keyof typeof genders] == "Male") {
                 store.mdhash = GetHashKey("mp_m_freemode_01")
@@ -28,9 +34,9 @@ export function addMenuGender(parentMenu: Menu, store: CharacterStore) {
             }
             
             RequestModel(store.mdhash)
-            character["resemblance"] = 1.0 - character["resemblance"]
-            character["skintone"] = 1.0 - character["skintone"]
-            // RefreshModel()
+            store.actions.setResemblance(1.0 - character.resemblance);
+            store.actions.setSkintone(1.0 - character.resemblance);
+            RefreshModel()
         }
     })
 }
