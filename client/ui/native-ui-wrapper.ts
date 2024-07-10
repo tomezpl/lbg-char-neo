@@ -28,6 +28,7 @@ interface WindowGlobal {
 const NativeUIEvents = [
     'OnListChange',
     'OnSliderChange',
+    'OnSliderChanged',
     'OnMenuChanged',
     'OnMenuClosed'
 ] as const;
@@ -36,7 +37,10 @@ type NativeUIEvent = typeof NativeUIEvents[number];
 
 const defaultEventHandlers = {
     OnListChange(sender: unknown, item: MenuItem, index: number) {},
+    // this one is usually registered on menus
     OnSliderChange(sender: unknown, item: MenuItem, index: number) {},
+    // this one is registered on menu items
+    OnSliderChanged(sender: unknown, item: MenuItem, index: number) {},
     OnMenuChanged(parent: Menu, menu: Menu) {},
     OnMenuClosed() {}
 } as const;
@@ -48,7 +52,7 @@ interface INativeUIRoot {
     CreateMenu(name: string, colour: string, width: number, height: number): Menu;
     CreateListItem(name: string, options: ReadonlyArray<string>, defaultItemIndex: number, description: string): MenuItem;
     CreateHeritageWindow(defaultMum: number, defaultDad: number): Window;
-    CreateSliderItem(name: string, levels: ReadonlyArray<number>, defaultLevelIndex: number, description: string, divider: boolean): MenuItem;
+    CreateSliderItem(name: string, levels: ReadonlyArray<number | string>, defaultLevelIndex: number, description: string, divider: boolean): MenuItem;
     setEventListener<TEvent extends NativeUIEvent = NativeUIEvent>(target: Menu | MenuItem, event: TEvent, handler: NativeUIEventHandler<TEvent>): void;
 }
 
@@ -85,6 +89,14 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuItem:Index': 1,
 };
 
+type EventTarget = Menu | MenuItem;
+
+type EventName = `nativeuilua:js:${EventTarget}${number}:${NativeUIEvent}`;
+
+const eventCount: Partial<Record<EventName, number>> = {
+    
+};
+
 export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) => {
     const value = exports.NativeUI[key];
     console.log(key, typeof value);
@@ -100,9 +112,13 @@ export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) =>
     return obj;
 }, {
     setEventListener(target, event, handler) {
-        const eventName = `nativeuilua:js:${target}:${event}` as const;
+        const baseEventName = `nativeuilua:js:${target as `${EventTarget}${number}`}:${event}` as const;
+        let count = eventCount[baseEventName] || 0;
+        count++;
+        const eventName = `${baseEventName}${count}`;
         on(eventName, handler);
         exports.NativeUI._setEventListener(target, event, eventName);
+        eventCount[baseEventName] = count;
     }
 } as Partial<INativeUI>) as unknown as INativeUI;
 
