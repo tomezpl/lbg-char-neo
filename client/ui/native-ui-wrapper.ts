@@ -3,6 +3,7 @@
 export type Menu = 'menu';
 export type MenuPool = 'menuPool';
 export type MenuItem = 'menuItem';
+export type Panel = 'panel';
 export type Window = 'window';
 
 interface MenuPoolGlobal  {
@@ -19,6 +20,15 @@ interface MenuGlobal {
 
 interface MenuItemGlobal {
     Index(menuItem: MenuItem, index: number): void;
+    Index(menuItem: MenuItem): number;
+}
+
+interface MenuListItemGlobal extends MenuItemGlobal {
+    AddPanel(menuItem: MenuItem, panel: Panel): void;
+    IndexToItem(menuItem: MenuItem, index: number): MenuItem;
+    getPanelValue(menuItem: MenuItem, panelIndex: number): number | string;
+    getProp<TResult = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string): TResult;
+    setProp<TResult = unknown, TValue = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string, propValue: TValue): TResult;
 }
 
 interface WindowGlobal {
@@ -27,6 +37,7 @@ interface WindowGlobal {
 
 const NativeUIEvents = [
     'OnListChange',
+    'OnListChanged',
     'OnSliderChange',
     'OnSliderChanged',
     'OnMenuChanged',
@@ -36,7 +47,11 @@ const NativeUIEvents = [
 type NativeUIEvent = typeof NativeUIEvents[number];
 
 const defaultEventHandlers = {
+    // Triggered on parent menu
     OnListChange(sender: unknown, item: MenuItem, index: number) {},
+    // Triggered on a menu list item
+    OnListChanged(parentMenu: never, item: MenuItem, index: number) {},
+
     // this one is usually registered on menus
     OnSliderChange(sender: unknown, item: MenuItem, index: number) {},
     // this one is registered on menu items
@@ -53,6 +68,7 @@ interface INativeUIRoot {
     CreateListItem(name: string, options: ReadonlyArray<string>, defaultItemIndex: number, description: string): MenuItem;
     CreateHeritageWindow(defaultMum: number, defaultDad: number): Window;
     CreateSliderItem(name: string, levels: ReadonlyArray<number | string>, defaultLevelIndex: number, description: string, divider: boolean): MenuItem;
+    CreateColourPanel(name: string, colours: ReadonlyArray<[number, number, number, number]>): Panel;
     setEventListener<TEvent extends NativeUIEvent = NativeUIEvent>(target: Menu | MenuItem, event: TEvent, handler: NativeUIEventHandler<TEvent>): void;
 }
 
@@ -60,6 +76,7 @@ type INativeUI = INativeUIRoot & {
     Menu: MenuGlobal;
     MenuPool: MenuPoolGlobal;
     MenuItem: MenuItemGlobal;
+    MenuListItem: MenuListItemGlobal;
     Window: WindowGlobal;
 };
 
@@ -70,6 +87,7 @@ type AllNestedKeys =
     NestedKeys<'MenuPool'>  |
     NestedKeys<'Menu'>      |
     NestedKeys<'MenuItem'>      |
+    NestedKeys<'MenuListItem'>      |
     NestedKeys<'Window'>;
 
 // This is a Record rather than an array so we get type errors if we forgot to declare a field here.
@@ -87,6 +105,13 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'Window:Index': 1,
     'CreateSliderItem': 1,
     'MenuItem:Index': 1,
+    'CreateColourPanel': 1,
+    'MenuListItem:AddPanel': 1,
+    'MenuListItem:Index': 1,
+    'MenuListItem:IndexToItem': 1,
+    'MenuListItem:getProp': 1,
+    'MenuListItem:getPanelValue': 1,
+    'MenuListItem:setProp': 1,
 };
 
 type EventTarget = Menu | MenuItem;

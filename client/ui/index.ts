@@ -1,4 +1,5 @@
 import { store } from 'state';
+import { addMenuAppearance } from './menus/appearance';
 import { addMenuFaceShape } from './menus/face-shape';
 import { addMenuGender } from './menus/gender';
 import { addMenuHeritage } from './menus/heritage';
@@ -25,6 +26,7 @@ export function RunUI() {
         addMenuGender(mainMenu, store);
         addMenuHeritage(menuPool, mainMenu, store);
         addMenuFaceShape(menuPool, mainMenu, store);
+        addMenuAppearance(menuPool, mainMenu, store);
 
         setTick(() =>  {
             NativeUI.MenuPool.ProcessMenus(menuPool);
