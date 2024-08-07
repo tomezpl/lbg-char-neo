@@ -6,7 +6,7 @@ export type MenuItem = 'menuItem';
 export type Panel = 'panel';
 export type Window = 'window';
 
-interface MenuPoolGlobal  {
+interface MenuPoolGlobal {
     Add(menuPool: MenuPool, menu: Menu): void;
     ProcessMenus(menuPool: MenuPool): void;
     AddSubMenu(menuPool: MenuPool, parentMenu: Menu, text: string, description: string, keepPosition: boolean, keepBanner: boolean): Menu;
@@ -25,10 +25,12 @@ interface MenuItemGlobal {
 
 interface MenuListItemGlobal extends MenuItemGlobal {
     AddPanel(menuItem: MenuItem, panel: Panel): void;
+    RemovePanelAt(menuItem: MenuItem, panelIndex: number): void;
     IndexToItem(menuItem: MenuItem, index: number): MenuItem;
     getPanelValue(menuItem: MenuItem, panelIndex: number): number | string;
     getProp<TResult = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string): TResult;
     setProp<TResult = unknown, TValue = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string, propValue: TValue): TResult;
+    doesPanelExist(menuItem: MenuItem, panelIndex: number): boolean;
 }
 
 interface WindowGlobal {
@@ -48,27 +50,28 @@ type NativeUIEvent = typeof NativeUIEvents[number];
 
 const defaultEventHandlers = {
     // Triggered on parent menu
-    OnListChange(sender: unknown, item: MenuItem, index: number) {},
+    OnListChange(sender: unknown, item: MenuItem, index: number) { },
     // Triggered on a menu list item
-    OnListChanged(parentMenu: never, item: MenuItem, index: number) {},
+    OnListChanged(parentMenu: never, item: MenuItem, index: number) { },
 
     // this one is usually registered on menus
-    OnSliderChange(sender: unknown, item: MenuItem, index: number) {},
+    OnSliderChange(sender: unknown, item: MenuItem, index: number) { },
     // this one is registered on menu items
-    OnSliderChanged(sender: unknown, item: MenuItem, index: number) {},
-    OnMenuChanged(parent: Menu, menu: Menu) {},
-    OnMenuClosed() {}
+    OnSliderChanged(sender: unknown, item: MenuItem, index: number) { },
+    OnMenuChanged(parent: Menu, menu: Menu) { },
+    OnMenuClosed() { }
 } as const;
 
 type NativeUIEventHandler<TEvent extends NativeUIEvent> = (...params: Parameters<typeof defaultEventHandlers[TEvent]>) => ReturnType<typeof defaultEventHandlers[TEvent]>;
 
 interface INativeUIRoot {
-    CreatePool() : MenuPool;
+    CreatePool(): MenuPool;
     CreateMenu(name: string, colour: string, width: number, height: number): Menu;
     CreateListItem(name: string, options: ReadonlyArray<string>, defaultItemIndex: number, description: string): MenuItem;
     CreateHeritageWindow(defaultMum: number, defaultDad: number): Window;
     CreateSliderItem(name: string, levels: ReadonlyArray<number | string>, defaultLevelIndex: number, description: string, divider: boolean): MenuItem;
     CreateColourPanel(name: string, colours: ReadonlyArray<[number, number, number, number]>): Panel;
+    CreatePercentagePanel(minText: string, title: string, maxText: string): Panel;
     setEventListener<TEvent extends NativeUIEvent = NativeUIEvent>(target: Menu | MenuItem, event: TEvent, handler: NativeUIEventHandler<TEvent>): void;
 }
 
@@ -84,10 +87,10 @@ type NativeUIKeys = keyof Omit<INativeUI, keyof INativeUIRoot>;
 type NestedKeys<TKey extends NativeUIKeys = NativeUIKeys, TProp extends INativeUI[TKey] = INativeUI[TKey]> = `${TKey}:${Extract<keyof TProp, string>}`;
 
 type AllNestedKeys =
-    NestedKeys<'MenuPool'>  |
-    NestedKeys<'Menu'>      |
-    NestedKeys<'MenuItem'>      |
-    NestedKeys<'MenuListItem'>      |
+    NestedKeys<'MenuPool'> |
+    NestedKeys<'Menu'> |
+    NestedKeys<'MenuItem'> |
+    NestedKeys<'MenuListItem'> |
     NestedKeys<'Window'>;
 
 // This is a Record rather than an array so we get type errors if we forgot to declare a field here.
@@ -112,6 +115,9 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuListItem:getProp': 1,
     'MenuListItem:getPanelValue': 1,
     'MenuListItem:setProp': 1,
+    'CreatePercentagePanel': 1,
+    'MenuListItem:RemovePanelAt': 1,
+    'MenuListItem:doesPanelExist': 1,
 };
 
 type EventTarget = Menu | MenuItem;
@@ -119,19 +125,19 @@ type EventTarget = Menu | MenuItem;
 type EventName = `nativeuilua:js:${EventTarget}${number}:${NativeUIEvent}`;
 
 const eventCount: Partial<Record<EventName, number>> = {
-    
+
 };
 
 export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) => {
     const value = exports.NativeUI[key];
     console.log(key, typeof value);
-    if(key.includes(':')) {
+    if (key.includes(':')) {
         const [className, funcName] = key.split(':');
         (obj[className as keyof typeof obj] as unknown as Record<any, unknown>) ??= {};
         (obj[className as keyof typeof obj] as unknown as Record<any, unknown>)[funcName] = value;
         console.log(obj)
     } else {
-        Object.assign(obj, {[key]: value});
+        Object.assign(obj, { [key]: value });
     }
 
     return obj;

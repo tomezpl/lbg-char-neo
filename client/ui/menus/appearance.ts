@@ -65,11 +65,11 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	const hairColour = NativeUI.CreateColourPanel('Color', HairBrowColours);
 	NativeUI.MenuListItem.AddPanel(hairItem, hairColour);
 	NativeUI.Menu.AddItem(submenu, hairItem);
-	
+
 	NativeUI.setEventListener(hairItem, 'OnListChanged', (sender, selectedItem, index) => {
 		const activeItem = NativeUI.MenuListItem.IndexToItem(selectedItem, index);
 		const colour = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
-		
+
 		actions.setHair_color_1(colour - 1)
 		actions.setHair(index - 1);
 
@@ -82,113 +82,250 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		AddPedDecorationFromHashes(PlayerPedId(), ...(hairDecor?.[character.hair] || DefaultHairDecor));
 	});
 
+	const eyebrows = [
+		"Balanced",
+		"Fashion",
+		"Cleopatra",
+		"Quizzical",
+		"Femme",
+		"Seductive",
+		"Pinched",
+		"Chola",
+		"Triomphe",
+		"Carefree",
+		"Curvaceous",
+		"Rodent",
+
+		"Double Tram",
+		"Thin",
+		"Penciled",
+		"Mother Plucker",
+		"Straight and Narrow",
+		"Natural",
+		"Fuzzy",
+		"Unkempt",
+		"Caterpillar",
+		"Regular",
+		"Mediterranean",
+		"Groomed",
+		"Bushels",
+
+		"Feathered",
+		"Prickly",
+		"Monobrow",
+		"Winged",
+		"Triple Tram",
+		"Arched Tram",
+		"Cutouts",
+		"Fade Away",
+		"Solo Tram"
+	] as const;
+
+	// const eyebrowItem = NativeUI.CreateListItem("Eyebrows", eyebrows, character.eyebrows + 1, "Select to change your Appearance.");
+	// const browColour = NativeUI.CreateColourPanel("Color", HairBrowColours);
+	// const browPercentageItem = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%");
+	// NativeUI.MenuListItem.AddPanel(eyebrowItem, browPercentageItem);
+	// NativeUI.MenuListItem.AddPanel(eyebrowItem, browColour)
+	// NativeUI.Menu.AddItem(submenu, eyebrowItem);
+
+	// NativeUI.setEventListener(eyebrowItem, 'OnListChanged', (parent, item, index) => {
+	// 	NativeUI.MenuListItem.Index(eyebrowItem, index);
+	// 	const activeItem = NativeUI.MenuListItem.IndexToItem(item, index);
+	// 	const percentage = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
+	// 	const colour = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 2) || 1);
+
+	// 	SetPedHeadOverlay(PlayerPedId(), 2, index - 1, percentage);
+	// 	SetPedHeadOverlayColor(PlayerPedId(), 2, 1, colour - 1, 0);
+
+	// 	actions.setEyebrows(index - 1);
+	// 	actions.setEyebrows_2(percentage);
+	// 	actions.setEyebrows_3(colour - 1);
+	// });
+
+	const beard = [
+		"Clean Shaven",
+		"Light Stubble",
+		"Balbo",
+		"Circle Beard",
+		"Goatee",
+		"Chin",
+		"Chin Fuzz",
+		"Pencil Chin Strap",
+		"Scruffy",
+		"Musketeer",
+		"Mustache",
+
+		"Trimmed Beard",
+		"Stubble",
+		"Thin Circle Beard",
+		"Horseshoe",
+		"Pencil and Chops",
+		"Chin Strap Beard",
+		"Balbo and Sideburns",
+		"Mutton Chops",
+		"Scruffy Beard",
+		"Curly",
+
+		"Curly and Deep Stranger",
+		"Handlebar",
+		"Faustic",
+		"Otto and Patch",
+		"Otto and Full Stranger",
+		"Light Franz",
+		"The Hampstead",
+		"The Ambrose",
+		"Lincoln Curtain"
+	] as const;
+
+	// const beardItem = NativeUI.CreateListItem("Facial Hair", beard, character.beard + 2, "Make changes to your Appearance.");
+	// NativeUI.Menu.AddItem(submenu, beardItem);
+	// NativeUI.setEventListener("menuItem", 'OnListChanged', (parent, item, index) => {
+	// 	if (character.gender === 'Male') {
+	// 		if (index === 1) {
+	// 			NativeUI.MenuListItem.RemovePanelAt(beardItem, 1);
+	// 			NativeUI.MenuListItem.RemovePanelAt(beardItem, 1);
+
+	// 			SetPedHeadOverlay(PlayerPedId(), 1, 0, 0);
+	// 			SetPedHeadOverlayColor(PlayerPedId(), 1, 1, 0, 0);
+
+	// 			actions.setBeard(0);
+	// 			actions.setBeard_2(0);
+	// 			actions.setBeard_3(0);
+	// 		} else {
+	// 			if (NativeUI.MenuListItem.getPanelValue(beardItem, 1) === undefined) {
+	// 				const beardColour = NativeUI.CreateColourPanel("Color", HairBrowColours);
+	// 				const beardPercentage = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%");
+	// 				NativeUI.MenuListItem.AddPanel(beardItem, beardPercentage);
+	// 				NativeUI.MenuListItem.AddPanel(beardItem, beardColour);
+	// 			}
+
+	// 			const activeItem = NativeUI.MenuListItem.IndexToItem(beardItem, index);
+	// 			const percentage = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
+	// 			const color = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 2) || 1);
+	// 			SetPedHeadOverlay(PlayerPedId(), 1, index - 2, percentage)
+	// 			SetPedHeadOverlayColor(PlayerPedId(), 1, 1, color - 1, 0)
+	// 			actions.setBeard(index - 2);
+	// 			actions.setBeard_2(percentage);
+	// 			actions.setBeard_3(color);
+	// 		}
+	// 	}
+	// });
+
+	const blemishes = [
+		"None",
+		"Measles",
+		"Pimples",
+		"Spots",
+		"Break Out",
+		"Blackheads",
+		"Build Up",
+		"Pustules",
+		"Zits",
+		"Full Acne",
+		"Acne",
+		"Cheek Rash",
+		"Face Rash",
+		"Picker",
+		"Puberty",
+		"Eyesore",
+		"Chin Rash",
+		"Two Face",
+		"T Zone",
+		"Greasy",
+		"Marked",
+		"Acne Scarring",
+		"Full Acne Scarring",
+		"Cold Sores",
+		"Impetigo"
+	] as const;
+
+	// const blemishesItem = NativeUI.CreateListItem("Skin Blemishes", blemishes, character.bodyb_1 + 1, "Make changes to your Appearance.");
+	// NativeUI.Menu.AddItem(submenu, blemishesItem);
+	// NativeUI.setEventListener(blemishesItem, 'OnListChanged', (parent, item, index) => {
+	// 	if (index === 1) {
+	// 		NativeUI.MenuListItem.RemovePanelAt(blemishesItem, 1);
+	// 		NativeUI.MenuListItem.RemovePanelAt(blemishesItem, 1);
+
+	// 		SetPedHeadOverlay(PlayerPedId(), 11, 0, 0);
+	// 		SetPedHeadOverlayColor(PlayerPedId(), 11, 1, 0, 0);
+
+	// 		actions.setBodyb_1(0);
+	// 		actions.setBodyb_2(0);
+	// 	} else {
+	// 		if (NativeUI.MenuListItem.getPanelValue(blemishesItem, 1) === undefined) {
+	// 			const blemishesColour = NativeUI.CreateColourPanel("Color", HairBrowColours);
+	// 			const blemishesPercentage = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%");
+	// 			NativeUI.MenuListItem.AddPanel(blemishesItem, blemishesPercentage);
+	// 			NativeUI.MenuListItem.AddPanel(beardItem, blemishesColour);
+	// 		}
+
+	// 		const activeItem = NativeUI.MenuListItem.IndexToItem(blemishesItem, index);
+	// 		const percentage = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
+	// 		SetPedHeadOverlay(PlayerPedId(), 11, index - 1, percentage)
+	// 		actions.setBodyb_1(index - 1);
+	// 		actions.setBeard_2(percentage);
+	// 	}
+	// });
+
+	type PropsToUpdate<P extends keyof typeof character = keyof typeof character> = [P] | [P, P] | [P, P, P];
+
+	function createOverlayItem(items: ReadonlyArray<string>, title: string, overlayId: number, defaultValueKey: keyof typeof character, propsToUpdate: PropsToUpdate, indexOffset = 0, colourType: 1 | 2 = 1) {
+		const overlayItem = NativeUI.CreateListItem(title, items, (character[defaultValueKey] as number) + 1 - indexOffset, "Make changes to your Appearance.");
+		NativeUI.Menu.AddItem(submenu, overlayItem);
+		NativeUI.setEventListener(overlayItem, 'OnListChanged', (parent, item, index) => {
+			if (index === 1) {
+				for (let i = 0; i < Math.min(2, propsToUpdate.length - 1); i++) {
+					NativeUI.MenuListItem.RemovePanelAt(overlayItem, 1);
+				}
+
+				SetPedHeadOverlay(PlayerPedId(), overlayId, 0, 0);
+				SetPedHeadOverlayColor(PlayerPedId(), overlayId, colourType, 0, 0);
+
+				propsToUpdate.forEach((prop) => {
+					actions[`set${prop[0].toUpperCase()}${prop.slice(1)}` as keyof typeof actions](0 as never);
+				});
+			} else {
+				const value = NativeUI.MenuListItem.getPanelValue(overlayItem, 1);
+				console.log(value, value === undefined);
+				if (!NativeUI.MenuListItem.doesPanelExist(overlayItem, 1)) {
+					if (propsToUpdate.length > 1) {
+						NativeUI.MenuListItem.AddPanel(overlayItem, NativeUI.CreatePercentagePanel("0%", "Opacity", "100%"));
+					}
+
+					if (propsToUpdate.length > 2) {
+						NativeUI.MenuListItem.AddPanel(overlayItem, NativeUI.CreateColourPanel("Color", HairBrowColours));
+					}
+				}
+
+				const activeItem = NativeUI.MenuListItem.IndexToItem(overlayItem, index);
+				propsToUpdate.forEach((prop, idx) => {
+					let value: number;
+					switch (idx) {
+						// Item index
+						case 0:
+							value = (index - 1) + indexOffset;
+						// Percentage
+						case 1:
+							value = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
+							SetPedHeadOverlay(PlayerPedId(), overlayId, (index - 1) + indexOffset, value);
+						// Colour
+						case 2:
+							value = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 2) || 1) - 1;
+							SetPedHeadOverlayColor(PlayerPedId(), overlayId, colourType, value, 0);
+					}
+
+					actions[`set${prop[0].toUpperCase()}${prop.slice(1)}` as keyof typeof actions](value as never);
+				});
+			}
+		});
+	}
+
+	const description = "Select to change your Appearance." as const;
+	createOverlayItem(eyebrows, "Eyebrows", 2, 'eyebrows', ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1);
+	createOverlayItem(beard, "Facial Hair", 1, 'beard', ['beard', 'beard_2', 'beard_3'], 1, 1);
+	createOverlayItem(blemishes, "Skin Blemishes", 11, 'bodyb_1', ['bodyb_1', 'bodyb_2']);
 
 	/*
-	hairitem.OnListChanged = function(ParentMenu, SelectedItem, Index)
-		local ActiveItem = SelectedItem:IndexToItem(Index)
-		local color = (ActiveItem.Panels and ActiveItem.Panels[1] or 1)
-		Character['hair_color_1'] = color-1
-		Character["hair"] = Index - 1
-		SetPedComponentVariation(PlayerPedId(), 2, Index - 1, 0, 2)
-		SetPedHairColor(PlayerPedId(),color-1,0)
-		ClearPedDecorations(PlayerPedId())
-		if hairDecor[Character["ogd"]][hairitem:Index()] ~= nil then
-			local hairDecoraciones = hairDecor[Character["ogd"]]
-			if hairDecoraciones[Character["hair"]] ~= nil then
-				AddPedDecorationFromHashes(PlayerPedId(), hairDecoraciones[Character["hair"]][1], hairDecoraciones[Character["hair"]][2])
-			else
-				AddPedDecorationFromHashes(PlayerPedId(), hairDecorDefault[1], hairDecorDefault[2])
-			end
-		else
-			AddPedDecorationFromHashes(PlayerPedId(), hairDecorDefault[1], hairDecorDefault[2])
-		end
-	end
-	
-	local eyebrows = { "Balanced", "Fashion", "Cleopatra", "Quizzical", "Femme", "Seductive", "Pinched", "Chola", "Triomphe", "Carefree", "Curvaceous", "Rodent", 
-	"Double Tram", "Thin", "Penciled", "Mother Plucker", "Straight and Narrow", "Natural", "Fuzzy", "Unkempt", "Caterpillar", "Regular", "Mediterranean", "Groomed", "Bushels", 
-	"Feathered", "Prickly", "Monobrow", "Winged", "Triple Tram", "Arched Tram", "Cutouts", "Fade Away", "Solo Tram" }
-	local eyebrowitem = NativeUI.CreateListItem("Eyebrows", eyebrows, Character['eyebrows'] + 1, "Select to change your Appearance.")
-	local browcolor = NativeUI.CreateColourPanel("Color", hairbrowcolors)
-	local browpercentageitem = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%")
-	eyebrowitem:AddPanel(browpercentageitem)
-	eyebrowitem:AddPanel(browcolor)
-	submenu:AddItem(eyebrowitem)
-	eyebrowitem.OnListChanged = function(ParentMenu, SelectedItem, Index)
-		eyebrowitem:Index(Index)
-		local ActiveItem = SelectedItem:IndexToItem(Index)
-		local percentage = (ActiveItem.Panels and ActiveItem.Panels[1] or 1.0)
-		local color = (ActiveItem.Panels and ActiveItem.Panels[2] or 1)
-		SetPedHeadOverlay(PlayerPedId(), 2,Index-1,percentage)
-		SetPedHeadOverlayColor(PlayerPedId(), 2, 1,	color-1,0)
-		Character['eyebrows'] = Index-1
-		Character['eyebrows_2'] = percentage
-		Character['eyebrows_3'] = color-1
-	end
-
-	local beard = { "Clean Shaven", "Light Stubble", "Balbo", "Circle Beard", "Goatee", "Chin", "Chin Fuzz", "Pencil Chin Strap", "Scruffy", "Musketeer", "Mustache", 
-	"Trimmed Beard", "Stubble", "Thin Circle Beard", "Horseshoe", "Pencil and Chops", "Chin Strap Beard", "Balbo and Sideburns", "Mutton Chops", "Scruffy Beard", "Curly", 
-	"Curly and Deep Stranger", "Handlebar", "Faustic", "Otto and Patch", "Otto and Full Stranger", "Light Franz", "The Hampstead", "The Ambrose", "Lincoln Curtain" }
-	local bearditem = NativeUI.CreateListItem("Facial Hair", beard, Character["beard"] + 2, "Make changes to your Appearance.")
-	submenu:AddItem(bearditem)
-	bearditem.OnListChanged = function(ParentMenu, SelectedItem, Index)
-		if Character["gender"] == "Female" then
-			bearditem:Index(Character["beard"] + 1)
-			ShowNotification("Facial Hair unavailable for Female characters.")
-		else
-			if Index == 1 then
-				bearditem:RemovePanelAt(1)
-				bearditem:RemovePanelAt(1)
-				SetPedHeadOverlay(PlayerPedId(), 1,0,0.0)
-				SetPedHeadOverlayColor(PlayerPedId(), 1, 1,	0,0)
-				Character['beard'] = 0
-				Character['beard_2'] = 0
-				Character['beard_3'] = 0
-			else
-				if bearditem.Panels[1] == nil then
-					local beardcolor = NativeUI.CreateColourPanel("Color", hairbrowcolors)
-					local beardper = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%")
-					bearditem:AddPanel(beardper)
-					bearditem:AddPanel(beardcolor)
-				end
-				local ActiveItem = SelectedItem:IndexToItem(Index)
-				local percentage = (ActiveItem.Panels and ActiveItem.Panels[1] or 1.0)
-				local color = (ActiveItem.Panels and ActiveItem.Panels[2] or 1)
-				SetPedHeadOverlay(PlayerPedId(), 1,Index - 2,percentage)
-				SetPedHeadOverlayColor(PlayerPedId(), 1, 1,	color-1,0)
-				Character['beard'] = Index - 2
-				Character['beard_2'] = percentage
-				Character['beard_3'] = color-1
-			end
-		end
-	end
-
-	local blemishes = { "None", "Measles", "Pimples", "Spots", "Break Out", "Blackheads", "Build Up", "Pustules", "Zits", "Full Acne", "Acne", "Cheek Rash", "Face Rash",
-	"Picker", "Puberty", "Eyesore", "Chin Rash", "Two Face", "T Zone", "Greasy", "Marked", "Acne Scarring", "Full Acne Scarring", "Cold Sores", "Impetigo" }
-	local blemishesitem = NativeUI.CreateListItem("Skin Blemishes", blemishes, Character['bodyb_1'] + 1, "Make changes to your Appearance.")
-	submenu:AddItem(blemishesitem)
-	blemishesitem.OnListChanged = function(ParentMenu, SelectedItem, Index)
-		if Index == 1 then
-			blemishesitem:RemovePanelAt(1)
-			blemishesitem:RemovePanelAt(1)
-			SetPedHeadOverlay(PlayerPedId(), 11,0,0.0)
-			SetPedHeadOverlayColor(PlayerPedId(), 11, 1,	0,0)
-			Character['bodyb_1'] = 0
-			Character['bodyb_2'] = 0
-		else
-			if blemishesitem.Panels[1] == nil then
-				local blemishescolor = NativeUI.CreateColourPanel("Color", hairbrowcolors)
-				local blemishesper = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%")
-				blemishesitem:AddPanel(blemishesper)
-				blemishesitem:AddPanel(blemishescolor)
-			end
-			local ActiveItem = SelectedItem:IndexToItem(Index)
-			local percentage = (ActiveItem.Panels and ActiveItem.Panels[1] or 1.0)
-			SetPedHeadOverlay(PlayerPedId(), 11,Index-1,percentage)
-			Character['bodyb_1'] = Index-1
-			Character['bodyb_2'] = percentage
-		end
-	end
-
 	local aging = { "None", "Crow's Feet", "First Signs", "Middle Aged", "Worry Lines", "Depression", "Distinguished", "Aged", "Weathered", "Wrinkled", "Sagging", "Tough Life", 
 	"Vintage", "Retired", "Junkie", "Geriatric" }
 	local agingitem = NativeUI.CreateListItem("Skin Aging", aging, Character['age_1'] + 1, "Make changes to your Appearance.")
