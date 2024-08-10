@@ -82,195 +82,11 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		AddPedDecorationFromHashes(PlayerPedId(), ...(hairDecor?.[character.hair] || DefaultHairDecor));
 	});
 
-	const eyebrows = [
-		"Balanced",
-		"Fashion",
-		"Cleopatra",
-		"Quizzical",
-		"Femme",
-		"Seductive",
-		"Pinched",
-		"Chola",
-		"Triomphe",
-		"Carefree",
-		"Curvaceous",
-		"Rodent",
-
-		"Double Tram",
-		"Thin",
-		"Penciled",
-		"Mother Plucker",
-		"Straight and Narrow",
-		"Natural",
-		"Fuzzy",
-		"Unkempt",
-		"Caterpillar",
-		"Regular",
-		"Mediterranean",
-		"Groomed",
-		"Bushels",
-
-		"Feathered",
-		"Prickly",
-		"Monobrow",
-		"Winged",
-		"Triple Tram",
-		"Arched Tram",
-		"Cutouts",
-		"Fade Away",
-		"Solo Tram"
-	] as const;
-
-	// const eyebrowItem = NativeUI.CreateListItem("Eyebrows", eyebrows, character.eyebrows + 1, "Select to change your Appearance.");
-	// const browColour = NativeUI.CreateColourPanel("Color", HairBrowColours);
-	// const browPercentageItem = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%");
-	// NativeUI.MenuListItem.AddPanel(eyebrowItem, browPercentageItem);
-	// NativeUI.MenuListItem.AddPanel(eyebrowItem, browColour)
-	// NativeUI.Menu.AddItem(submenu, eyebrowItem);
-
-	// NativeUI.setEventListener(eyebrowItem, 'OnListChanged', (parent, item, index) => {
-	// 	NativeUI.MenuListItem.Index(eyebrowItem, index);
-	// 	const activeItem = NativeUI.MenuListItem.IndexToItem(item, index);
-	// 	const percentage = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
-	// 	const colour = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 2) || 1);
-
-	// 	SetPedHeadOverlay(PlayerPedId(), 2, index - 1, percentage);
-	// 	SetPedHeadOverlayColor(PlayerPedId(), 2, 1, colour - 1, 0);
-
-	// 	actions.setEyebrows(index - 1);
-	// 	actions.setEyebrows_2(percentage);
-	// 	actions.setEyebrows_3(colour - 1);
-	// });
-
-	const beard = [
-		"Clean Shaven",
-		"Light Stubble",
-		"Balbo",
-		"Circle Beard",
-		"Goatee",
-		"Chin",
-		"Chin Fuzz",
-		"Pencil Chin Strap",
-		"Scruffy",
-		"Musketeer",
-		"Mustache",
-
-		"Trimmed Beard",
-		"Stubble",
-		"Thin Circle Beard",
-		"Horseshoe",
-		"Pencil and Chops",
-		"Chin Strap Beard",
-		"Balbo and Sideburns",
-		"Mutton Chops",
-		"Scruffy Beard",
-		"Curly",
-
-		"Curly and Deep Stranger",
-		"Handlebar",
-		"Faustic",
-		"Otto and Patch",
-		"Otto and Full Stranger",
-		"Light Franz",
-		"The Hampstead",
-		"The Ambrose",
-		"Lincoln Curtain"
-	] as const;
-
-	// const beardItem = NativeUI.CreateListItem("Facial Hair", beard, character.beard + 2, "Make changes to your Appearance.");
-	// NativeUI.Menu.AddItem(submenu, beardItem);
-	// NativeUI.setEventListener("menuItem", 'OnListChanged', (parent, item, index) => {
-	// 	if (character.gender === 'Male') {
-	// 		if (index === 1) {
-	// 			NativeUI.MenuListItem.RemovePanelAt(beardItem, 1);
-	// 			NativeUI.MenuListItem.RemovePanelAt(beardItem, 1);
-
-	// 			SetPedHeadOverlay(PlayerPedId(), 1, 0, 0);
-	// 			SetPedHeadOverlayColor(PlayerPedId(), 1, 1, 0, 0);
-
-	// 			actions.setBeard(0);
-	// 			actions.setBeard_2(0);
-	// 			actions.setBeard_3(0);
-	// 		} else {
-	// 			if (NativeUI.MenuListItem.getPanelValue(beardItem, 1) === undefined) {
-	// 				const beardColour = NativeUI.CreateColourPanel("Color", HairBrowColours);
-	// 				const beardPercentage = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%");
-	// 				NativeUI.MenuListItem.AddPanel(beardItem, beardPercentage);
-	// 				NativeUI.MenuListItem.AddPanel(beardItem, beardColour);
-	// 			}
-
-	// 			const activeItem = NativeUI.MenuListItem.IndexToItem(beardItem, index);
-	// 			const percentage = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
-	// 			const color = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 2) || 1);
-	// 			SetPedHeadOverlay(PlayerPedId(), 1, index - 2, percentage)
-	// 			SetPedHeadOverlayColor(PlayerPedId(), 1, 1, color - 1, 0)
-	// 			actions.setBeard(index - 2);
-	// 			actions.setBeard_2(percentage);
-	// 			actions.setBeard_3(color);
-	// 		}
-	// 	}
-	// });
-
-	const blemishes = [
-		"None",
-		"Measles",
-		"Pimples",
-		"Spots",
-		"Break Out",
-		"Blackheads",
-		"Build Up",
-		"Pustules",
-		"Zits",
-		"Full Acne",
-		"Acne",
-		"Cheek Rash",
-		"Face Rash",
-		"Picker",
-		"Puberty",
-		"Eyesore",
-		"Chin Rash",
-		"Two Face",
-		"T Zone",
-		"Greasy",
-		"Marked",
-		"Acne Scarring",
-		"Full Acne Scarring",
-		"Cold Sores",
-		"Impetigo"
-	] as const;
-
-	// const blemishesItem = NativeUI.CreateListItem("Skin Blemishes", blemishes, character.bodyb_1 + 1, "Make changes to your Appearance.");
-	// NativeUI.Menu.AddItem(submenu, blemishesItem);
-	// NativeUI.setEventListener(blemishesItem, 'OnListChanged', (parent, item, index) => {
-	// 	if (index === 1) {
-	// 		NativeUI.MenuListItem.RemovePanelAt(blemishesItem, 1);
-	// 		NativeUI.MenuListItem.RemovePanelAt(blemishesItem, 1);
-
-	// 		SetPedHeadOverlay(PlayerPedId(), 11, 0, 0);
-	// 		SetPedHeadOverlayColor(PlayerPedId(), 11, 1, 0, 0);
-
-	// 		actions.setBodyb_1(0);
-	// 		actions.setBodyb_2(0);
-	// 	} else {
-	// 		if (NativeUI.MenuListItem.getPanelValue(blemishesItem, 1) === undefined) {
-	// 			const blemishesColour = NativeUI.CreateColourPanel("Color", HairBrowColours);
-	// 			const blemishesPercentage = NativeUI.CreatePercentagePanel("0%", "Opacity", "100%");
-	// 			NativeUI.MenuListItem.AddPanel(blemishesItem, blemishesPercentage);
-	// 			NativeUI.MenuListItem.AddPanel(beardItem, blemishesColour);
-	// 		}
-
-	// 		const activeItem = NativeUI.MenuListItem.IndexToItem(blemishesItem, index);
-	// 		const percentage = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
-	// 		SetPedHeadOverlay(PlayerPedId(), 11, index - 1, percentage)
-	// 		actions.setBodyb_1(index - 1);
-	// 		actions.setBeard_2(percentage);
-	// 	}
-	// });
 
 	type PropsToUpdate<P extends keyof typeof character = keyof typeof character> = [P] | [P, P] | [P, P, P];
 
-	function createOverlayItem(items: ReadonlyArray<string>, title: string, overlayId: number, defaultValueKey: keyof typeof character, propsToUpdate: PropsToUpdate, indexOffset = 0, colourType: 1 | 2 = 1) {
-		const overlayItem = NativeUI.CreateListItem(title, items, (character[defaultValueKey] as number) + 1 - indexOffset, "Make changes to your Appearance.");
+	function createOverlayItem(items: ReadonlyArray<string>, title: string, overlayId: number, defaultValue: number, propsToUpdate: PropsToUpdate, indexOffset = 0, colourType: 1 | 2 = 1) {
+		const overlayItem = NativeUI.CreateListItem(title, items, defaultValue, "Make changes to your Appearance.");
 		NativeUI.Menu.AddItem(submenu, overlayItem);
 		NativeUI.setEventListener(overlayItem, 'OnListChanged', (parent, item, index) => {
 			if (index === 1) {
@@ -321,9 +137,279 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	}
 
 	const description = "Select to change your Appearance." as const;
-	createOverlayItem(eyebrows, "Eyebrows", 2, 'eyebrows', ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1);
-	createOverlayItem(beard, "Facial Hair", 1, 'beard', ['beard', 'beard_2', 'beard_3'], 1, 1);
-	createOverlayItem(blemishes, "Skin Blemishes", 11, 'bodyb_1', ['bodyb_1', 'bodyb_2']);
+
+	const eyebrows = [
+		"Balanced",
+		"Fashion",
+		"Cleopatra",
+		"Quizzical",
+		"Femme",
+		"Seductive",
+		"Pinched",
+		"Chola",
+		"Triomphe",
+		"Carefree",
+		"Curvaceous",
+		"Rodent",
+
+		"Double Tram",
+		"Thin",
+		"Penciled",
+		"Mother Plucker",
+		"Straight and Narrow",
+		"Natural",
+		"Fuzzy",
+		"Unkempt",
+		"Caterpillar",
+		"Regular",
+		"Mediterranean",
+		"Groomed",
+		"Bushels",
+
+		"Feathered",
+		"Prickly",
+		"Monobrow",
+		"Winged",
+		"Triple Tram",
+		"Arched Tram",
+		"Cutouts",
+		"Fade Away",
+		"Solo Tram"
+	] as const;
+	createOverlayItem(eyebrows, "Eyebrows", 2, character.eyebrows + 1, ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1);
+
+	const beard = [
+		"Clean Shaven",
+		"Light Stubble",
+		"Balbo",
+		"Circle Beard",
+		"Goatee",
+		"Chin",
+		"Chin Fuzz",
+		"Pencil Chin Strap",
+		"Scruffy",
+		"Musketeer",
+		"Mustache",
+
+		"Trimmed Beard",
+		"Stubble",
+		"Thin Circle Beard",
+		"Horseshoe",
+		"Pencil and Chops",
+		"Chin Strap Beard",
+		"Balbo and Sideburns",
+		"Mutton Chops",
+		"Scruffy Beard",
+		"Curly",
+
+		"Curly and Deep Stranger",
+		"Handlebar",
+		"Faustic",
+		"Otto and Patch",
+		"Otto and Full Stranger",
+		"Light Franz",
+		"The Hampstead",
+		"The Ambrose",
+		"Lincoln Curtain"
+	] as const;
+	createOverlayItem(beard, "Facial Hair", 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1);
+
+	const blemishes = [
+		"None",
+		"Measles",
+		"Pimples",
+		"Spots",
+		"Break Out",
+		"Blackheads",
+		"Build Up",
+		"Pustules",
+		"Zits",
+		"Full Acne",
+		"Acne",
+		"Cheek Rash",
+		"Face Rash",
+		"Picker",
+		"Puberty",
+		"Eyesore",
+		"Chin Rash",
+		"Two Face",
+		"T Zone",
+		"Greasy",
+		"Marked",
+		"Acne Scarring",
+		"Full Acne Scarring",
+		"Cold Sores",
+		"Impetigo"
+	] as const; createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']);
+
+	const aging = [
+		"None",
+		"Crow's Feet",
+		"First Signs",
+		"Middle Aged",
+		"Worry Lines",
+		"Depression",
+		"Distinguished",
+		"Aged",
+		"Weathered",
+		"Wrinkled",
+		"Sagging",
+		"Tough Life",
+
+		"Vintage",
+		"Retired",
+		"Junkie",
+		"Geriatric"
+	] as const;
+	createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1);
+
+	const complexion = [
+		"None",
+		"Rosy Cheeks",
+		"Stubble Rash",
+		"Hot Flush",
+		"Sunburn",
+		"Bruised",
+		"Alchoholic",
+		"Patchy",
+		"Totem",
+		"Blood Vessels",
+		"Damaged",
+		"Pale",
+		"Ghostly"
+	] as const;
+	createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1);
+
+	const molesFreckles = [
+		"None",
+		"Cherub",
+		"All Over",
+		"Irregular",
+		"Dot Dash",
+		"Over the Bridge",
+		"Baby Doll",
+		"Pixie",
+		"Sun Kissed",
+		"Beauty Marks",
+		"Line Up",
+		"Modelesque",
+		"Occasional",
+		"Speckled",
+		"Rain Drops",
+		"Double Dip",
+		"One Sided",
+		"Pairs",
+		"Growth"
+	] as const;
+	createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']);
+
+	const skinDamage = [
+		"None",
+		"Uneven",
+		"Sandpaper",
+		"Patchy",
+		"Rough",
+		"Leathery",
+		"Textured",
+		"Coarse",
+		"Rugged",
+		"Creased",
+		"Cracked",
+		"Gritty"
+	] as const;
+	createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1)
+
+	const eyeColours = [
+		"Green",
+		"Emerald",
+		"Light Blue",
+		"Ocean Blue",
+		"Light Brown",
+		"Dark Brown",
+		"Hazel",
+		"Dark Gray",
+		"Light Gray",
+		"Pink",
+		"Yellow",
+		"Purple",
+		"Blackout",
+
+		"Shades of Gray",
+		"Tequila Sunrise",
+		"Atomic",
+		"Warp",
+		"ECola",
+		"Space Ranger",
+		"Ying Yang",
+		"Bullseye",
+		"Lizard",
+		"Dragon",
+		"Extra Terrestrial",
+		"Goat",
+		"Smiley",
+		"Possessed",
+
+		"Demon",
+		"Infected",
+		"Alien",
+		"Undead",
+		"Zombie"
+	] as const;
+	const eyeColourItem = NativeUI.CreateListItem('Eye Color', eyeColours, character.eye_color + 1, description);
+	NativeUI.Menu.AddItem(submenu, eyeColourItem);
+	NativeUI.setEventListener(eyeColourItem, 'OnListChanged', (parent, item, index) => {
+		SetPedEyeColor(PlayerPedId(), index - 1);
+		actions.setEye_color(index - 1);
+	});
+
+	const makeup = [
+		"None",
+		"Smoky Black",
+		"Bronze",
+		"Soft Gray",
+		"Retro Glam",
+		"Natural Look",
+		"Cat Eyes",
+		"Chola",
+		"Vamp",
+		"Vinewood Glamour",
+		"Bubblegum",
+		"Aqua Dream",
+		"Pin up",
+		"Purple Passion",
+		"Smoky Cat Eye",
+		"Smoldering Ruby",
+		"Pop Princess"
+	] as const;
+	createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1);
+
+	const blush = [
+		"None",
+		"Full",
+		"Angled",
+		"Round",
+		"Horizontal",
+		"High",
+		"Sweetheart",
+		"Eighties"
+	] as const;
+	createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1);
+
+	const lipstick = [
+		"None",
+		"Color Matte",
+		"Color Gloss",
+		"Lined Matte",
+		"Lined Gloss",
+		"Heavy Lined Matte",
+		"Heavy Lined Gloss",
+		"Lined Nude Matte",
+		"Liner Nude Gloss",
+		"Smudged",
+		"Geisha"
+	] as const;
+	createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 1, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1);
+
 
 	/*
 	local aging = { "None", "Crow's Feet", "First Signs", "Middle Aged", "Worry Lines", "Depression", "Distinguished", "Aged", "Weathered", "Wrinkled", "Sagging", "Tough Life", 
