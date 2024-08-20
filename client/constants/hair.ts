@@ -124,3 +124,30 @@ export const HairBrowColours: ReadonlyArray<[number, number, number, number]> = 
     [170, 78, 43, 255],
     [98, 98, 98, 255]
 ]);
+
+export const OldDLCHairMap = {
+    // Beach Bum
+    CLO_BBF_H_00: 'HAIR_GROUP_BCH1',
+    CLO_BBF_H_05: 'HAIR_GROUP_BCH2',
+    CLO_BBM_H_00: 'HAIR_GROUP_BCH3',
+    CLO_BBM_H_05: 'HAIR_GROUP_BCH4',
+
+    // Business
+    CLO_BUS_H_0_0: 'HAIR_GROUP_BUS1',
+    CLO_BUS_H_1_0: 'HAIR_GROUP_BUS2',
+    CLO_BUS_F_H_0_0: 'HAIR_GROUP_BUS3',
+    CLO_BUS_F_H_1_0: 'HAIR_GROUP_BUS4',
+
+    // Valentines:
+    CLO_VALF_H_0_0: 'HAIR_GROUP_VAL1',
+
+    // Not A Hipster
+    CLO_HP_F_HR_0_0: 'HAIR_GROUP_HIP3',
+    CLO_HP_F_HR_1_0: 'HAIR_GROUP_HIP4',
+    CLO_HP_HR_0_0: 'HAIR_GROUP_HIP1',
+    CLO_HP_HR_1_0: 'HAIR_GROUP_HIP2',
+
+    // Independence
+    CLO_INDF_H_0_0: 'HAIR_GROUP_IND1',
+    CLO_IND_H_0_0: 'HAIR_GROUP_IND1',
+} as const;

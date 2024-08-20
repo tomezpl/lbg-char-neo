@@ -1,4 +1,4 @@
-import { DefaultHairDecor, HairBrowColours, HairDecor } from "constants/hair";
+import { DefaultHairDecor, HairBrowColours, HairDecor, OldDLCHairMap } from "constants/hair";
 import { clothingStore } from "state/clothing-store";
 import { CharacterStore } from "state/character-store";
 import { Menu, MenuPool, NativeUI } from "ui";
@@ -27,6 +27,8 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 			}
 			if (DoesTextLabelExist(label)) {
 				text = GetLabelText(label);
+			} else if (hairNames?.[0] && hairNames[0] in OldDLCHairMap && DoesTextLabelExist(OldDLCHairMap[hairNames?.[0] as keyof typeof OldDLCHairMap])) {
+				text = GetLabelText(OldDLCHairMap[hairNames?.[0] as keyof typeof OldDLCHairMap]);
 			} else if (DoesTextLabelExist(hairNames?.[0])) {
 				text = GetLabelText(hairNames[0])
 			}
