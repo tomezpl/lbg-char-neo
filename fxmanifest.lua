@@ -11,3 +11,7 @@ server_script 'dist/server.js'
 -- client_script 'plugins/vmenu-import-ui.lua'
 
 dependency 'NativeUI'
+
+files {
+    'assets/clothesdump/dist/clothingdump.json'
+}

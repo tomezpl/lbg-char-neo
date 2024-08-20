@@ -16,6 +16,7 @@ interface MenuGlobal {
     Visible(menu: Menu, visible: boolean): void;
     AddItem(menu: Menu, item: MenuItem): void;
     AddWindow(menu: Menu, window: Window): void;
+    Clear(menu: Menu): void;
 }
 
 interface MenuItemGlobal {
@@ -118,6 +119,7 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'CreatePercentagePanel': 1,
     'MenuListItem:RemovePanelAt': 1,
     'MenuListItem:doesPanelExist': 1,
+    'Menu:Clear': 1,
 };
 
 type EventTarget = Menu | MenuItem;

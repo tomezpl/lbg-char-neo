@@ -1,67 +1,49 @@
 import { DefaultHairDecor, HairBrowColours, HairDecor } from "constants/hair";
+import { clothingStore } from "state/clothing-store";
 import { CharacterStore } from "state/character-store";
 import { Menu, MenuPool, NativeUI } from "ui";
 import { ensureArray } from "utils/misc";
 
-export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
-	const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Appearance', 'Select to change your Appearance.', true, false);
+let submenu: Menu;
 
-	const haircutNames = {
-		male: [
-			"Close Shave",
-			"Buzzcut",
-			"Faux Hawk",
-			"Hipster",
-			"Side Parting",
-			"Shorter Cut",
-			"Biker",
-			"Ponytail",
-			"Cornrows",
-			"Slicked",
-			"Short Brushed",
-			"Spikey",
-			"Caesar",
-			"Chopped",
-			"Dreads",
-			"Long Hair",
-			"Shaggy Curls",
-			"Surfer Dude",
-			"Short Side Part",
-			"High Slicked Sides",
-			"Long Slicked",
-			"Hipster Youth",
-			"Mullet"],
-		female: [
-			"Close Shave",
-			"Short",
-			"Layered Bob",
-			"Pigtails",
-			"Ponytail",
-			"Braided Mohawk",
-			"Braids",
-			"Bob",
-			"Faux Hawk",
-			"French Twist",
-			"Long Bob",
-			"Loose Tied",
-			"Pixie",
-			"Shaved Bangs",
-			"Top Knot",
-			"Wavy Bob",
-			"Pin Up Girl",
-			"Messy Bun",
-			"Unknown",
-			"Tight Bun",
-			"Twisted Bob",
-			"Big Bangs",
-			"Braided Top Knot"
-		]
-	} as const;
+export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
+	if (submenu) {
+		NativeUI.Menu.Clear(submenu);
+	} else {
+		submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Appearance', 'Select to change your Appearance.', true, false);
+	}
+
+	// Get hairstyle names from the GXT files.
+	const baseHaircutNames = Object.fromEntries((['f', 'm'] as const).map((gender) => {
+		const pedName = `mp_${gender}_freemode_01` as const;
+		return [gender, Object.entries(clothingStore[pedName].hair).reduce((hair, [hairIndex, hairNames], i) => {
+			const label = `HAIR_GROUP_${gender.toUpperCase()}${i}`;
+
+			let text: string;
+
+			// There's like a random NVG headset in the middle of the hair styles that causes some of them to be offset by one...
+			if (!(hairNames?.[0]?.length > 0) && Number(hairIndex) >= 16) {
+				return hair;
+			}
+			if (DoesTextLabelExist(label)) {
+				text = GetLabelText(label);
+			} else if (DoesTextLabelExist(hairNames?.[0])) {
+				text = GetLabelText(hairNames[0])
+			}
+
+			if (text && !hair.some(([existingText]) => existingText === text)) {
+				hair.push([text, i]);
+			}
+
+			return hair;
+		}, [])];
+	}));
+
+	const haircutNames = baseHaircutNames;
 
 	const { character, actions } = store;
 
-	const hairIndices = [...Array(Math.min(...Object.values(haircutNames).map(({ length: n }) => n)))].map((_, i) => `${i + 1}`);
-	const hairItem = NativeUI.CreateListItem('Hair', hairIndices, character.hair + 1, 'Make changes to your Appearance.');
+	const hairItem = NativeUI.CreateListItem('Hair', haircutNames[character.ogd?.length > 0 ? character.ogd.toLowerCase() : 'm'].map(([name]) => name), character.hair + 1, 'Make changes to your Appearance.');
 	const hairColour = NativeUI.CreateColourPanel('Color', HairBrowColours);
 	NativeUI.MenuListItem.AddPanel(hairItem, hairColour);
 	NativeUI.Menu.AddItem(submenu, hairItem);
@@ -69,6 +51,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	NativeUI.setEventListener(hairItem, 'OnListChanged', (sender, selectedItem, index) => {
 		const activeItem = NativeUI.MenuListItem.IndexToItem(selectedItem, index);
 		const colour = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
+
+		// Look up the actual hair component index in the array.
+		index = haircutNames[character.ogd?.length > 0 ? character.ogd.toLowerCase() : 'm'][index - 1][1] + 1;
 
 		actions.setHair_color_1(colour - 1)
 		actions.setHair(index - 1);
@@ -415,28 +400,15 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 			// CreateSkinCam('face')
 		}
 
-		let hairItems = hairIndices;
-		if (haircutNames[character.gender.toLowerCase() as keyof typeof haircutNames]) {
-			hairItems = [...Array(haircutNames[character.gender.toLowerCase() as keyof typeof haircutNames].length)].map((_, i) => `${i + 1}`);
+		if (character.gender === 'Male') {
+			NativeUI.MenuListItem.setProp(hairItem, 'Items', baseHaircutNames['m'].map(([name]) => name));
+		} else if (character.gender === 'Female') {
+			NativeUI.MenuListItem.setProp(hairItem, 'Items', baseHaircutNames['f'].map(([name]) => name));
 		}
-
-		NativeUI.MenuListItem.setProp(hairItem, 'Items', hairItems);
 	})
 
 	/*
-	menu.OnMenuChanged = function(parent, menu, whateverthefuck)
-		if menu == submenu then
-			CreateSkinCam('face')
-		end
 
-		if Character["gender"] == "Male" then
-			hairitem.Items = MHairNames
-		elseif Character["gender"] == "Female" then
-			hairitem.Items = FHairNames
-		else
-			hairitem.Items = haircuts
-		end
-	end
 	submenu.OnMenuClosed = function()
 		CreateSkinCam('body')
 	end*/

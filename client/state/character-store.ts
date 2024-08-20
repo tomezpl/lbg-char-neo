@@ -1,4 +1,6 @@
 import { Character, DefaultCharacter } from "constants/character";
+import { UIContext } from "ui";
+import { addMenuAppearance } from "ui/menus/appearance";
 
 type CharacterStoreActions = {
     [Property in keyof Character as `set${Capitalize<Property & string>}`]: (value: Character[Property]) => void;
@@ -9,10 +11,10 @@ interface ICharacterStore {
 }
 
 export class CharacterStore implements ICharacterStore {
-    private _character : Character = JSON.parse(JSON.stringify(DefaultCharacter));
+    private _character: Character = JSON.parse(JSON.stringify(DefaultCharacter));
     public readonly actions: CharacterStoreActions;
 
-    mdhash : number;
+    mdhash: number;
 
     public constructor() {
         this.actions = Object.fromEntries((Object.keys(DefaultCharacter) as Array<keyof Character>).map((prop) => {
@@ -21,9 +23,16 @@ export class CharacterStore implements ICharacterStore {
                 this._character[prop as keyof Character] = value as Character[keyof Character];
             }] as [keyof CharacterStoreActions, CharacterStoreActions[keyof CharacterStoreActions]];
         })) as CharacterStoreActions;
+
+        this.actions.setGender = (gender) => {
+            this._character.gender = gender;
+
+            // Reinitialise the appearance menu to update any gender-specific items
+            addMenuAppearance(UIContext.menuPool, UIContext.mainMenu, this);
+        }
     }
 
-    public get character() : Character {
+    public get character(): Character {
         return this._character;
     }
 }
