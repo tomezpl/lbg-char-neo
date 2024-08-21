@@ -44,7 +44,8 @@ const NativeUIEvents = [
     'OnSliderChange',
     'OnSliderChanged',
     'OnMenuChanged',
-    'OnMenuClosed'
+    'OnMenuClosed',
+    'Activated',
 ] as const;
 
 type NativeUIEvent = typeof NativeUIEvents[number];
@@ -60,7 +61,8 @@ const defaultEventHandlers = {
     // this one is registered on menu items
     OnSliderChanged(sender: unknown, item: MenuItem, index: number) { },
     OnMenuChanged(parent: Menu, menu: Menu) { },
-    OnMenuClosed() { }
+    OnMenuClosed() { },
+    Activated() { },
 } as const;
 
 type NativeUIEventHandler<TEvent extends NativeUIEvent> = (...params: Parameters<typeof defaultEventHandlers[TEvent]>) => ReturnType<typeof defaultEventHandlers[TEvent]>;
@@ -68,6 +70,7 @@ type NativeUIEventHandler<TEvent extends NativeUIEvent> = (...params: Parameters
 interface INativeUIRoot {
     CreatePool(): MenuPool;
     CreateMenu(name: string, colour: string, width: number, height: number): Menu;
+    CreateItem(text: string, description: string): MenuItem;
     CreateListItem(name: string, options: ReadonlyArray<string>, defaultItemIndex: number, description: string): MenuItem;
     CreateHeritageWindow(defaultMum: number, defaultDad: number): Window;
     CreateSliderItem(name: string, levels: ReadonlyArray<number | string>, defaultLevelIndex: number, description: string, divider: boolean): MenuItem;
@@ -102,6 +105,7 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuPool:ProcessMenus': 1,
     'Menu:Visible': 1,
     "Menu:AddItem": 1,
+    'CreateItem': 1,
     'CreateListItem': 1,
     'MenuPool:AddSubMenu': 1,
     'Menu:AddWindow': 1,

@@ -12,6 +12,18 @@ export const UIContext = {
     mainMenu: undefined as Menu,
 };
 
+export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
+
+    const finishButton = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Save & Continue", "Ready to play?", true, false);
+    const sureButton = NativeUI.CreateItem("Are you sure?", "Press Enter to continue");
+    NativeUI.Menu.AddItem(finishButton, sureButton);
+    NativeUI.setEventListener(sureButton, "Activated", (menu, item) => {
+        // EndCharCreator();
+        NativeUI.Menu.Visible(finishButton, false);
+        NativeUI.Menu.Visible(parentMenu, false);
+    });
+}
+
 export function RunUI() {
     // const immediate = setImmediate(() => {
     let menuPool: MenuPool;
@@ -29,6 +41,7 @@ export function RunUI() {
     addMenuFaceShape(menuPool, mainMenu, store);
     addMenuAppearance(menuPool, mainMenu, store);
     addMenuApparel(menuPool, mainMenu, store);
+    addFinishButton(menuPool, mainMenu);
 
     setTick(() => {
         NativeUI.MenuPool.ProcessMenus(menuPool);
