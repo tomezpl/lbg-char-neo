@@ -3,6 +3,8 @@ import { clothingStore } from "state/clothing-store";
 import { CharacterStore } from "state/character-store";
 import { Menu, MenuPool, NativeUI } from "ui";
 import { ensureArray } from "utils/misc";
+import { cameraShots } from "constants/camera";
+import { createSkinCamera } from "anim";
 
 let submenu: Menu;
 
@@ -399,7 +401,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 
 	NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
 		if (menu === submenu) {
-			// CreateSkinCam('face')
+			createSkinCamera(cameraShots.face)
 		}
 
 		if (character.gender === 'Male') {
@@ -408,6 +410,10 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 			NativeUI.MenuListItem.setProp(hairItem, 'Items', baseHaircutNames['f'].map(([name]) => name));
 		}
 	})
+
+	NativeUI.setEventListener(submenu, 'OnMenuClosed', () => {
+		createSkinCamera(cameraShots.body);
+	});
 
 	/*
 

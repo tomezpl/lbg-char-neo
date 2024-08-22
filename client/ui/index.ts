@@ -1,3 +1,4 @@
+import { animateCharCreatorOutro } from 'anim';
 import { store } from 'state';
 import { addMenuApparel } from './menus/apparel';
 import { addMenuAppearance } from './menus/appearance';
@@ -17,7 +18,8 @@ export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
     const finishButton = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Save & Continue", "Ready to play?", true, false);
     const sureButton = NativeUI.CreateItem("Are you sure?", "Press Enter to continue");
     NativeUI.Menu.AddItem(finishButton, sureButton);
-    NativeUI.setEventListener(sureButton, "Activated", (menu, item) => {
+    NativeUI.setEventListener(sureButton, "Activated", () => {
+        animateCharCreatorOutro();
         // EndCharCreator();
         NativeUI.Menu.Visible(finishButton, false);
         NativeUI.Menu.Visible(parentMenu, false);
@@ -25,7 +27,6 @@ export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
 }
 
 export function RunUI() {
-    // const immediate = setImmediate(() => {
     let menuPool: MenuPool;
     let mainMenu: Menu;
     menuPool = NativeUI.CreatePool();
@@ -46,9 +47,4 @@ export function RunUI() {
     setTick(() => {
         NativeUI.MenuPool.ProcessMenus(menuPool);
     });
-
-    // if(immediate) {
-    // clearImmediate(immediate);
-    // }
-    // });
 }

@@ -1,19 +1,16 @@
+import { animateCharCreatorIntro } from "anim";
 import { RunUI, NativeUI, UIContext } from "ui";
 
 console.log("[lbg-char] Client Resource Started");
 
 RunUI();
 
-setTick(() => {
-
-})
-
 on('lbg-openChar', () => {
     setImmediate(() => {
-        NativeUI.Menu.Visible(UIContext.mainMenu, true);
+        animateCharCreatorIntro();
     });
 });
 
 RegisterCommand("charedit", () => {
     emit("lbg-openChar");
-}, false)
+}, false);

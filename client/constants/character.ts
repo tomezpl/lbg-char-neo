@@ -13,7 +13,7 @@ const defaultCharacter = Object.freeze({
 	lcgd: "male",
 	hair: 13,
 	hair_color_1: 0,
-	outfit: 1,
+	outfit: 0,
 	beard: 0,
 	beard_2: 1,
 	beard_3: 26,
@@ -68,9 +68,9 @@ type Writable<T> = {
 }
 
 export type Character = Writable<Omit<typeof defaultCharacter, "gender" | "ogd" | "lcgd">> & {
-    gender: "Male" | "Female";
-    ogd: "M" | "F";
-    lcgd: "male" | "female";
+	gender: "Male" | "Female";
+	ogd: "M" | "F";
+	lcgd: "male" | "female";
 };
 
-export const DefaultCharacter : Readonly<Character> = defaultCharacter as Readonly<Character>;
+export const DefaultCharacter: Readonly<Character> = defaultCharacter as Readonly<Character>;

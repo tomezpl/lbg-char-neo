@@ -67,7 +67,6 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 		}
 
 		if (Character["gender"] === "Male") {
-
 			SetPedHeadOverlay(PlayerPedId(), 1, Character['beard'], Character['beard_2'])
 			SetPedHeadOverlayColor(PlayerPedId(), 1, 1, Character['beard_3'], 0)
 		} else if (Character["gender"] === "Female") {

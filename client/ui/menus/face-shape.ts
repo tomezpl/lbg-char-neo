@@ -1,14 +1,16 @@
+import { createSkinCamera } from "anim";
+import { cameraShots } from "constants/camera";
 import { Character } from "constants/character";
 import { CharacterStore } from "state/character-store";
 import { Menu, MenuPool, NativeUI } from "ui";
 
 export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
-    const listItems = new Array<string>();
-    for(let i = -1.0; i <= 1.0; i += 0.1) {
-        listItems.push(`${i.toFixed(1)}`);
-    }
+	const listItems = new Array<string>();
+	for (let i = -1.0; i <= 1.0; i += 0.1) {
+		listItems.push(`${i.toFixed(1)}`);
+	}
 
-	const {character, actions} = store;
+	const { character, actions } = store;
 
 	const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Features", "Select to alter your facial Features.", true, false)
 
@@ -36,7 +38,7 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 	];
 
 	features.reduce((featureIndex, [name, featureName, currentFeatureIndex]) => {
-		if(typeof currentFeatureIndex === 'number') {
+		if (typeof currentFeatureIndex === 'number') {
 			featureIndex = currentFeatureIndex || 0;
 		}
 
@@ -53,12 +55,14 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 	}, 0);
 
 	NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
-		if(parentMenu === menu) {
+		if (parentMenu === menu) {
+			createSkinCamera(cameraShots.face);
 			// CreateSkinCam('face');
 		}
 	});
 
 	NativeUI.setEventListener(submenu, 'OnMenuClosed', () => {
+		createSkinCamera(cameraShots.body);
 		// CreateSkinCam('body');
 	});
 }

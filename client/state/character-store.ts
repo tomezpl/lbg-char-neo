@@ -30,6 +30,8 @@ export class CharacterStore implements ICharacterStore {
             // Reinitialise the appearance menu to update any gender-specific items
             addMenuAppearance(UIContext.menuPool, UIContext.mainMenu, this);
         }
+
+        this.mdhash = GetHashKey("mp_m_freemode_01");
     }
 
     public get character(): Character {
