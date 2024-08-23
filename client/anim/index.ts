@@ -9,7 +9,7 @@ import { delay } from "utils/delay";
 import { loadAnim } from "utils/load-anim";
 
 export function animateCharCreatorIntro() {
-    animateCameraIntro();
+    return animateCameraIntro();
 }
 
 let cam: number, cam2: number, cam3: number, camSkin: number;
@@ -49,22 +49,24 @@ async function animateCameraIntro() {
         SetEntityHeading(PlayerPedId(), 173.97);
     }
     await delay(100);
-    NativeUI.Menu.Visible(UIContext.mainMenu, true);
+    NativeUI.Menu.Visible(UIContext.creatorMainMenu, true);
     await delay(1000);
     FreezeEntityPosition(PlayerPedId(), true);
 }
 
-export function animateCharCreatorOutro() {
-    animateCameraOutro(store);
+export function animateCharCreatorOutro(doWalkAnim = true) {
+    return animateCameraOutro(doWalkAnim, store);
 }
 
-async function animateCameraOutro({ character }: CharacterStore) {
-    NativeUI.Menu.Visible(UIContext.mainMenu, false)
+async function animateCameraOutro(doWalkAnim: boolean, { character }: CharacterStore) {
+    NativeUI.Menu.Visible(UIContext.creatorMainMenu, false)
     FreezeEntityPosition(PlayerPedId(), false)
     const animDict = ({ m: "mp_character_creation@lineup@male_b", f: "mp_character_creation@lineup@female_a" } as const)[character.ogd?.toLowerCase() || 'm'];
-    await loadAnim(animDict);
-    TaskPlayAnim(PlayerPedId(), animDict, "outro", 0.225, 1.0, 6000, 1, 1.0, false, false, false);
-    await delay(4275);
+    if (doWalkAnim) {
+        await loadAnim(animDict);
+        TaskPlayAnim(PlayerPedId(), animDict, "outro", 0.225, 1.0, 6000, 1, 1.0, false, false, false);
+        await delay(4275);
+    }
     DoScreenFadeOut(1000)
     await delay(1000);
     SetEntityCoords(PlayerPedId(), initPos[0], initPos[1], initPos[2], true, false, false, true)
@@ -80,7 +82,6 @@ async function animateCameraOutro({ character }: CharacterStore) {
     EnableAllControlActions(0)
     FreezeEntityPosition(PlayerPedId(), false)
     await delay(1000)
-    SetResourceKvp('lbg-char-info', JSON.stringify(character));
     // TriggerServerEvent('lbg-chardone', Character)
     DisplayRadar(true)
     DoScreenFadeIn(1000)

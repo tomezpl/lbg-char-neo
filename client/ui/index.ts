@@ -1,6 +1,6 @@
-import { animateCharCreatorOutro } from 'anim';
+import { animateCharCreatorIntro, animateCharCreatorOutro } from 'anim';
 import vMenuPlugin from 'plugins/vmenu';
-import { store } from 'state';
+import { inputState, store } from 'state';
 import { addMenuApparel } from './menus/apparel';
 import { addMenuAppearance } from './menus/appearance';
 import { addMenuFaceShape } from './menus/face-shape';
@@ -11,6 +11,7 @@ export * from './native-ui-wrapper';
 
 export const UIContext = {
     menuPool: undefined as MenuPool,
+    creatorMainMenu: undefined as Menu,
     mainMenu: undefined as Menu,
 };
 
@@ -20,31 +21,63 @@ export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
     const sureButton = NativeUI.CreateItem("Are you sure?", "Press Enter to continue");
     NativeUI.Menu.AddItem(finishButton, sureButton);
     NativeUI.setEventListener(sureButton, "Activated", () => {
-        animateCharCreatorOutro();
-        // EndCharCreator();
-        NativeUI.Menu.Visible(finishButton, false);
-        NativeUI.Menu.Visible(parentMenu, false);
+        if (!inputState.blockMenuButtons) {
+            SetResourceKvp('lbg-char-info', JSON.stringify(store.character));
+            animateCharCreatorOutro();
+            NativeUI.Menu.Visible(finishButton, false);
+            NativeUI.Menu.Visible(parentMenu, false);
+        }
     });
 }
 
 export function RunUI() {
     let menuPool: MenuPool;
     let mainMenu: Menu;
+    let creatorMainMenu: Menu;
     menuPool = NativeUI.CreatePool();
-    mainMenu = NativeUI.CreateMenu("Character Creator", "~HUD_COLOUR_FREEMODE~EDIT CHARACTER", 47.5, 47.5);
+    mainMenu = NativeUI.CreateMenu("Appearance", "~HUD_COLOUR_FREEMODE~EDIT CHARACTER", 47.5, 47.5);
+    creatorMainMenu = NativeUI.MenuPool.AddSubMenu(menuPool, mainMenu, "Character Creator", "Create a GTA Online character.", true, false);
 
+    NativeUI.setEventListener(mainMenu, 'OnMenuChanged', (parent, menu) => {
+        if (menu === creatorMainMenu) {
+            const immediate = setImmediate(() => {
+                NativeUI.Menu.Visible(creatorMainMenu, false);
+                animateCharCreatorIntro().then(() => {
+                    clearImmediate(immediate);
+                });
+            });
+        }
+    });
+
+    UIContext.creatorMainMenu = creatorMainMenu;
     UIContext.mainMenu = mainMenu;
     UIContext.menuPool = menuPool;
 
     NativeUI.MenuPool.Add(menuPool, mainMenu);
 
-    addMenuGender(mainMenu, store);
-    addMenuHeritage(menuPool, mainMenu, store);
-    addMenuFaceShape(menuPool, mainMenu, store);
-    addMenuAppearance(menuPool, mainMenu, store);
-    addMenuApparel(menuPool, mainMenu, store);
+    NativeUI.setEventListener(creatorMainMenu, 'OnMenuClosed', () => {
+        NativeUI.Menu.Visible(mainMenu, false);
+        inputState.blockMenuButtons = true;
+        TriggerEvent('alertbox:message', 'alert', 'Are you sure you want to exit? Unsaved changes will be lost.', ['YES', 'BACK_ESC'], undefined, undefined, true, undefined, (_: never, outcome: 'YES' | 'BACK_ESC') => {
+            if (outcome === 'YES') {
+                animateCharCreatorOutro(false).then(() => {
+                    inputState.blockMenuButtons = false;
+                });
+            } else {
+                NativeUI.Menu.Visible(creatorMainMenu, true);
+                inputState.blockMenuButtons = false;
+            }
+        });
+    });
+
+    addMenuGender(creatorMainMenu, store);
+    addMenuHeritage(menuPool, creatorMainMenu, store);
+    addMenuFaceShape(menuPool, creatorMainMenu, store);
+    addMenuAppearance(menuPool, creatorMainMenu, store);
+    addMenuApparel(menuPool, creatorMainMenu, store);
+    vMenuPlugin.ui.addvMenuCharacterList(menuPool, creatorMainMenu, store);
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
-    addFinishButton(menuPool, mainMenu);
+    addFinishButton(menuPool, creatorMainMenu);
 
     setTick(() => {
         NativeUI.MenuPool.ProcessMenus(menuPool);
