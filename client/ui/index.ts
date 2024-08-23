@@ -1,4 +1,5 @@
 import { animateCharCreatorOutro } from 'anim';
+import vMenuPlugin from 'plugins/vmenu';
 import { store } from 'state';
 import { addMenuApparel } from './menus/apparel';
 import { addMenuAppearance } from './menus/appearance';
@@ -42,6 +43,7 @@ export function RunUI() {
     addMenuFaceShape(menuPool, mainMenu, store);
     addMenuAppearance(menuPool, mainMenu, store);
     addMenuApparel(menuPool, mainMenu, store);
+    vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, mainMenu);
 
     setTick(() => {

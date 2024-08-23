@@ -46,6 +46,7 @@ const NativeUIEvents = [
     'OnMenuChanged',
     'OnMenuClosed',
     'Activated',
+    'OnItemSelect',
 ] as const;
 
 type NativeUIEvent = typeof NativeUIEvents[number];
@@ -63,6 +64,7 @@ const defaultEventHandlers = {
     OnMenuChanged(parent: Menu, menu: Menu) { },
     OnMenuClosed() { },
     Activated() { },
+    OnItemSelect(sender: never, item: never, index: number) { }
 } as const;
 
 type NativeUIEventHandler<TEvent extends NativeUIEvent> = (...params: Parameters<typeof defaultEventHandlers[TEvent]>) => ReturnType<typeof defaultEventHandlers[TEvent]>;
