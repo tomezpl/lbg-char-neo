@@ -64,6 +64,12 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 
 				SetPedComponentVariation(PlayerPedId(), Number(component), drawable, texture, 2);
 			});
+		} else if (Object.keys(Character.customOutfit || {}).length > 0) {
+			Object.entries(Character.customOutfit).forEach((entry) => {
+				const [component, [drawable, texture]] = entry as [`${number}`, ComponentVariation];
+
+				SetPedComponentVariation(PlayerPedId(), Number(component), drawable, texture, 2);
+			})
 		}
 
 		if (Character["gender"] === "Male") {
@@ -74,18 +80,26 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 			SetPedHeadOverlayColor(PlayerPedId(), 5, 2, Character['blush_3'], 0)
 		}
 
-		if (Character["glasses"] === 0) {
-			if (Character["gender"] === "Male") {
-				SetPedPropIndex(PlayerPedId(), 1, 11, 0, false);
+		if (Object.keys(typeof Character.customProps === 'object' ? Character.customProps : {}).length === 0) {
+			if (Character["glasses"] === 0) {
+				if (Character["gender"] === "Male") {
+					SetPedPropIndex(PlayerPedId(), 1, 11, 0, false);
+				} else {
+					SetPedPropIndex(PlayerPedId(), 1, 5, 0, false);
+				}
 			} else {
-				SetPedPropIndex(PlayerPedId(), 1, 5, 0, false);
+				if (Character["gender"] === "Male") {
+					SetPedPropIndex(PlayerPedId(), 1, 5, 0, false);
+				} else {
+					SetPedPropIndex(PlayerPedId(), 1, 11, 0, false);
+				}
 			}
 		} else {
-			if (Character["gender"] === "Male") {
-				SetPedPropIndex(PlayerPedId(), 1, 5, 0, false);
-			} else {
-				SetPedPropIndex(PlayerPedId(), 1, 11, 0, false);
-			}
+			Object.entries(Character.customProps).forEach((entry) => {
+				const [prop, [drawable, texture]] = entry as [`${number}`, ComponentVariation];
+
+				SetPedPropIndex(PlayerPedId(), Number(prop), drawable, texture || 0, true);
+			});
 		}
 
 		clearImmediate(immediate);

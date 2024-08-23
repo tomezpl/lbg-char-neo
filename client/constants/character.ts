@@ -1,3 +1,6 @@
+import { ComponentVariation } from "./clothing";
+import type { Outfit } from "./outfit";
+
 export const MPMale = "mp_m_freemode_01";
 export const MPFemale = "mp_f_freemode_01";
 
@@ -61,6 +64,8 @@ const defaultCharacter = Object.freeze({
 	nose_2: 0.0,
 	nose_1: 0.0,
 	glasses: 0,
+	customOutfit: undefined,
+	customProps: undefined,
 });
 
 type Writable<T> = {
@@ -71,6 +76,8 @@ export type Character = Writable<Omit<typeof defaultCharacter, "gender" | "ogd" 
 	gender: "Male" | "Female";
 	ogd: "M" | "F";
 	lcgd: "male" | "female";
+	customOutfit?: Outfit;
+	customProps?: Record<number, ComponentVariation>;
 };
 
 export const DefaultCharacter: Readonly<Character> = defaultCharacter as Readonly<Character>;

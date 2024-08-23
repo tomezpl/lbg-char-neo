@@ -1,5 +1,7 @@
+import { MPFemale, MPMale } from "constants/character";
 import { RefreshModel } from "ped";
 import { CharacterStore } from "state/character-store";
+import { PedComponents, ComponentVariation } from "constants/clothing";
 
 export interface IVMenuCharacter {
     PedHeadBlendData: IVMenuPedHeadBlendData;
@@ -98,7 +100,7 @@ export function applyVMenuCharacter(character: IVMenuCharacter, store: Character
     const { actions } = store;
 
     // Character gender
-    let mdHash = "mp_m_freemode_01"
+    let mdHash = MPMale;
     if (character.IsMale == true) {
         actions.setGender("Male")
         actions.setOgd("M")
@@ -106,8 +108,8 @@ export function applyVMenuCharacter(character: IVMenuCharacter, store: Character
     } else {
         actions.setGender("Female")
         actions.setOgd("F")
-        actions.setLcgd("f")
-        mdHash = "mp_f_freemode_01";
+        actions.setLcgd("female")
+        mdHash = MPFemale;
     }
     store.mdhash = GetHashKey(mdHash);
 
@@ -154,7 +156,6 @@ export function applyVMenuCharacter(character: IVMenuCharacter, store: Character
     actions.setBeard_2(appearance.beardOpacity);
     actions.setBeard_3(appearance.beardColor);
 
-
     actions.setMoles_1(appearance.molesFrecklesStyle);
     actions.setMoles_2(appearance.molesFrecklesOpacity);
 
@@ -184,9 +185,16 @@ export function applyVMenuCharacter(character: IVMenuCharacter, store: Character
     actions.setNose_2(faceShapeFeatures["1"])
     actions.setNose_1(faceShapeFeatures["0"])
 
-    //Set default outfit
-    //TODO: add vMenu clothing
-    actions.setOutfit(0);
+    // Setting the lbg outfit index to -1 as the character will have their own outfit.
+    actions.setOutfit(-1);
+    actions.setCustomOutfit(drawablesToTuples(character.DrawableVariations.clothes));
+    actions.setCustomProps(drawablesToTuples(character.PropVariations.props));
 
     RefreshModel(true)
+}
+
+function drawablesToTuples(drawables: DrawableVariations): Record<number, ComponentVariation> {
+    return Object.fromEntries(Object.entries(drawables).map(([componentId, drawable]) => {
+        return [componentId, [drawable.Key, drawable.Value]]
+    }))
 }

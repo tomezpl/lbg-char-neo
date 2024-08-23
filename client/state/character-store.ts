@@ -1,4 +1,4 @@
-import { Character, DefaultCharacter } from "constants/character";
+import { Character, DefaultCharacter, MPMale } from "constants/character";
 import { UIContext } from "ui";
 import { addMenuAppearance } from "ui/menus/appearance";
 
@@ -31,7 +31,7 @@ export class CharacterStore implements ICharacterStore {
             addMenuAppearance(UIContext.menuPool, UIContext.mainMenu, this);
         }
 
-        this.mdhash = GetHashKey("mp_m_freemode_01");
+        this.mdhash = GetHashKey(MPMale);
     }
 
     public get character(): Character {
