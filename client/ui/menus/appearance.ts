@@ -1,12 +1,29 @@
 import { DefaultHairDecor, HairBrowColours, HairDecor, OldDLCHairMap } from "constants/hair";
 import { clothingStore } from "state/clothing-store";
 import { CharacterStore } from "state/character-store";
-import { Menu, MenuPool, NativeUI } from "ui";
+import { Menu, MenuItem, MenuPool, NativeUI, UIContext } from "ui";
 import { ensureArray } from "utils/misc";
 import { cameraShots } from "constants/camera";
 import { createSkinCamera } from "anim";
 
 let submenu: Menu;
+
+interface IUIAppearanceMenuContext {
+	hairItem: MenuItem;
+	eyebrowsItem: MenuItem;
+	beardItem: MenuItem;
+	blemishesItem: MenuItem;
+	agingItem: MenuItem;
+	complexionItem: MenuItem;
+	sunDamageItem: MenuItem;
+	molesItem: MenuItem;
+	eyeColourItem: MenuItem;
+	makeupItem: MenuItem;
+	blushItem: MenuItem;
+	lipstickItem: MenuItem;
+}
+
+export const UIAppearanceMenuContext: Partial<IUIAppearanceMenuContext> = {};
 
 export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
 	if (submenu) {
@@ -51,6 +68,8 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	const hairColour = NativeUI.CreateColourPanel('Color', HairBrowColours);
 	NativeUI.MenuListItem.AddPanel(hairItem, hairColour);
 	NativeUI.Menu.AddItem(submenu, hairItem);
+
+	UIAppearanceMenuContext.hairItem = hairItem;
 
 	NativeUI.setEventListener(hairItem, 'OnListChanged', (sender, selectedItem, index) => {
 		const activeItem = NativeUI.MenuListItem.IndexToItem(selectedItem, index);
@@ -123,6 +142,8 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 				});
 			}
 		});
+
+		return overlayItem;
 	}
 
 	const description = "Select to change your Appearance." as const;
@@ -165,7 +186,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Fade Away",
 		"Solo Tram"
 	] as const;
-	createOverlayItem(eyebrows, "Eyebrows", 2, character.eyebrows + 1, ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1);
+	UIAppearanceMenuContext.eyebrowsItem = createOverlayItem(eyebrows, "Eyebrows", 2, character.eyebrows + 1, ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1);
 
 	const beard = [
 		"Clean Shaven",
@@ -201,7 +222,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"The Ambrose",
 		"Lincoln Curtain"
 	] as const;
-	createOverlayItem(beard, "Facial Hair", 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1);
+	UIAppearanceMenuContext.beardItem = createOverlayItem(beard, "Facial Hair", 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1);
 
 	const blemishes = [
 		"None",
@@ -229,7 +250,8 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Full Acne Scarring",
 		"Cold Sores",
 		"Impetigo"
-	] as const; createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']);
+	] as const;
+	UIAppearanceMenuContext.blemishesItem = createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']);
 
 	const aging = [
 		"None",
@@ -250,7 +272,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Junkie",
 		"Geriatric"
 	] as const;
-	createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1);
+	UIAppearanceMenuContext.agingItem = createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1);
 
 	const complexion = [
 		"None",
@@ -267,7 +289,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pale",
 		"Ghostly"
 	] as const;
-	createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1);
+	UIAppearanceMenuContext.complexionItem = createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1);
 
 	const molesFreckles = [
 		"None",
@@ -290,7 +312,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pairs",
 		"Growth"
 	] as const;
-	createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']);
+	UIAppearanceMenuContext.molesItem = createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']);
 
 	const skinDamage = [
 		"None",
@@ -306,7 +328,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Cracked",
 		"Gritty"
 	] as const;
-	createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1)
+	UIAppearanceMenuContext.sunDamageItem = createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1)
 
 	const eyeColours = [
 		"Green",
@@ -350,6 +372,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		SetPedEyeColor(PlayerPedId(), index - 1);
 		actions.setEye_color(index - 1);
 	});
+	UIAppearanceMenuContext.eyeColourItem = eyeColourItem;
 
 	const makeup = [
 		"None",
@@ -370,7 +393,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smoldering Ruby",
 		"Pop Princess"
 	] as const;
-	createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1);
+	UIAppearanceMenuContext.makeupItem = createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1);
 
 	const blush = [
 		"None",
@@ -382,7 +405,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Sweetheart",
 		"Eighties"
 	] as const;
-	createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1);
+	UIAppearanceMenuContext.blushItem = createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1);
 
 	const lipstick = [
 		"None",
@@ -397,7 +420,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smudged",
 		"Geisha"
 	] as const;
-	createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 1, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1);
+	UIAppearanceMenuContext.lipstickItem = createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 1, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1);
 
 	NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
 		if (menu === submenu) {

@@ -39,7 +39,7 @@ export function RunUI() {
     creatorMainMenu = NativeUI.MenuPool.AddSubMenu(menuPool, mainMenu, "Character Creator", "Create a GTA Online character.", true, false);
 
     NativeUI.setEventListener(mainMenu, 'OnMenuChanged', (parent, menu) => {
-        if (menu === creatorMainMenu) {
+        if (menu === creatorMainMenu && !inputState.blockMenuButtons/* && Boolean(GetConvar("lbgchar_disableCreator", "false")) !== true*/) {
             const immediate = setImmediate(() => {
                 NativeUI.Menu.Visible(creatorMainMenu, false);
                 animateCharCreatorIntro().then(() => {
