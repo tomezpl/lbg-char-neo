@@ -21,7 +21,7 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 			AddPedDecorationFromHashes(PlayerPedId(), ...DefaultHairDecor);
 		}
 		SetPedHeadOverlay(PlayerPedId(), 8, Character['lipstick_1'], Character['lipstick_2'])
-		SetPedHeadOverlayColor(PlayerPedId(), 8, 1, Character['lipstick_3'], 0)
+		SetPedHeadOverlayColor(PlayerPedId(), 8, 2, Character['lipstick_3'], 0)
 		SetPedHeadOverlay(PlayerPedId(), 2, Character['eyebrows'], Character['eyebrows_2'])
 		SetPedHeadOverlayColor(PlayerPedId(), 2, 1, Character['eyebrows_3'], 0)
 		SetPedHeadOverlay(PlayerPedId(), 3, Character['age_1'], Character['age_2'])
@@ -31,7 +31,7 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 		// SetPedEyeColor(PlayerPedId(), Character['eye_color'], 0, 1)
 		SetPedEyeColor(PlayerPedId(), Character['eye_color']);
 		SetPedHeadOverlay(PlayerPedId(), 4, Character['makeup_1'], Character['makeup_2'])
-		SetPedHeadOverlayColor(PlayerPedId(), 4, 1, Character['makeup_3'], 0)
+		SetPedHeadOverlayColor(PlayerPedId(), 4, 2, Character['makeup_3'], 0)
 		SetPedFaceFeature(PlayerPedId(), 19, Character['neck_thick'])
 		SetPedFaceFeature(PlayerPedId(), 18, Character['chin_hole'])
 		SetPedFaceFeature(PlayerPedId(), 17, Character['chin_width'])

@@ -28,7 +28,9 @@ interface MenuListItemGlobal extends MenuItemGlobal {
     AddPanel(menuItem: MenuItem, panel: Panel): void;
     RemovePanelAt(menuItem: MenuItem, panelIndex: number): void;
     IndexToItem(menuItem: MenuItem, index: number): MenuItem;
-    getPanelValue(menuItem: MenuItem, panelIndex: number): number | string;
+    getPanelValue(panel: Panel): number | string;
+    setPanelValue(panel: Panel, value: number): void;
+    setPanelEnabled(menuItem: MenuItem, panelIndex: number, enabled: boolean): void;
     getProp<TResult = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string): TResult;
     setProp<TResult = unknown, TValue = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string, propValue: TValue): TResult;
     doesPanelExist(menuItem: MenuItem, panelIndex: number): boolean;
@@ -121,6 +123,8 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuListItem:IndexToItem': 1,
     'MenuListItem:getProp': 1,
     'MenuListItem:getPanelValue': 1,
+    'MenuListItem:setPanelValue': 1,
+    'MenuListItem:setPanelEnabled': 1,
     'MenuListItem:setProp': 1,
     'CreatePercentagePanel': 1,
     'MenuListItem:RemovePanelAt': 1,
@@ -142,7 +146,7 @@ export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) =>
     if (key.includes(':')) {
         const [className, funcName] = key.split(':');
         (obj[className as keyof typeof obj] as unknown as Record<any, unknown>) ??= {};
-        (obj[className as keyof typeof obj] as unknown as Record<any, unknown>)[funcName] = value;
+        (obj[className as keyof typeof obj] as unknown as Record<any, unknown>)[funcName] = (...params: any[]) => { funcName !== 'ProcessMenus' && console.log(`calling ${funcName}(${params.map((v) => v?.toString?.()).join(', ')})`); return value(...params); };
         console.log(obj)
     } else {
         Object.assign(obj, { [key]: value });

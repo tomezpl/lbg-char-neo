@@ -28,7 +28,7 @@ export class CharacterStore implements ICharacterStore {
             this._character.gender = gender;
 
             // Reinitialise the appearance menu to update any gender-specific items
-            addMenuAppearance(UIContext.menuPool, UIContext.creatorMainMenu, this);
+            // addMenuAppearance(UIContext.menuPool, UIContext.creatorMainMenu, this);
         }
 
         this.mdhash = GetHashKey(MPMale);

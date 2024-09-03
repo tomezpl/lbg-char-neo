@@ -1,7 +1,7 @@
 import { DefaultHairDecor, HairBrowColours, HairDecor, OldDLCHairMap } from "constants/hair";
 import { clothingStore } from "state/clothing-store";
 import { CharacterStore } from "state/character-store";
-import { Menu, MenuItem, MenuPool, NativeUI, UIContext } from "ui";
+import { Menu, MenuItem, MenuPool, NativeUI, Panel, UIContext } from "ui";
 import { ensureArray } from "utils/misc";
 import { cameraShots } from "constants/camera";
 import { createSkinCamera } from "anim";
@@ -21,6 +21,8 @@ interface IUIAppearanceMenuContext {
 	makeupItem: MenuItem;
 	blushItem: MenuItem;
 	lipstickItem: MenuItem;
+	lipstickOpacityPanel: Panel;
+	lipstickColourPanel: Panel;
 }
 
 export const UIAppearanceMenuContext: Partial<IUIAppearanceMenuContext> = {};
@@ -65,7 +67,8 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	const { character, actions } = store;
 
 	const hairItem = NativeUI.CreateListItem('Hair', haircutNames[character.ogd?.length > 0 ? character.ogd.toLowerCase() : 'm'].map(([name]) => name), character.hair + 1, 'Make changes to your Appearance.');
-	const hairColour = NativeUI.CreateColourPanel('Color', HairBrowColours);
+	const hairColours = [...Array(GetNumHairColors())].map((_, i) => [...GetHairRgbColor(i), 255] as [number, number, number, number]);
+	const hairColour = NativeUI.CreateColourPanel('Color', hairColours);
 	NativeUI.MenuListItem.AddPanel(hairItem, hairColour);
 	NativeUI.Menu.AddItem(submenu, hairItem);
 
@@ -73,7 +76,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 
 	NativeUI.setEventListener(hairItem, 'OnListChanged', (sender, selectedItem, index) => {
 		const activeItem = NativeUI.MenuListItem.IndexToItem(selectedItem, index);
-		const colour = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
+		const colour = Number(NativeUI.MenuListItem.getPanelValue(hairColour) || 1);
 
 		// Look up the actual hair component index in the array.
 		index = haircutNames[character.ogd?.length > 0 ? character.ogd.toLowerCase() : 'm'][index - 1][1] + 1;
@@ -96,10 +99,26 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	function createOverlayItem(items: ReadonlyArray<string>, title: string, overlayId: number, defaultValue: number, propsToUpdate: PropsToUpdate, indexOffset = 0, colourType: 1 | 2 = 1) {
 		const overlayItem = NativeUI.CreateListItem(title, items, defaultValue, "Make changes to your Appearance.");
 		NativeUI.Menu.AddItem(submenu, overlayItem);
+
+		const panels: Array<Panel> = [];
+
+		if (propsToUpdate.length > 1) {
+			panels.push(NativeUI.CreatePercentagePanel("0%", "Opacity", "100%"));
+			NativeUI.MenuListItem.AddPanel(overlayItem, panels[0]);
+			NativeUI.MenuListItem.setPanelEnabled(overlayItem, 1, false);
+		}
+
+		if (propsToUpdate.length > 2) {
+			const overlayColours = [...Array(GetNumMakeupColors())].map((_, i) => [...GetMakeupRgbColor(i), 255] as [number, number, number, number]);
+			panels.push(NativeUI.CreateColourPanel("Color", overlayColours));
+			NativeUI.MenuListItem.AddPanel(overlayItem, panels[1]);
+			NativeUI.MenuListItem.setPanelEnabled(overlayItem, 2, false);
+		}
+
 		NativeUI.setEventListener(overlayItem, 'OnListChanged', (parent, item, index) => {
 			if (index === 1) {
 				for (let i = 0; i < Math.min(2, propsToUpdate.length - 1); i++) {
-					NativeUI.MenuListItem.RemovePanelAt(overlayItem, 1);
+					NativeUI.MenuListItem.setPanelEnabled(overlayItem, i + 1, false);
 				}
 
 				SetPedHeadOverlay(PlayerPedId(), overlayId, 0, 0);
@@ -109,17 +128,11 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 					actions[`set${prop[0].toUpperCase()}${prop.slice(1)}` as keyof typeof actions](0 as never);
 				});
 			} else {
-				const value = NativeUI.MenuListItem.getPanelValue(overlayItem, 1);
-				console.log(value, value === undefined);
-				if (!NativeUI.MenuListItem.doesPanelExist(overlayItem, 1)) {
-					if (propsToUpdate.length > 1) {
-						NativeUI.MenuListItem.AddPanel(overlayItem, NativeUI.CreatePercentagePanel("0%", "Opacity", "100%"));
-					}
-
-					if (propsToUpdate.length > 2) {
-						NativeUI.MenuListItem.AddPanel(overlayItem, NativeUI.CreateColourPanel("Color", HairBrowColours));
-					}
+				for (let i = 0; i < Math.min(2, propsToUpdate.length - 1); i++) {
+					NativeUI.MenuListItem.setPanelEnabled(overlayItem, i + 1, true);
 				}
+				const value = NativeUI.MenuListItem.getPanelValue(panels[0]);
+				console.log(value, value === undefined);
 
 				const activeItem = NativeUI.MenuListItem.IndexToItem(overlayItem, index);
 				propsToUpdate.forEach((prop, idx) => {
@@ -130,11 +143,11 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 							value = (index - 1) + indexOffset;
 						// Percentage
 						case 1:
-							value = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 1) || 1);
+							value = Number(NativeUI.MenuListItem.getPanelValue(panels[0]) ?? 1);
 							SetPedHeadOverlay(PlayerPedId(), overlayId, (index - 1) + indexOffset, value);
 						// Colour
 						case 2:
-							value = Number(NativeUI.MenuListItem.getPanelValue(activeItem, 2) || 1) - 1;
+							value = Number(NativeUI.MenuListItem.getPanelValue(panels[1]) || 1) - 1;
 							SetPedHeadOverlayColor(PlayerPedId(), overlayId, colourType, value, 0);
 					}
 
@@ -143,7 +156,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 			}
 		});
 
-		return overlayItem;
+		return { overlayItem, panels };
 	}
 
 	const description = "Select to change your Appearance." as const;
@@ -186,7 +199,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Fade Away",
 		"Solo Tram"
 	] as const;
-	UIAppearanceMenuContext.eyebrowsItem = createOverlayItem(eyebrows, "Eyebrows", 2, character.eyebrows + 1, ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1);
+	UIAppearanceMenuContext.eyebrowsItem = createOverlayItem(eyebrows, "Eyebrows", 2, character.eyebrows + 1, ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1).overlayItem;
 
 	const beard = [
 		"Clean Shaven",
@@ -222,7 +235,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"The Ambrose",
 		"Lincoln Curtain"
 	] as const;
-	UIAppearanceMenuContext.beardItem = createOverlayItem(beard, "Facial Hair", 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1);
+	UIAppearanceMenuContext.beardItem = createOverlayItem(beard, "Facial Hair", 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1).overlayItem;
 
 	const blemishes = [
 		"None",
@@ -251,7 +264,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Cold Sores",
 		"Impetigo"
 	] as const;
-	UIAppearanceMenuContext.blemishesItem = createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']);
+	UIAppearanceMenuContext.blemishesItem = createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']).overlayItem;
 
 	const aging = [
 		"None",
@@ -272,7 +285,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Junkie",
 		"Geriatric"
 	] as const;
-	UIAppearanceMenuContext.agingItem = createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1);
+	UIAppearanceMenuContext.agingItem = createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1).overlayItem;
 
 	const complexion = [
 		"None",
@@ -289,7 +302,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pale",
 		"Ghostly"
 	] as const;
-	UIAppearanceMenuContext.complexionItem = createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1);
+	UIAppearanceMenuContext.complexionItem = createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1).overlayItem;
 
 	const molesFreckles = [
 		"None",
@@ -312,7 +325,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pairs",
 		"Growth"
 	] as const;
-	UIAppearanceMenuContext.molesItem = createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']);
+	UIAppearanceMenuContext.molesItem = createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']).overlayItem;
 
 	const skinDamage = [
 		"None",
@@ -328,7 +341,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Cracked",
 		"Gritty"
 	] as const;
-	UIAppearanceMenuContext.sunDamageItem = createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1)
+	UIAppearanceMenuContext.sunDamageItem = createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1).overlayItem
 
 	const eyeColours = [
 		"Green",
@@ -393,7 +406,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smoldering Ruby",
 		"Pop Princess"
 	] as const;
-	UIAppearanceMenuContext.makeupItem = createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1);
+	UIAppearanceMenuContext.makeupItem = createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1).overlayItem;
 
 	const blush = [
 		"None",
@@ -405,7 +418,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Sweetheart",
 		"Eighties"
 	] as const;
-	UIAppearanceMenuContext.blushItem = createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1);
+	UIAppearanceMenuContext.blushItem = createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1).overlayItem;
 
 	const lipstick = [
 		"None",
@@ -420,7 +433,10 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smudged",
 		"Geisha"
 	] as const;
-	UIAppearanceMenuContext.lipstickItem = createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 1, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1);
+	const { overlayItem: lipstickItem, panels: [lipstickOpacityPanel, lipstickColourPanel] } = createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 1, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1, 2);
+	UIAppearanceMenuContext.lipstickItem = lipstickItem;
+	UIAppearanceMenuContext.lipstickColourPanel = lipstickColourPanel;
+	UIAppearanceMenuContext.lipstickOpacityPanel = lipstickOpacityPanel;
 
 	NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
 		if (menu === submenu) {

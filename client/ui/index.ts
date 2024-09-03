@@ -78,8 +78,4 @@ export function RunUI() {
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, creatorMainMenu, store);
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, creatorMainMenu);
-
-    setTick(() => {
-        NativeUI.MenuPool.ProcessMenus(menuPool);
-    });
 }
