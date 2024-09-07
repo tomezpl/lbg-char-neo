@@ -135,14 +135,17 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		}
 
 		if (propsToUpdate.length > 2) {
-			const overlayColours = [...Array(GetNumMakeupColors())].map((_, i) => [...GetMakeupRgbColor(i), 255] as [number, number, number, number]);
+			const numColours = colourType === 2 ? GetNumMakeupColors() : GetNumHairColors();
+			const getColourRgb = colourType == 2 ? (i: number) => GetMakeupRgbColor(i) : (i: number) => GetHairRgbColor(i);
+			const overlayColours = [...Array(numColours)].map((_, i) => [...getColourRgb(i), 255] as [number, number, number, number]);
 			panels.push(NativeUI.CreateColourPanel("Color", overlayColours));
 			NativeUI.MenuListItem.AddPanel(overlayItem, panels[1]);
 			NativeUI.MenuListItem.setPanelEnabled(overlayItem, 2, false);
 		}
 
 		NativeUI.setEventListener(overlayItem, 'OnListChanged', (parent, item, index) => {
-			if (index === 1) {
+			// the overlayId !== 2 check is to make sure we don't remove eyebrows (the player can control this with opacity)
+			if (index <= 1 && overlayId !== 2) {
 				for (let i = 0; i < Math.min(2, propsToUpdate.length - 1); i++) {
 					NativeUI.MenuListItem.setPanelEnabled(overlayItem, i + 1, false);
 				}
