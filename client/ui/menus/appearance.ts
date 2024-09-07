@@ -10,16 +10,41 @@ let submenu: Menu;
 
 interface IUIAppearanceMenuContext {
 	hairItem: MenuItem;
+	hairColourPanel: Panel;
+
 	eyebrowsItem: MenuItem;
+	eyebrowsColourPanel: Panel;
+	eyebrowsPercentagePanel: Panel;
+
 	beardItem: MenuItem;
+	beardColourPanel: Panel;
+	beardPercentagePanel: Panel;
+
 	blemishesItem: MenuItem;
+	blemishesOpacityPanel: Panel;
+
 	agingItem: MenuItem;
+	agingOpacityPanel: Panel;
+
 	complexionItem: MenuItem;
+	complexionOpacityPanel: Panel;
+
 	sunDamageItem: MenuItem;
+	sunDamageOpacityPanel: Panel;
+
 	molesItem: MenuItem;
+	molesOpacityPanel: Panel;
+
 	eyeColourItem: MenuItem;
+
 	makeupItem: MenuItem;
+	makeupOpacityPanel: Panel;
+	makeupColourPanel: Panel;
+
 	blushItem: MenuItem;
+	blushOpacityPanel: Panel;
+	blushColourPanel: Panel;
+
 	lipstickItem: MenuItem;
 	lipstickOpacityPanel: Panel;
 	lipstickColourPanel: Panel;
@@ -96,6 +121,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 
 	type PropsToUpdate<P extends keyof typeof character = keyof typeof character> = [P] | [P, P] | [P, P, P];
 
+	// Helper function to create an overlay item in the menu instead of having to duplicate calls to CreateListItem, CreatePercentagePanel, CreateColourPanel etc.
 	function createOverlayItem(items: ReadonlyArray<string>, title: string, overlayId: number, defaultValue: number, propsToUpdate: PropsToUpdate, indexOffset = 0, colourType: 1 | 2 = 1) {
 		const overlayItem = NativeUI.CreateListItem(title, items, defaultValue, "Make changes to your Appearance.");
 		NativeUI.Menu.AddItem(submenu, overlayItem);
@@ -131,8 +157,6 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 				for (let i = 0; i < Math.min(2, propsToUpdate.length - 1); i++) {
 					NativeUI.MenuListItem.setPanelEnabled(overlayItem, i + 1, true);
 				}
-				const value = NativeUI.MenuListItem.getPanelValue(panels[0]);
-				console.log(value, value === undefined);
 
 				const activeItem = NativeUI.MenuListItem.IndexToItem(overlayItem, index);
 				propsToUpdate.forEach((prop, idx) => {
@@ -199,7 +223,10 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Fade Away",
 		"Solo Tram"
 	] as const;
-	UIAppearanceMenuContext.eyebrowsItem = createOverlayItem(eyebrows, "Eyebrows", 2, character.eyebrows + 1, ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1).overlayItem;
+	const { overlayItem: eyebrowsItem, panels: [eyebrowsPercentagePanel, eyebrowsColourPanel] } = createOverlayItem(eyebrows, "Eyebrows", 2, character.eyebrows + 1, ['eyebrows', 'eyebrows_2', 'eyebrows_3'], 0, 1);
+	UIAppearanceMenuContext.eyebrowsItem = eyebrowsItem;
+	UIAppearanceMenuContext.eyebrowsColourPanel = eyebrowsColourPanel;
+	UIAppearanceMenuContext.eyebrowsPercentagePanel = eyebrowsPercentagePanel;
 
 	const beard = [
 		"Clean Shaven",
@@ -235,7 +262,10 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"The Ambrose",
 		"Lincoln Curtain"
 	] as const;
-	UIAppearanceMenuContext.beardItem = createOverlayItem(beard, "Facial Hair", 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1).overlayItem;
+	const { overlayItem: beardItem, panels: [beardOpacityPanel, beardColourPanel] } = createOverlayItem(beard, "Facial Hair", 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1);
+	UIAppearanceMenuContext.beardItem = beardItem;
+	UIAppearanceMenuContext.beardPercentagePanel = beardOpacityPanel;
+	UIAppearanceMenuContext.beardColourPanel = beardColourPanel;
 
 	const blemishes = [
 		"None",
@@ -264,7 +294,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Cold Sores",
 		"Impetigo"
 	] as const;
-	UIAppearanceMenuContext.blemishesItem = createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']).overlayItem;
+	const { overlayItem: blemishesItem, panels: [blemishesOpacityPanel] } = createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']);
+	UIAppearanceMenuContext.blemishesItem = blemishesItem;
+	UIAppearanceMenuContext.blemishesOpacityPanel = blemishesOpacityPanel;
 
 	const aging = [
 		"None",
@@ -285,7 +317,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Junkie",
 		"Geriatric"
 	] as const;
-	UIAppearanceMenuContext.agingItem = createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1).overlayItem;
+	const { overlayItem: agingItem, panels: [agingOpacityPanel] } = createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1);
+	UIAppearanceMenuContext.agingItem = agingItem;
+	UIAppearanceMenuContext.agingOpacityPanel = agingOpacityPanel;
 
 	const complexion = [
 		"None",
@@ -302,7 +336,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pale",
 		"Ghostly"
 	] as const;
-	UIAppearanceMenuContext.complexionItem = createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1).overlayItem;
+	const { overlayItem: complexionItem, panels: [complexionOpacityPanel] } = createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1);
+	UIAppearanceMenuContext.complexionItem = complexionItem;
+	UIAppearanceMenuContext.complexionOpacityPanel = complexionOpacityPanel;
 
 	const molesFreckles = [
 		"None",
@@ -325,7 +361,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pairs",
 		"Growth"
 	] as const;
-	UIAppearanceMenuContext.molesItem = createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']).overlayItem;
+	const { overlayItem: molesItem, panels: [molesOpacityPanel] } = createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']);
+	UIAppearanceMenuContext.molesItem = molesItem;
+	UIAppearanceMenuContext.molesOpacityPanel = molesOpacityPanel;
 
 	const skinDamage = [
 		"None",
@@ -341,7 +379,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Cracked",
 		"Gritty"
 	] as const;
-	UIAppearanceMenuContext.sunDamageItem = createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1).overlayItem
+	const { overlayItem: skinDamageItem, panels: [skinDamageOpacityPanel] } = createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1);
+	UIAppearanceMenuContext.sunDamageItem = skinDamageItem;
+	UIAppearanceMenuContext.sunDamageOpacityPanel = skinDamageOpacityPanel;
 
 	const eyeColours = [
 		"Green",
@@ -406,7 +446,10 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smoldering Ruby",
 		"Pop Princess"
 	] as const;
-	UIAppearanceMenuContext.makeupItem = createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1).overlayItem;
+	const { overlayItem: makeupItem, panels: [makeupOpacityPanel, makeupColourPanel] } = createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1, 2);
+	UIAppearanceMenuContext.makeupItem = makeupItem;
+	UIAppearanceMenuContext.makeupColourPanel = makeupColourPanel;
+	UIAppearanceMenuContext.makeupOpacityPanel = makeupOpacityPanel;
 
 	const blush = [
 		"None",
@@ -418,7 +461,10 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Sweetheart",
 		"Eighties"
 	] as const;
-	UIAppearanceMenuContext.blushItem = createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1).overlayItem;
+	const { overlayItem: blushItem, panels: [blushOpacityPanel, blushColourPanel] } = createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1, 2);
+	UIAppearanceMenuContext.blushItem = blushItem;
+	UIAppearanceMenuContext.blushColourPanel = blushColourPanel;
+	UIAppearanceMenuContext.blushOpacityPanel = blushOpacityPanel;
 
 	const lipstick = [
 		"None",
