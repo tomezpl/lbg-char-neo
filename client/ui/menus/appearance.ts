@@ -168,14 +168,17 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 						// Item index
 						case 0:
 							value = (index - 1) + indexOffset;
+							break;
 						// Percentage
 						case 1:
 							value = Number(NativeUI.MenuListItem.getPanelValue(panels[0]) ?? 1);
 							SetPedHeadOverlay(PlayerPedId(), overlayId, (index - 1) + indexOffset, value);
+							break;
 						// Colour
 						case 2:
 							value = Number(NativeUI.MenuListItem.getPanelValue(panels[1]) || 1) - 1;
 							SetPedHeadOverlayColor(PlayerPedId(), overlayId, colourType, value, 0);
+							break;
 					}
 
 					actions[`set${prop[0].toUpperCase()}${prop.slice(1)}` as keyof typeof actions](value as never);
@@ -482,7 +485,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smudged",
 		"Geisha"
 	] as const;
-	const { overlayItem: lipstickItem, panels: [lipstickOpacityPanel, lipstickColourPanel] } = createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 1, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1, 2);
+	const { overlayItem: lipstickItem, panels: [lipstickOpacityPanel, lipstickColourPanel] } = createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 2, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1, 2);
 	UIAppearanceMenuContext.lipstickItem = lipstickItem;
 	UIAppearanceMenuContext.lipstickColourPanel = lipstickColourPanel;
 	UIAppearanceMenuContext.lipstickOpacityPanel = lipstickOpacityPanel;

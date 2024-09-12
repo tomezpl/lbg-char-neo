@@ -1,4 +1,5 @@
 import { animateCharCreatorIntro, animateCharCreatorOutro } from 'anim';
+import { ActiveCharacterKvpName } from 'constants/misc';
 import vMenuPlugin from 'plugins/vmenu';
 import { inputState, store } from 'state';
 import { addMenuApparel } from './menus/apparel';
@@ -22,7 +23,8 @@ export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
     NativeUI.Menu.AddItem(finishButton, sureButton);
     NativeUI.setEventListener(sureButton, "Activated", () => {
         if (!inputState.blockMenuButtons) {
-            SetResourceKvp('lbg-char-info', JSON.stringify(store.character));
+            SetResourceKvp(ActiveCharacterKvpName, JSON.stringify(store.character));
+            console.log('!!!! SAVING CHARACTER !!!!')
             animateCharCreatorOutro();
             NativeUI.Menu.Visible(finishButton, false);
             NativeUI.Menu.Visible(parentMenu, false);

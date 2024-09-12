@@ -1,0 +1,1 @@
+export const ActiveCharacterKvpName = 'lbg-char-info' as const;

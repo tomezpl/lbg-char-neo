@@ -76,7 +76,7 @@ interface INativeUIRoot {
     CreateMenu(name: string, colour: string, width: number, height: number): Menu;
     CreateItem(text: string, description: string): MenuItem;
     CreateListItem(name: string, options: ReadonlyArray<string>, defaultItemIndex: number, description: string): MenuItem;
-    CreateHeritageWindow(defaultMum: number, defaultDad: number): Window;
+    CreateHeritageWindow(defaultMum: number | `-${number}`, defaultDad: number | `-${number}`): Window;
     CreateSliderItem(name: string, levels: ReadonlyArray<number | string>, defaultLevelIndex: number, description: string, divider: boolean): MenuItem;
     CreateColourPanel(name: string, colours: ReadonlyArray<[number, number, number, number]>): Panel;
     CreatePercentagePanel(minText: string, title: string, maxText: string): Panel;
@@ -146,7 +146,7 @@ export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) =>
     if (key.includes(':')) {
         const [className, funcName] = key.split(':');
         (obj[className as keyof typeof obj] as unknown as Record<any, unknown>) ??= {};
-        (obj[className as keyof typeof obj] as unknown as Record<any, unknown>)[funcName] = (...params: any[]) => { funcName !== 'ProcessMenus' && console.log(`calling ${funcName}(${params.map((v) => v?.toString?.()).join(', ')})`); return value(...params); };
+        (obj[className as keyof typeof obj] as unknown as Record<any, unknown>)[funcName] = value;
         console.log(obj)
     } else {
         Object.assign(obj, { [key]: value });
