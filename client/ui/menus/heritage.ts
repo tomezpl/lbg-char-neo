@@ -1,18 +1,29 @@
 import { createSkinCamera } from "anim";
 import { cameraShots } from "constants/camera";
-import { FemaleParents, MaleParents } from "constants/parents";
+import { MaleOutfits } from "constants/outfit";
+import { FemaleParentIds, FemaleParents, MaleParentIds, MaleParents } from "constants/parents";
 import { CharacterStore } from "state/character-store";
-import { Menu, MenuPool, NativeUI } from "ui"
+import { Menu, MenuItem, MenuPool, NativeUI, Window } from "ui"
+
+interface IUIHeritageMenuContext {
+    mumItem: MenuItem;
+    dadItem: MenuItem;
+    resemblanceItem: MenuItem;
+    skinToneItem: MenuItem;
+    heritageWindow: Window;
+}
+
+export const UIHeritageMenuContext: Partial<IUIHeritageMenuContext> = {
+
+};
 
 export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
     const parents = [...Array(46)].map((_, i) => `${i}`.padStart(2, '0'));
 
-    // Female heads
-    const moms = ["21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "45"]
-    // Male heads
-    const dads = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "42", "43", "44"];
+    const moms = FemaleParentIds;
+    const dads = MaleParentIds;
 
-    const parentNames = parents.map((parentId) => FemaleParents[moms.indexOf(parentId)] ?? MaleParents[dads.indexOf(parentId)]);
+    const parentNames = parents.map((parentId) => FemaleParents[moms.indexOf(parentId as typeof moms[number])] ?? MaleParents[dads.indexOf(parentId as typeof moms[number])]);
 
     const { character: Character } = store;
     const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Heritage", "Select to choose your parents.", true, true);
@@ -21,12 +32,15 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
         moms.find((m) => Number(m) === Character.dad) ? `-${moms.findIndex((m) => Number(m) === Character.dad)}` : dads.findIndex((d) => Number(d) === Character.dad)
     );
     NativeUI.Menu.AddWindow(submenu, heritage);
+    UIHeritageMenuContext.heritageWindow = heritage;
 
     const momItem = NativeUI.CreateListItem("Parent #1", parentNames, Character["mom"] + 1, "Select your Mom.");
     NativeUI.Menu.AddItem(submenu, momItem);
+    UIHeritageMenuContext.mumItem = momItem;
 
     const dadItem = NativeUI.CreateListItem("Parent #2", parentNames, Character["dad"] + 1, "Select your Dad.");
     NativeUI.Menu.AddItem(submenu, dadItem);
+    UIHeritageMenuContext.dadItem = dadItem;
 
 
     NativeUI.setEventListener(submenu, 'OnListChange', (sender, item, index) => {
@@ -58,9 +72,11 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
 
     const resemblanceItem = NativeUI.CreateSliderItem("Resemblance", ZtO, resemblanceIndex, "Select if your features are influenced more by your Mother or Father.", true);
     NativeUI.Menu.AddItem(submenu, resemblanceItem);
+    UIHeritageMenuContext.resemblanceItem = resemblanceItem;
 
     const skintoneItem = NativeUI.CreateSliderItem("Skin Tone", ZtO, skintoneIndex, "Select if your skin tone is influenced more by your Mother or Father.", true)
     NativeUI.Menu.AddItem(submenu, skintoneItem);
+    UIHeritageMenuContext.skinToneItem = skintoneItem;
 
     NativeUI.setEventListener(submenu, 'OnSliderChange', (sender, item, index) => {
         if (item === resemblanceItem || item === skintoneItem) {

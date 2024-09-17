@@ -30,6 +30,7 @@ interface MenuListItemGlobal extends MenuItemGlobal {
     IndexToItem(menuItem: MenuItem, index: number): MenuItem;
     getPanelValue(panel: Panel): number | string;
     setPanelValue(panel: Panel, value: number): void;
+    setPanelValue(panel: [Panel, Panel], value: [number, number]): void;
     setPanelEnabled(menuItem: MenuItem, panelIndex: number, enabled: boolean): void;
     getProp<TResult = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string): TResult;
     setProp<TResult = unknown, TValue = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string, propValue: TValue): TResult;

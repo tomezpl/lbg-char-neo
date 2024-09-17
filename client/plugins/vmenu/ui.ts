@@ -1,8 +1,12 @@
 import { OldDLCHairMap } from "constants/hair";
+import { FemaleParentIds, MaleParentIds } from "constants/parents";
+import { store } from "state";
 import { CharacterStore } from "state/character-store";
 import { clothingStore } from "state/clothing-store";
 import { Menu, MenuPool, NativeUI } from "ui";
 import { UIAppearanceMenuContext } from "ui/menus/appearance";
+import { UIHeritageMenuContext } from "ui/menus/heritage";
+import { getZtOIndex } from "utils/misc";
 import { getVMenuCharacters } from "./import"
 import { applyVMenuCharacter, IVMenuCharacter } from "./ped";
 
@@ -31,6 +35,22 @@ export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, stor
 
 function updateMenuItemValues(character: IVMenuCharacter) {
     updateAppearanceMenuItemValues(character);
+    updateHeritageMenuItemValues(character);
+}
+
+function updateHeritageMenuItemValues({ PedHeadBlendData: heritage }: IVMenuCharacter) {
+    const { dadItem, mumItem, resemblanceItem, skinToneItem, heritageWindow } = UIHeritageMenuContext;
+    mumItem && NativeUI.MenuListItem.Index(mumItem, heritage.FirstFaceShape + 1);
+    dadItem && NativeUI.MenuListItem.Index(dadItem, heritage.SecondFaceShape + 1);
+    resemblanceItem && NativeUI.MenuListItem.Index(resemblanceItem, getZtOIndex(heritage.ParentFaceShapePercent) + 1)
+    skinToneItem && NativeUI.MenuListItem.Index(skinToneItem, getZtOIndex(heritage.ParentSkinTonePercent) + 1);
+
+    const dads = MaleParentIds;
+    const mums = FemaleParentIds;
+    const mom = heritage.FirstFaceShape;
+    const dad = heritage.SecondFaceShape;
+    heritageWindow && NativeUI.Window.Index(heritageWindow, (dads.find((d) => Number(d) === mom) ? `-${dads.findIndex((d) => Number(d) === mom)}` : mums.findIndex((m) => Number(m) === mom)) as number,
+        (mums.find((m) => Number(m) === dad) ? `-${mums.findIndex((m) => Number(m) === dad)}` : dads.findIndex((d) => Number(d) === dad)) as number)
 }
 
 function updateAppearanceMenuItemValues({ PedAppearance: appearance, IsMale: isMale }: IVMenuCharacter) {
@@ -110,16 +130,17 @@ function updateAppearanceMenuItemValues({ PedAppearance: appearance, IsMale: isM
 
     const { makeupItem, makeupColourPanel, makeupOpacityPanel } = UIAppearanceMenuContext;
     makeupItem && NativeUI.MenuListItem.Index(makeupItem, appearance.makeupStyle + 2);
-    makeupColourPanel && NativeUI.MenuListItem.setPanelValue(makeupColourPanel, appearance.makeupColor + 1);
+    makeupColourPanel && NativeUI.MenuListItem.setPanelValue(makeupColourPanel, appearance.makeupColor);
     makeupOpacityPanel && NativeUI.MenuListItem.setPanelValue(makeupOpacityPanel, appearance.makeupOpacity);
 
     const { blushItem, blushColourPanel, blushOpacityPanel } = UIAppearanceMenuContext;
     blushItem && NativeUI.MenuListItem.Index(blushItem, appearance.blushStyle + 2);
-    blushColourPanel && NativeUI.MenuListItem.setPanelValue(blushColourPanel, appearance.blushColor + 1);
+    blushColourPanel && NativeUI.MenuListItem.setPanelValue(blushColourPanel, appearance.blushColor);
     blushOpacityPanel && NativeUI.MenuListItem.setPanelValue(blushOpacityPanel, appearance.blushOpacity);
 
+    console.log(appearance);
     const { lipstickItem, lipstickColourPanel, lipstickOpacityPanel } = UIAppearanceMenuContext;
     lipstickItem && NativeUI.MenuListItem.Index(lipstickItem, appearance.lipstickStyle + 2);
-    lipstickColourPanel && NativeUI.MenuListItem.setPanelValue(lipstickColourPanel, appearance.lipstickColor + 1);
+    lipstickColourPanel && NativeUI.MenuListItem.setPanelValue(lipstickColourPanel, appearance.lipstickColor);
     lipstickOpacityPanel && NativeUI.MenuListItem.setPanelValue(lipstickOpacityPanel, appearance.lipstickOpacity);
 }

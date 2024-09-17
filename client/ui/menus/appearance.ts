@@ -52,6 +52,15 @@ interface IUIAppearanceMenuContext {
 
 export const UIAppearanceMenuContext: Partial<IUIAppearanceMenuContext> = {};
 
+/**
+ * Helper function to check if an overlay should be set to "None". This returns true if all {@link overlayValues} are 0.
+ * @param overlayValues Values used for this overlay (style, opacity, colour?)
+ * @returns 
+ */
+function hasOverlay(overlayValues: [number, number] | [number, number, number]): boolean {
+	return overlayValues.some((v) => v !== 0);
+}
+
 export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
 	if (submenu) {
 		NativeUI.Menu.Clear(submenu);
@@ -98,6 +107,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	NativeUI.Menu.AddItem(submenu, hairItem);
 
 	UIAppearanceMenuContext.hairItem = hairItem;
+	UIAppearanceMenuContext.hairColourPanel = hairColour;
+	character.hair > 0 && NativeUI.MenuListItem.setPanelEnabled(hairItem, 1, true);
+	character.hair > 0 && NativeUI.MenuListItem.setPanelValue(hairColour, character.hair_color_1);
 
 	NativeUI.setEventListener(hairItem, 'OnListChanged', (sender, selectedItem, index) => {
 		const activeItem = NativeUI.MenuListItem.IndexToItem(selectedItem, index);
@@ -233,6 +245,9 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	UIAppearanceMenuContext.eyebrowsItem = eyebrowsItem;
 	UIAppearanceMenuContext.eyebrowsColourPanel = eyebrowsColourPanel;
 	UIAppearanceMenuContext.eyebrowsPercentagePanel = eyebrowsPercentagePanel;
+	NativeUI.MenuListItem.setPanelEnabled(eyebrowsItem, 1, true);
+	NativeUI.MenuListItem.setPanelEnabled(eyebrowsItem, 2, true);
+	NativeUI.MenuListItem.setPanelValue([eyebrowsPercentagePanel, eyebrowsColourPanel], [character.eyebrows_2, character.eyebrows_3]);
 
 	const beard = [
 		"Clean Shaven",
@@ -272,6 +287,10 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	UIAppearanceMenuContext.beardItem = beardItem;
 	UIAppearanceMenuContext.beardPercentagePanel = beardOpacityPanel;
 	UIAppearanceMenuContext.beardColourPanel = beardColourPanel;
+	NativeUI.MenuListItem.setPanelEnabled(beardItem, 2, character.beard > 0);
+	NativeUI.MenuListItem.setPanelValue(beardColourPanel, character.beard_3);
+	NativeUI.MenuListItem.setPanelEnabled(beardItem, 1, character.beard > 0);
+	NativeUI.MenuListItem.setPanelValue(beardOpacityPanel, character.beard_2);
 
 	const blemishes = [
 		"None",
@@ -300,9 +319,13 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Cold Sores",
 		"Impetigo"
 	] as const;
-	const { overlayItem: blemishesItem, panels: [blemishesOpacityPanel] } = createOverlayItem(blemishes, "Skin Blemishes", 11, character.bodyb_1 + 1, ['bodyb_1', 'bodyb_2']);
+	const hasBlemishes = hasOverlay([character.bodyb_1, character.bodyb_2]);
+	const defaultBlemishStyle = hasBlemishes ? character.bodyb_1 + 2 : 1;
+	const { overlayItem: blemishesItem, panels: [blemishesOpacityPanel] } = createOverlayItem(blemishes, "Skin Blemishes", 11, defaultBlemishStyle, ['bodyb_1', 'bodyb_2']);
 	UIAppearanceMenuContext.blemishesItem = blemishesItem;
 	UIAppearanceMenuContext.blemishesOpacityPanel = blemishesOpacityPanel;
+	hasBlemishes && NativeUI.MenuListItem.setPanelEnabled(blemishesItem, 1, true);
+	hasBlemishes && NativeUI.MenuListItem.setPanelValue(blemishesOpacityPanel, character.bodyb_2);
 
 	const aging = [
 		"None",
@@ -323,9 +346,13 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Junkie",
 		"Geriatric"
 	] as const;
-	const { overlayItem: agingItem, panels: [agingOpacityPanel] } = createOverlayItem(aging, 'Skin Aging', 3, character.age_1 + 1, ['age_1', 'age_2'], -1);
+	const hasAging = hasOverlay([character.age_1, character.age_2]);
+	const defaultAgingStyle = hasAging ? character.age_1 + 2 : 1;
+	const { overlayItem: agingItem, panels: [agingOpacityPanel] } = createOverlayItem(aging, 'Skin Aging', 3, defaultAgingStyle, ['age_1', 'age_2'], -1);
 	UIAppearanceMenuContext.agingItem = agingItem;
 	UIAppearanceMenuContext.agingOpacityPanel = agingOpacityPanel;
+	hasAging && NativeUI.MenuListItem.setPanelEnabled(agingItem, 1, true);
+	hasAging && NativeUI.MenuListItem.setPanelValue(agingOpacityPanel, character.age_2);
 
 	const complexion = [
 		"None",
@@ -342,9 +369,13 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pale",
 		"Ghostly"
 	] as const;
-	const { overlayItem: complexionItem, panels: [complexionOpacityPanel] } = createOverlayItem(complexion, "Skin Complexion", 6, character.complexion_1 + 1, ['complexion_1', 'complexion_2'], -1);
+	const hasComplexion = hasOverlay([character.complexion_1, character.complexion_2]);
+	const defaultComplexionStyle = hasComplexion ? character.complexion_1 + 2 : 1;
+	const { overlayItem: complexionItem, panels: [complexionOpacityPanel] } = createOverlayItem(complexion, "Skin Complexion", 6, defaultComplexionStyle, ['complexion_1', 'complexion_2'], -1);
 	UIAppearanceMenuContext.complexionItem = complexionItem;
 	UIAppearanceMenuContext.complexionOpacityPanel = complexionOpacityPanel;
+	hasComplexion && NativeUI.MenuListItem.setPanelEnabled(complexionItem, 1, true);
+	hasComplexion && NativeUI.MenuListItem.setPanelValue(complexionOpacityPanel, character.complexion_2);
 
 	const molesFreckles = [
 		"None",
@@ -367,9 +398,13 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Pairs",
 		"Growth"
 	] as const;
-	const { overlayItem: molesItem, panels: [molesOpacityPanel] } = createOverlayItem(molesFreckles, 'Moles & Freckles', 9, character.moles_1, ['moles_1', 'moles_2']);
+	const hasMoles = hasOverlay([character.moles_1, character.moles_2]);
+	const defaultMoles = hasMoles ? character.moles_1 + 2 : 1;
+	const { overlayItem: molesItem, panels: [molesOpacityPanel] } = createOverlayItem(molesFreckles, 'Moles & Freckles', 9, defaultMoles, ['moles_1', 'moles_2']);
 	UIAppearanceMenuContext.molesItem = molesItem;
 	UIAppearanceMenuContext.molesOpacityPanel = molesOpacityPanel;
+	hasMoles && NativeUI.MenuListItem.setPanelEnabled(molesItem, 1, true);
+	hasMoles && NativeUI.MenuListItem.setPanelValue(molesOpacityPanel, character.moles_2);
 
 	const skinDamage = [
 		"None",
@@ -385,9 +420,13 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Cracked",
 		"Gritty"
 	] as const;
-	const { overlayItem: skinDamageItem, panels: [skinDamageOpacityPanel] } = createOverlayItem(skinDamage, 'Skin Damage', 7, character.sun_1 + 1, ['sun_1', 'sun_2'], -1);
+	const hasSkinDamage = hasOverlay([character.sun_1, character.sun_2]);
+	const defaultSkinDamageStyle = hasSkinDamage ? character.sun_1 + 2 : 1;
+	const { overlayItem: skinDamageItem, panels: [skinDamageOpacityPanel] } = createOverlayItem(skinDamage, 'Skin Damage', 7, defaultSkinDamageStyle, ['sun_1', 'sun_2'], -1);
 	UIAppearanceMenuContext.sunDamageItem = skinDamageItem;
 	UIAppearanceMenuContext.sunDamageOpacityPanel = skinDamageOpacityPanel;
+	hasSkinDamage && NativeUI.MenuListItem.setPanelEnabled(skinDamageItem, 1, true);
+	hasSkinDamage && NativeUI.MenuListItem.setPanelValue(skinDamageOpacityPanel, character.sun_2);
 
 	const eyeColours = [
 		"Green",
@@ -452,10 +491,15 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smoldering Ruby",
 		"Pop Princess"
 	] as const;
-	const { overlayItem: makeupItem, panels: [makeupOpacityPanel, makeupColourPanel] } = createOverlayItem(makeup, 'Makeup', 4, character.makeup_1 + 1, ['makeup_1', 'makeup_2', 'makeup_3'], -1, 2);
+	const hasMakeup = hasOverlay([character.makeup_1, character.makeup_2, character.makeup_3]);
+	const defaultMakeupStyle = hasMakeup ? character.makeup_1 + 2 : 1;
+	const { overlayItem: makeupItem, panels: [makeupOpacityPanel, makeupColourPanel] } = createOverlayItem(makeup, 'Makeup', 4, defaultMakeupStyle, ['makeup_1', 'makeup_2', 'makeup_3'], -1, 2);
 	UIAppearanceMenuContext.makeupItem = makeupItem;
 	UIAppearanceMenuContext.makeupColourPanel = makeupColourPanel;
 	UIAppearanceMenuContext.makeupOpacityPanel = makeupOpacityPanel;
+	hasMakeup && NativeUI.MenuListItem.setPanelEnabled(makeupItem, 1, true);
+	hasMakeup && NativeUI.MenuListItem.setPanelEnabled(makeupItem, 2, true);
+	hasMakeup && NativeUI.MenuListItem.setPanelValue([makeupOpacityPanel, makeupColourPanel], [character.makeup_2, character.makeup_3]);
 
 	const blush = [
 		"None",
@@ -467,10 +511,15 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Sweetheart",
 		"Eighties"
 	] as const;
-	const { overlayItem: blushItem, panels: [blushOpacityPanel, blushColourPanel] } = createOverlayItem(blush, 'Blush', 5, character.blush_1 + 1, ['blush_1', 'blush_2', 'blush_3'], -1, 2);
+	const hasBlush = hasOverlay([character.blush_1, character.blush_2, character.blush_3]);
+	const defaultBlushStyle = hasBlush ? character.blush_1 + 2 : 1;
+	const { overlayItem: blushItem, panels: [blushOpacityPanel, blushColourPanel] } = createOverlayItem(blush, 'Blush', 5, defaultBlushStyle, ['blush_1', 'blush_2', 'blush_3'], -1, 2);
 	UIAppearanceMenuContext.blushItem = blushItem;
 	UIAppearanceMenuContext.blushColourPanel = blushColourPanel;
 	UIAppearanceMenuContext.blushOpacityPanel = blushOpacityPanel;
+	hasBlush && NativeUI.MenuListItem.setPanelEnabled(blushItem, 1, true);
+	hasBlush && NativeUI.MenuListItem.setPanelEnabled(blushItem, 2, true);
+	hasBlush && NativeUI.MenuListItem.setPanelValue([blushOpacityPanel, blushColourPanel], [character.blush_2, character.blush_3]);
 
 	const lipstick = [
 		"None",
@@ -485,10 +534,15 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		"Smudged",
 		"Geisha"
 	] as const;
-	const { overlayItem: lipstickItem, panels: [lipstickOpacityPanel, lipstickColourPanel] } = createOverlayItem(lipstick, 'Lipstick', 8, character.lipstick_1 + 2, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1, 2);
+	const hasLipstick = hasOverlay([character.lipstick_1, character.lipstick_2, character.lipstick_3]);
+	const defaultLipstickStyle = hasLipstick ? character.lipstick_1 + 2 : 1;
+	const { overlayItem: lipstickItem, panels: [lipstickOpacityPanel, lipstickColourPanel] } = createOverlayItem(lipstick, 'Lipstick', 8, defaultLipstickStyle, ['lipstick_1', 'lipstick_2', 'lipstick_3'], -1, 2);
 	UIAppearanceMenuContext.lipstickItem = lipstickItem;
 	UIAppearanceMenuContext.lipstickColourPanel = lipstickColourPanel;
 	UIAppearanceMenuContext.lipstickOpacityPanel = lipstickOpacityPanel;
+	hasLipstick && NativeUI.MenuListItem.setPanelEnabled(lipstickItem, 1, true);
+	hasLipstick && NativeUI.MenuListItem.setPanelEnabled(lipstickItem, 2, true);
+	hasLipstick && NativeUI.MenuListItem.setPanelValue([lipstickOpacityPanel, lipstickColourPanel], [character.lipstick_2, character.lipstick_3]);
 
 	NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
 		if (menu === submenu) {

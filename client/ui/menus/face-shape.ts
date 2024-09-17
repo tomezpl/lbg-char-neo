@@ -55,7 +55,7 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 	}, 0);
 
 	NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
-		if (parentMenu === menu) {
+		if (submenu === menu) {
 			createSkinCamera(cameraShots.face);
 			// CreateSkinCam('face');
 		}

@@ -11,9 +11,9 @@ const defaultCharacter = Object.freeze({
 	dmom: 0,
 	mom: 21,
 	dad: 0,
-	gender: "Male",
-	ogd: "M",
-	lcgd: "male",
+	gender: "Male" as const,
+	ogd: "M" as const,
+	lcgd: "male" as const,
 	hair: 13,
 	hair_color_1: 0,
 	outfit: 0,
@@ -24,7 +24,7 @@ const defaultCharacter = Object.freeze({
 	eyebrows_2: 1,
 	eyebrows_3: 1,
 	blush_1: 0,
-	blush_2: 1,
+	blush_2: 0,
 	blush_3: 0,
 	sun_1: 0,
 	sun_2: 0,
@@ -66,18 +66,29 @@ const defaultCharacter = Object.freeze({
 	glasses: 0,
 	customOutfit: undefined,
 	customProps: undefined,
+	version: '2' as const,
 });
 
 type Writable<T> = {
 	-readonly [K in keyof T]: T[K];
 }
 
+/**
+ * The overlay/component styles in this object are 0-indexed in order to fit the game's native usage.
+
+ * Keep in mind the UI expects 1-indexed IDs due to being implemented in Lua.
+ */
 export type Character = Writable<Omit<typeof defaultCharacter, "gender" | "ogd" | "lcgd">> & {
 	gender: "Male" | "Female";
 	ogd: "M" | "F";
 	lcgd: "male" | "female";
 	customOutfit?: Outfit;
 	customProps?: Record<number, ComponentVariation>;
+
+	/** 2.0 is incompatible with 1.x character data */
+	version: '2';
 };
 
-export const DefaultCharacter: Readonly<Character> = defaultCharacter as Readonly<Character>;
+export type LegacyCharacter = Omit<Character, 'version'>;
+
+export const DefaultCharacter: Readonly<Character> = defaultCharacter;
