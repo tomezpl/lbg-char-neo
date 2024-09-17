@@ -5,6 +5,7 @@ import { CharacterStore } from "state/character-store";
 import { clothingStore } from "state/clothing-store";
 import { Menu, MenuPool, NativeUI } from "ui";
 import { UIAppearanceMenuContext } from "ui/menus/appearance";
+import { UIGenderMenuContext } from "ui/menus/gender";
 import { UIHeritageMenuContext } from "ui/menus/heritage";
 import { getZtOIndex } from "utils/misc";
 import { getVMenuCharacters } from "./import"
@@ -34,8 +35,14 @@ export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, stor
 }
 
 function updateMenuItemValues(character: IVMenuCharacter) {
+    updateGenderItemValue(character);
     updateAppearanceMenuItemValues(character);
     updateHeritageMenuItemValues(character);
+}
+
+function updateGenderItemValue({ IsMale: isMale }: Pick<IVMenuCharacter, 'IsMale'>) {
+    const { genderItem } = UIGenderMenuContext;
+    genderItem && NativeUI.MenuListItem.Index(genderItem, isMale ? 1 : 2);
 }
 
 function updateHeritageMenuItemValues({ PedHeadBlendData: heritage }: IVMenuCharacter) {
