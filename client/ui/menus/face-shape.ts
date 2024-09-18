@@ -2,7 +2,11 @@ import { createSkinCamera } from "anim";
 import { cameraShots } from "constants/camera";
 import { Character } from "constants/character";
 import { CharacterStore } from "state/character-store";
-import { Menu, MenuPool, NativeUI } from "ui";
+import { Menu, MenuItem, MenuPool, NativeUI } from "ui";
+import { UIGenderMenuContext } from "./gender";
+
+export const UIFaceShapeMenuContext: Partial<Record<`${keyof Character}_item`, MenuItem>> = {
+}
 
 export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
 	const listItems = new Array<string>();
@@ -14,7 +18,7 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 
 	const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Features", "Select to alter your facial Features.", true, false)
 
-	const features: Array<[name: string, featureName: keyof Extract<Character, number>, featureIndex?: number]> = [
+	const features: Array<[name: string, featureName: keyof Character, featureIndex?: number]> = [
 		["Nose Width", "nose_1"],
 		["Nose Peak Height", "nose_2"],
 		["Nose Peak Length", "nose_3"],
@@ -44,11 +48,15 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 
 		const featureItem = NativeUI.CreateSliderItem(name, listItems, ((character[featureName as keyof Character] as number) + 1) * 10 + 1, "Make changes to your physical Features.", true);
 		NativeUI.Menu.AddItem(submenu, featureItem);
+
+		const uiItemKey: keyof typeof UIFaceShapeMenuContext = `${featureName}_item` as `${keyof Character}_item`;
+		UIFaceShapeMenuContext[uiItemKey] = featureItem;
+
 		NativeUI.setEventListener(featureItem, 'OnSliderChanged', (sender, item, index) => {
-			console.log(`setting feature ${featureIndex} to ${Number(listItems[index])}`);
-			SetPedFaceFeature(PlayerPedId(), featureIndex, Number(listItems[index]));
+			console.log(`setting feature ${featureIndex} to ${Number(listItems[index - 1])}`);
+			SetPedFaceFeature(PlayerPedId(), featureIndex, Number(listItems[index - 1]));
 			const setterKey = `set${(featureName as string).slice(0, 1).toUpperCase()}${(featureName as string).slice(1)}` as keyof typeof actions;
-			actions[setterKey](Number(listItems[index]) as never);
+			actions[setterKey](Number(listItems[index - 1]) as never);
 		})
 
 		return featureIndex + 1;

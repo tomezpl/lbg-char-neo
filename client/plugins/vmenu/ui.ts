@@ -1,3 +1,4 @@
+import { Character, DefaultCharacter } from "constants/character";
 import { OldDLCHairMap } from "constants/hair";
 import { FemaleParentIds, MaleParentIds } from "constants/parents";
 import { store } from "state";
@@ -5,6 +6,7 @@ import { CharacterStore } from "state/character-store";
 import { clothingStore } from "state/clothing-store";
 import { Menu, MenuPool, NativeUI } from "ui";
 import { UIAppearanceMenuContext } from "ui/menus/appearance";
+import { UIFaceShapeMenuContext } from "ui/menus/face-shape";
 import { UIGenderMenuContext } from "ui/menus/gender";
 import { UIHeritageMenuContext } from "ui/menus/heritage";
 import { getZtOIndex } from "utils/misc";
@@ -28,16 +30,41 @@ export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, stor
 
         NativeUI.setEventListener(submenu, "OnItemSelect", (sender, item, index) => {
             const charName = characterItemIndices[index - 1];
-            updateMenuItemValues(characters[charName]);
             applyVMenuCharacter(characters[charName], store);
+            console.log('logging updated character');
+            console.log(JSON.stringify(store.character));
+            updateMenuItemValues(characters[charName], store.character);
         });
     }
 }
 
-function updateMenuItemValues(character: IVMenuCharacter) {
-    updateGenderItemValue(character);
-    updateAppearanceMenuItemValues(character);
-    updateHeritageMenuItemValues(character);
+function updateMenuItemValues(vMenuCharacter: IVMenuCharacter, character: Character) {
+    updateGenderItemValue(vMenuCharacter);
+    updateAppearanceMenuItemValues(vMenuCharacter);
+    updateHeritageMenuItemValues(vMenuCharacter);
+    updateFaceShapeMenuItemValues(character);
+}
+
+function updateFaceShapeMenuItemValues(character: Character) {
+    Object.keys(DefaultCharacter).forEach((key) => {
+        if (`${key}_item` in UIFaceShapeMenuContext) {
+            const uiItem = UIFaceShapeMenuContext[`${key}_item` as keyof typeof UIFaceShapeMenuContext];
+            const value = character[key as keyof Character];
+            const index = (value + 1) * 10 + 1;
+            console.log(`setting ${key} UI item to ${value} (index: ${index})`);
+            uiItem && NativeUI.MenuListItem.Index(uiItem, index);
+        }
+    });
+
+    /*const { eye_open_item } = UIFaceShapeMenuContext;
+    eye_open_item && NativeUI.MenuListItem.Index(eye_open_item, (character.eye_open + 1) * 10 + 1);
+
+    const { cheeks_1_item, cheeks_2_item, cheeks_3_item } = UIFaceShapeMenuContext;
+    Object.entries({ cheeks_1_item, cheeks_2_item, cheeks_3_item }).forEach(([key, item]) => item && NativeUI.MenuListItem.Index(item, (character[key.replace("_item", "") as keyof Character] + 1) * 10 + 1));
+
+    const { jaw_1_item, jaw_2_item } = UIFaceShapeMenuContext;
+    jaw_1_item && NativeUI.MenuListItem.Index(jaw_1_item, (character.jaw_1 + 1) * 10 + 1);
+    jaw_2_item && NativeUI.MenuListItem.Index(jaw_2_item, (character.jaw_2 + 1) * 10 + 1);*/
 }
 
 function updateGenderItemValue({ IsMale: isMale }: Pick<IVMenuCharacter, 'IsMale'>) {

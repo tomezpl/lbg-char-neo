@@ -19,8 +19,7 @@ export class CharacterStore implements ICharacterStore {
     public constructor() {
         this.actions = Object.fromEntries((Object.keys(DefaultCharacter) as Array<keyof Character>).map((prop) => {
             return [`set${prop.slice(0, 1).toUpperCase()}${prop.slice(1)}` as keyof CharacterStoreActions, (...[value]: Parameters<CharacterStoreActions[keyof CharacterStoreActions]>) => {
-                // this._character = {...(this._character), [prop]: value};
-                this._character[prop as keyof Character] = value as Character[keyof Character];
+                this._character[prop as keyof Character] = (typeof value !== 'undefined' ? value : 0) as Character[keyof Character];
             }] as [keyof CharacterStoreActions, CharacterStoreActions[keyof CharacterStoreActions]];
         })) as CharacterStoreActions;
 
