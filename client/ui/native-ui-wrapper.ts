@@ -143,12 +143,12 @@ const eventCount: Partial<Record<EventName, number>> = {
 
 export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) => {
     const value = exports.NativeUI[key];
-    console.log(key, typeof value);
+    // console.log(key, typeof value);
     if (key.includes(':')) {
         const [className, funcName] = key.split(':');
         (obj[className as keyof typeof obj] as unknown as Record<any, unknown>) ??= {};
         (obj[className as keyof typeof obj] as unknown as Record<any, unknown>)[funcName] = value;
-        console.log(obj)
+        // console.log(obj)
     } else {
         Object.assign(obj, { [key]: value });
     }

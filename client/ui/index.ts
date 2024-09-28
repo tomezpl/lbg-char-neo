@@ -32,7 +32,7 @@ export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
     });
 }
 
-export function RunUI() {
+export async function RunUI() {
     let menuPool: MenuPool;
     let mainMenu: Menu;
     let creatorMainMenu: Menu;
@@ -76,7 +76,7 @@ export function RunUI() {
     addMenuHeritage(menuPool, creatorMainMenu, store);
     addMenuFaceShape(menuPool, creatorMainMenu, store);
     addMenuAppearance(menuPool, creatorMainMenu, store);
-    addMenuApparel(menuPool, creatorMainMenu, store);
+    await addMenuApparel(menuPool, creatorMainMenu, store);
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, creatorMainMenu, store);
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, creatorMainMenu);

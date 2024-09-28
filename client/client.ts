@@ -1,5 +1,6 @@
 import { animateCharCreatorIntro } from "anim";
 import { Character, MPFemale, MPMale } from "constants/character";
+import { PedComponents } from "constants/clothing";
 import { ActiveCharacterKvpName } from "constants/misc";
 import { RefreshModel } from "ped";
 import { store } from "state";
@@ -38,3 +39,9 @@ RegisterCommand("die", () => {
 on('playerSpawned', () => {
     RefreshModel(true, store.character);
 })
+
+const hashName = GetHashNameForComponent(PlayerPedId(), PedComponents.torso, 452, 0);
+console.log(`fivem hash for jbib drawable id 452: ${hashName.toString(16)}`);
+const [fivemNameHash, fivemEnumType, fivemComponentType] = GetVariantComponent(hashName, 0);
+console.log(`variant name hash: 0x${fivemNameHash.toString(16)}, enum type ${fivemEnumType}, comp type ${fivemComponentType}`)
+console.log(`0x${GetHashKey('DLC_MP_HEIST_F_SPECIAL2_0_0').toString(16)}`);

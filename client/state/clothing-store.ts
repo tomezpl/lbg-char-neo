@@ -6,8 +6,11 @@ interface IClothingDump {
 
 type PedClothing = Record<PedComponent, ComponentDrawables>;
 type ComponentDrawables = Record<number, DrawableTextures>;
-type DrawableTextures = Record<number, GxtLabel>;
-type GxtLabel = string;
+type DrawableTextures = Record<number, ComponentData>;
+interface ComponentData {
+    label: string | '';
+    locate: `${number}` | '';
+}
 
 type PedComponent = |
     "head" |
