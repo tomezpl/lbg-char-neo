@@ -107,7 +107,7 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         [173, 214],
         [21, 53],
         [27, 130],
-        [-1, 197],
+        [-1, label.match(/^CLO_[A-Z]+_L_/) ? 198 : 197],
         [8, 92],
         [9, 11],
         [20, 52],
@@ -115,7 +115,28 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         [103, 63],
         [171, 212],
         [241, 256],
-        [242, 283]
+        [242, 283],
+        [111, 150],
+        [28, 12],
+        [49, 23],
+        [60, 56],
+        [55, 75],
+        [58, 48],
+        [295, 340],
+        [296, 340],
+        [37, 95],
+        [34, 94],
+        [31, 14],
+        [39, 19],
+        [36, 96],
+        [40, 34],
+        [30, 51],
+        [41, 35],
+        [42, 55],
+        [46, 22],
+        [47, 90],
+        [45, 77],
+        [44, 21]
     ] as const;
 
     // TODO: find the highest locate that's less than or equal to the target locate,
@@ -143,6 +164,8 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         offset = 44;
     }*/
 
+    // This is an incredibly dumb fix for some polo shirts from The Contract and vests from Execs & Other Crims that both have locate=-99.
+    // I hate this.
     if (locate === -99) {
         const theContractPolosMatch = label.match(/^CLO_FX[A-Z]_U_(?<drawable>[0-1])_[0-9]+$/);
         if (theContractPolosMatch) {

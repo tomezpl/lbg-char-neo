@@ -71,7 +71,7 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
                 createClothingCategorySubmenu(menuPool, menu, pedComponents, ['torso', 'upper', 'armour']);
                 break;
             case ClothingItemCategories.Pants:
-                createClothingCategorySubmenu(menuPool, menu, pedComponents, ['lower', 'upper', 'feet']);
+                createClothingCategorySubmenu(menuPool, menu, pedComponents, ['lower', 'upper']);
                 break;
             case ClothingItemCategories.Shoes:
                 console.log('creating shoes');
