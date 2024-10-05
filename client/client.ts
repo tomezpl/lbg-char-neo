@@ -40,8 +40,18 @@ on('playerSpawned', () => {
     RefreshModel(true, store.character);
 })
 
-const hashName = GetHashNameForComponent(PlayerPedId(), PedComponents.torso, 452, 0);
-console.log(`fivem hash for jbib drawable id 452: ${hashName.toString(16)}`);
-const [fivemNameHash, fivemEnumType, fivemComponentType] = GetVariantComponent(hashName, 0);
-console.log(`variant name hash: 0x${fivemNameHash.toString(16)}, enum type ${fivemEnumType}, comp type ${fivemComponentType}`)
-console.log(`0x${GetHashKey('DLC_MP_HEIST_F_SPECIAL2_0_0').toString(16)}`);
+console.log(`116: `, IsPedComponentVariationGen9Exclusive(PlayerPedId(), PedComponents.feet, 116));
+console.log(`117: `, IsPedComponentVariationGen9Exclusive(PlayerPedId(), PedComponents.feet, 116));
+console.log(GetNumberOfPedDrawableVariations(PlayerPedId(), PedComponents.feet));
+
+
+for (let i = 0; i < 500; i++) {
+    const label = `CSHOP_ITEM${i}`;
+    if (DoesTextLabelExist(label)) {
+        const text = GetLabelText(label);
+        if (text === 'Service Shirts') {
+            console.log(label, text);
+            break;
+        }
+    }
+}

@@ -13,5 +13,5 @@ dependency 'NativeUI'
 dependency 'alertbox'
 
 files {
-    'assets/clothesdump/dist/clothingdump.json'
+    'assets/clothesdump/dist/clothingdump.patched.json'
 }

@@ -4,8 +4,8 @@ interface IClothingDump {
     "mp_m_freemode_01": PedClothing;
 }
 
-type PedClothing = Record<PedComponent, ComponentDrawables>;
-type ComponentDrawables = Record<number, DrawableTextures>;
+export type PedClothing = Record<PedComponent, ComponentDrawables>;
+export type ComponentDrawables = Record<number, DrawableTextures>;
 type DrawableTextures = Record<number, ComponentData>;
 interface ComponentData {
     label: string | '';
@@ -26,4 +26,4 @@ type PedComponent = |
     "badge" |
     "torso";
 
-export const clothingStore = JSON.parse(LoadResourceFile('lbg-char', 'assets/clothesdump/dist/clothingdump.json')) as IClothingDump;
+export const clothingStore = JSON.parse(LoadResourceFile('lbg-char', 'assets/clothesdump/dist/clothingdump.patched.json')) as IClothingDump;

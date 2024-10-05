@@ -73,12 +73,90 @@ export const KnownGen9ECLabels = [
 /**
  * Returns a GXT label for a given clothing component's locate value.
  */
-export function GetTextLabelForLocate(locate: number, dlcPack?: Extract<keyof typeof ClothingItemLocateOffsets, string>): `CSHOP_ITEM${number}` {
+export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_ITEM${number}` {
+
+
+    // "control points" for the mapper
+    const mappings = [
+        [131, 170],
+        [122, 161],
+        [189, 230],
+        [16, 8],
+        [167, 207],
+        [248, 288],
+        [249, 207],
+        [52, 27],
+        [10, 93],
+        [11, 3],
+        [12, 4],
+        [19, 11],
+        [54, 29],
+        [48, 91],
+        [235, 276],
+        [250, 247],
+        [251, 10],
+        [252, 5],
+        [253, 297],
+        [255, 4],
+        [256, 300],
+        [272, 316],
+        [187, 228],
+        [22, 54],
+        [7, 46],
+        [172, 210],
+        [173, 214],
+        [21, 53],
+        [27, 130],
+        [-1, 197],
+        [8, 92],
+        [9, 11],
+        [20, 52],
+        [23, 57],
+        [103, 63],
+        [171, 212],
+        [241, 256],
+        [242, 283]
+    ] as const;
+
+    // TODO: find the highest locate that's less than or equal to the target locate,
+    // then take the offset from the control point, and apply that to the target locate.
 
     let offset: number | null = null;
-    if (dlcPack) {
-        offset = Object.entries(ClothingItemLocateOffsets).find(([key]) => `${key}`.includes('_') && dlcPack.includes(key))?.[1];
+
+    const sortedMappings = [...mappings].sort(([a], [b]) => Math.max(-1, Math.min(1, a - b)))
+    for (let i = 0; i < sortedMappings.length; i++) {
+        if (i === 0 || sortedMappings[i][0] <= locate) {
+            offset = sortedMappings[i][1] - sortedMappings[i][0];
+        } else if (sortedMappings[i][0] > locate) {
+            console.log(`${locate} was between ${sortedMappings[i - 1]?.[0] || 0} and ${sortedMappings[i][0]} so chose offset ${offset}`);
+            break;
+        }
     }
-    offset ??= ClothingItemLocateOffsets[locate as unknown as keyof typeof ClothingItemLocateOffsets] ?? 41;
+
+    // if (dlcPack) {
+    // offset = Object.entries(ClothingItemLocateOffsets).find(([key]) => `${key}`.includes('_') && dlcPack.includes(key))?.[1];
+    // }
+    // offset ??= ClothingItemLocateOffsets[locate as unknown as keyof typeof ClothingItemLocateOffsets] ?? 41;
+    /*
+    offset = 41;
+    if (locate >= 250) {
+        offset = 44;
+    }*/
+
+    if (locate === -99) {
+        const theContractPolosMatch = label.match(/^CLO_FX[A-Z]_U_(?<drawable>[0-1])_[0-9]+$/);
+        if (theContractPolosMatch) {
+            offset = 0;
+            locate = theContractPolosMatch.groups?.drawable === '1' ? 233 : 8;
+        }
+        else {
+            const execsAndCrimsVestMatch = label.match(/^CLO_EX[A-Z]_AV_[1-2]_[0-9]+$/);
+            if (execsAndCrimsVestMatch) {
+                offset = 0;
+                locate = 177;
+            }
+        }
+    }
+
     return `CSHOP_ITEM${locate + offset}`;
 }
