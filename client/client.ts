@@ -38,20 +38,4 @@ RegisterCommand("die", () => {
 
 on('playerSpawned', () => {
     RefreshModel(true, store.character);
-})
-
-console.log(`116: `, IsPedComponentVariationGen9Exclusive(PlayerPedId(), PedComponents.feet, 116));
-console.log(`117: `, IsPedComponentVariationGen9Exclusive(PlayerPedId(), PedComponents.feet, 116));
-console.log(GetNumberOfPedDrawableVariations(PlayerPedId(), PedComponents.feet));
-
-
-for (let i = 0; i < 500; i++) {
-    const label = `CSHOP_ITEM${i}`;
-    if (DoesTextLabelExist(label)) {
-        const text = GetLabelText(label);
-        if (text === 'Service Shirts') {
-            console.log(label, text);
-            break;
-        }
-    }
-}
+});

@@ -122,7 +122,6 @@ function updateAppearanceMenuItemValues({ PedAppearance: appearance, IsMale: isM
     }));
     const haircutNames = baseHaircutNames[isMale ? 'm' : 'f'];
     const hairIndex = haircutNames.findIndex(([_, indices]) => indices.includes(appearance.hairStyle));
-    console.log(appearance.hairStyle, haircutNames[hairIndex]?.[0]);;
 
     // TODO: Hair highlights
     const { hairItem, hairColourPanel } = UIAppearanceMenuContext;
@@ -172,7 +171,6 @@ function updateAppearanceMenuItemValues({ PedAppearance: appearance, IsMale: isM
     blushColourPanel && NativeUI.MenuListItem.setPanelValue(blushColourPanel, appearance.blushColor);
     blushOpacityPanel && NativeUI.MenuListItem.setPanelValue(blushOpacityPanel, appearance.blushOpacity);
 
-    console.log(appearance);
     const { lipstickItem, lipstickColourPanel, lipstickOpacityPanel } = UIAppearanceMenuContext;
     lipstickItem && NativeUI.MenuListItem.Index(lipstickItem, appearance.lipstickStyle + 2);
     lipstickColourPanel && NativeUI.MenuListItem.setPanelValue(lipstickColourPanel, appearance.lipstickColor);

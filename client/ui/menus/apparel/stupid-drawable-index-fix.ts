@@ -38,6 +38,4 @@ export function iterateDrawables(drawables: ComponentDrawables, callback: (fixed
 
         callback(drawableId - skipped, drawableId, textures);
     });
-
-    console.log(`${lastSum2DrawableIndex} ${firstPostSum2Gen9Index} ${skipped}`);
 }

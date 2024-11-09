@@ -42,7 +42,6 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
             if (Number.isNaN(Number(key))) {
                 const textLabel = `CSHOP_ITEM${value as number}` as const;
                 const labelText = DoesTextLabelExist(textLabel) ? GetLabelText(textLabel) : (value as string);
-                console.log(`${textLabel}:${labelText}`);
                 menus[textLabel] = NativeUI.MenuPool.AddSubMenu(menuPool, submenu, labelText, '', true, false);
             }
 
@@ -52,7 +51,7 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
 
 
     NativeUI.setEventListener(submenu, "OnMenuChanged", (parent, menu) => {
-        if (menu === parent || menu === submenu) {
+        if (menu === parent || menu === submenu || menu === parentMenu) {
             return;
         }
 

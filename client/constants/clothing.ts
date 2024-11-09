@@ -74,8 +74,6 @@ export const KnownGen9ECLabels = [
  * Returns a GXT label for a given clothing component's locate value.
  */
 export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_ITEM${number}` {
-
-
     // "control points" for the mapper
     const mappings = [
         [131, 170],
@@ -139,7 +137,7 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         [44, 21]
     ] as const;
 
-    // TODO: find the highest locate that's less than or equal to the target locate,
+    // Find the highest locate that's less than or equal to the target locate,
     // then take the offset from the control point, and apply that to the target locate.
 
     let offset: number | null = null;
@@ -149,20 +147,10 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         if (i === 0 || sortedMappings[i][0] <= locate) {
             offset = sortedMappings[i][1] - sortedMappings[i][0];
         } else if (sortedMappings[i][0] > locate) {
-            console.log(`${locate} was between ${sortedMappings[i - 1]?.[0] || 0} and ${sortedMappings[i][0]} so chose offset ${offset}`);
+            // console.log(`${locate} was between ${sortedMappings[i - 1]?.[0] || 0} and ${sortedMappings[i][0]} so chose offset ${offset}`);
             break;
         }
     }
-
-    // if (dlcPack) {
-    // offset = Object.entries(ClothingItemLocateOffsets).find(([key]) => `${key}`.includes('_') && dlcPack.includes(key))?.[1];
-    // }
-    // offset ??= ClothingItemLocateOffsets[locate as unknown as keyof typeof ClothingItemLocateOffsets] ?? 41;
-    /*
-    offset = 41;
-    if (locate >= 250) {
-        offset = 44;
-    }*/
 
     // This is an incredibly dumb fix for some polo shirts from The Contract and vests from Execs & Other Crims that both have locate=-99.
     // I hate this.
