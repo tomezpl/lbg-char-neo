@@ -1,4 +1,4 @@
-import { DefaultHairDecor, HairBrowColours, HairDecor, OldDLCHairMap } from "constants/hair";
+import { DefaultHairDecor, HairDecor, OldDLCHairMap } from "constants/hair";
 import { clothingStore } from "state/clothing-store";
 import { CharacterStore } from "state/character-store";
 import { Menu, MenuItem, MenuPool, NativeUI, Panel, UIContext } from "ui";
@@ -126,7 +126,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 
 		ClearPedDecorations(PlayerPedId());
 
-		const hairDecor = HairDecor[character.ogd as keyof typeof HairDecor];
+		const hairDecor = HairDecor[character.gender];
 		AddPedDecorationFromHashes(PlayerPedId(), ...(hairDecor?.[character.hair] || DefaultHairDecor));
 	});
 
