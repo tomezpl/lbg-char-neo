@@ -77,15 +77,15 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 			let text: string;
 
 			// There's like a random NVG headset in the middle of the hair styles that causes some of them to be offset by one...
-			if (!(hairNames?.[0]?.length > 0) && Number(hairIndex) >= 16) {
+			if (!(hairNames?.[0]?.label?.length > 0) && Number(hairIndex) >= 16) {
 				return hair;
 			}
 			if (DoesTextLabelExist(label)) {
 				text = GetLabelText(label);
-			} else if (hairNames?.[0] && hairNames[0] in OldDLCHairMap && DoesTextLabelExist(OldDLCHairMap[hairNames?.[0] as keyof typeof OldDLCHairMap])) {
-				text = GetLabelText(OldDLCHairMap[hairNames?.[0] as keyof typeof OldDLCHairMap]);
-			} else if (DoesTextLabelExist(hairNames?.[0])) {
-				text = GetLabelText(hairNames[0])
+			} else if (hairNames?.[0]?.label && hairNames[0]?.label in OldDLCHairMap && DoesTextLabelExist(OldDLCHairMap[hairNames?.[0]?.label as keyof typeof OldDLCHairMap])) {
+				text = GetLabelText(OldDLCHairMap[hairNames?.[0]?.label as keyof typeof OldDLCHairMap]);
+			} else if (DoesTextLabelExist(hairNames?.[0]?.label)) {
+				text = GetLabelText(hairNames[0]?.label)
 			}
 
 			if (text && !hair.some(([existingText]) => existingText === text)) {
@@ -93,7 +93,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 			}
 
 			return hair;
-		}, [])];
+		}, [] as [string, number][])];
 	}));
 
 	const haircutNames = baseHaircutNames;
