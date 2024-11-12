@@ -84,6 +84,7 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         [248, 288],
         [249, 207],
         [52, 27],
+        [9, 111],
         [10, 93],
         [11, 3],
         [12, 4],
@@ -107,7 +108,10 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         [27, 130],
         [-1, label.match(/^CLO_[A-Z]+_L_/) ? 198 : 197],
         [8, 92],
-        [9, 11],
+
+        // For uppr components from drug wars, locate 9 seems to point to Denim Jackets. Otherwise it's Bikinis
+        [9, label.startsWith('CLO_X6F_U') ? 111 : 11],
+
         [20, 52],
         [23, 57],
         [103, 63],
