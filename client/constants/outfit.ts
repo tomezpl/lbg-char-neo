@@ -1,9 +1,9 @@
 import { PedComponents, ComponentVariation } from "./clothing"
 
-export interface Outfit extends Partial<Record<typeof PedComponents[keyof typeof PedComponents], ComponentVariation>> {
+export interface Outfit extends Partial<Record<Extract<PedComponents, number>, ComponentVariation>> {
 }
 
-export const MaleOutfits : Array<Outfit> = [
+export const MaleOutfits: Array<Outfit> = [
 	{
 		3: [18, 0],
 		11: [6, 5],
@@ -40,7 +40,7 @@ export const MaleOutfits : Array<Outfit> = [
 	}
 ];
 
-export const FemaleOutfits : Array<Outfit> = [
+export const FemaleOutfits: Array<Outfit> = [
 	{
 		3: [60, 0],
 		11: [8, 2],

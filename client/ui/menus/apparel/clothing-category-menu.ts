@@ -120,6 +120,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                                 break;
                                         }
                                         SetPedComponentVariation(PlayerPedId(), forcedCompSlot, drawableId, textureId, 0);
+                                        store.character.customOutfit[forcedCompSlot] = [drawableId, textureId];
                                     }
                                     valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
                                     componentsTried++;
@@ -170,6 +171,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                         // }
                                         console.log(`setting variant component ${variantCompSlotName} to [${drawableId}, ${textureId}]`);
                                         SetPedComponentVariation(PlayerPedId(), variantCompSlot, drawableId, textureId, 0);
+                                        store.character.customOutfit[variantCompSlot] = [drawableId, textureId];
                                     }
                                     valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
                                     componentsTried++;
@@ -178,7 +180,6 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                 // Avoid changing the forced component slots.
 
                                 if (!valid) {
-                                    SetPedDefaultComponentVariation(PlayerPedId());
                                     const existingVariations: Record<Extract<PedComponents, number>, [drawable: number, texture: number]> = Object.keys(PedComponents)
                                         .reduce((obj, comp) => {
                                             if (typeof comp === 'number' && ![PedComponents.hair].includes(comp)) {
@@ -190,11 +191,14 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                             return obj;
                                         }, {} as Record<Extract<PedComponents, number>, [drawable: number, texture: number]>);
 
+                                    SetPedDefaultComponentVariation(PlayerPedId());
                                     SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId, 0);
+                                    store.character.customOutfit[componentSlot] = [finalDrawableId, finalTextureId];
 
                                     Object.entries(existingVariations).forEach(([comp, [drawable, texture]]) => {
                                         if (IsPedComponentVariationValid(PlayerPedId(), comp as unknown as number, drawable, texture)) {
                                             SetPedComponentVariation(PlayerPedId(), comp as unknown as number, drawable, texture, 0);
+                                            store.character.customOutfit[comp] = [drawable, texture];
                                             console.log(`Reset ${PedComponents[comp]} to [${drawable}, ${texture}]`);
                                         } else {
                                             console.log(`Tried setting ${PedComponents[comp]} to [${drawable}, ${texture}] but this would've made the component variation invalid.`);
@@ -202,7 +206,11 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                     })
                                 }
 
-                                SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, textureId, 0);
+                                if (IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)) {
+                                    store.character.customOutfit[componentSlot] = [finalDrawableId, textureId];
+
+                                    SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, textureId, 0);
+                                }
                             }
                         });
                     }
