@@ -27,10 +27,21 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
 
     const { character: Character } = store;
     const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Heritage", "Select to choose your parents.", true, true);
-    const heritage = NativeUI.CreateHeritageWindow(
-        dads.find((d) => Number(d) === Character.mom) ? `-${dads.findIndex((d) => Number(d) === Character.mom)}` : moms.findIndex((m) => Number(m) === Character.mom),
-        moms.find((m) => Number(m) === Character.dad) ? `-${moms.findIndex((m) => Number(m) === Character.dad)}` : dads.findIndex((d) => Number(d) === Character.dad)
-    );
+
+    function getParentIndex([firstParents, secondParents]: [typeof moms, typeof dads] | [typeof dads, typeof moms], parentId: number): number | `-${number}` {
+        const index = secondParents.findIndex((secondParentId) => Number(secondParentId) === parentId);
+        if (index >= 0) {
+            return `-${index}`;
+        }
+
+        return firstParents.findIndex((firstParentId) => Number(firstParentId) === parentId);
+    }
+
+    // We're doing something really fucky here so hear me out:
+    // my cursed-ass fork of NativeUILua can accept an integer suffixed with a minus sign (as a string) in order to flip the gender in the heritage panel.
+    // This is because that NativeUI resource seems to only allow one female and one male parent, instead of allowing two of the same,
+    // so we use getParentIndex() to first look up if parent 1 (assumed to be of gender A) exists in gender B, and if so, prepend a minus sign to the ID. Repeat the same for parent 2.
+    const heritage = NativeUI.CreateHeritageWindow(getParentIndex([moms, dads], Character.mom), getParentIndex([dads, moms], Character.dad));
     NativeUI.Menu.AddWindow(submenu, heritage);
     UIHeritageMenuContext.heritageWindow = heritage;
 
