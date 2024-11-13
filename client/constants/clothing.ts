@@ -60,8 +60,13 @@ export const DLCG9Offsets = {
     }
 } as const;
 
-export function getDLCItemOffset(compType: PedComponents, label: string) {
-    return Object.entries(DLCG9Offsets).find(([key]) => label.startsWith(key))?.[1][compType] || 0;
+export function getDLCItemOffset(compType: PedComponents, label: string): number {
+    const dlcOffsets = Object.entries(DLCG9Offsets).find(([key]) => label.startsWith(key))?.[1];
+    if (dlcOffsets && compType in dlcOffsets) {
+        return dlcOffsets[compType as keyof typeof dlcOffsets] || 0;
+    }
+
+    return 0;
 }
 
 export const LastPreGen9ECLabel = 'CLO_SB' as const;

@@ -196,12 +196,14 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                     store.character.customOutfit[componentSlot] = [finalDrawableId, finalTextureId];
 
                                     Object.entries(existingVariations).forEach(([comp, [drawable, texture]]) => {
-                                        if (IsPedComponentVariationValid(PlayerPedId(), comp as unknown as number, drawable, texture)) {
-                                            SetPedComponentVariation(PlayerPedId(), comp as unknown as number, drawable, texture, 0);
+                                        type ComponentIdInteger = Extract<typeof comp, number>;
+
+                                        if (IsPedComponentVariationValid(PlayerPedId(), comp as ComponentIdInteger, drawable, texture)) {
+                                            SetPedComponentVariation(PlayerPedId(), comp as ComponentIdInteger, drawable, texture, 0);
                                             store.character.customOutfit[comp] = [drawable, texture];
-                                            console.log(`Reset ${PedComponents[comp]} to [${drawable}, ${texture}]`);
+                                            console.log(`Reset ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}]`);
                                         } else {
-                                            console.log(`Tried setting ${PedComponents[comp]} to [${drawable}, ${texture}] but this would've made the component variation invalid.`);
+                                            console.log(`Tried setting ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}] but this would've made the component variation invalid.`);
                                         }
                                     })
                                 }

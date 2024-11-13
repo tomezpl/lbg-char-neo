@@ -2,8 +2,10 @@ import { Character, DefaultCharacter, MPMale } from "constants/character";
 import { UIContext } from "ui";
 import { addMenuAppearance } from "ui/menus/appearance";
 
-type CharacterStoreActions = {
-    [Property in keyof Character as `set${Capitalize<Property & string>}`]: (value: Character[Property]) => void;
+type ExtractPrimitiveType<T> = T extends number ? number : T;
+
+export type CharacterStoreActions = {
+    [Property in keyof Character as `set${Capitalize<Property & string>}`]: (value: ExtractPrimitiveType<Character[Property]>) => void;
 }
 
 interface ICharacterStore {
@@ -17,9 +19,10 @@ export class CharacterStore implements ICharacterStore {
     mdhash: number;
 
     public constructor() {
-        this.actions = Object.fromEntries((Object.keys(DefaultCharacter) as Array<keyof Character>).map((prop) => {
+        this.actions = Object.fromEntries((Object.keys(DefaultCharacter) as Array<keyof Character>).map((prop: keyof Character) => {
             return [`set${prop.slice(0, 1).toUpperCase()}${prop.slice(1)}` as keyof CharacterStoreActions, (...[value]: Parameters<CharacterStoreActions[keyof CharacterStoreActions]>) => {
-                this._character[prop as keyof Character] = (typeof value !== 'undefined' ? value : 0) as Character[keyof Character];
+                const newValue = (typeof value !== 'undefined' ? value : 0) as Character[typeof prop];
+                Object.assign(this._character, { [prop]: newValue });
             }] as [keyof CharacterStoreActions, CharacterStoreActions[keyof CharacterStoreActions]];
         })) as CharacterStoreActions;
 

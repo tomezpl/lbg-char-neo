@@ -23,7 +23,7 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
     const moms = FemaleParentIds;
     const dads = MaleParentIds;
 
-    const parentNames = parents.map((parentId) => FemaleParents[moms.indexOf(parentId as typeof moms[number])] ?? MaleParents[dads.indexOf(parentId as typeof moms[number])]);
+    const parentNames = parents.map((parentId) => FemaleParents[moms.indexOf(parentId as typeof moms[number])] ?? MaleParents[dads.indexOf(parentId as typeof dads[number])]);
 
     const { character: Character } = store;
     const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Heritage", "Select to choose your parents.", true, true);
