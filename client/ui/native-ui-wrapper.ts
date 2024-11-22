@@ -5,6 +5,7 @@ export type MenuPool = 'menuPool';
 export type MenuItem = 'menuItem';
 export type Panel = 'panel';
 export type Window = 'window';
+export type InstructionButton = 'instrButton';
 
 interface MenuPoolGlobal {
     Add(menuPool: MenuPool, menu: Menu): void;
@@ -17,6 +18,8 @@ interface MenuGlobal {
     AddItem(menu: Menu, item: MenuItem): void;
     AddWindow(menu: Menu, window: Window): void;
     Clear(menu: Menu): void;
+    AddInstructionButton(menu: Menu, button: string, text: string): InstructionButton;
+    CurrentSelection(menu: Menu): number;
 }
 
 interface MenuItemGlobal {
@@ -131,6 +134,8 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuListItem:RemovePanelAt': 1,
     'MenuListItem:doesPanelExist': 1,
     'Menu:Clear': 1,
+    'Menu:AddInstructionButton': 1,
+    'Menu:CurrentSelection': 1
 };
 
 type EventTarget = Menu | MenuItem;

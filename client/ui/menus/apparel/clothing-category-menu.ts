@@ -1,4 +1,5 @@
 import { GetTextLabelForLocate, PedComponents } from "constants/clothing";
+import { ForceApplyControlId } from "constants/misc";
 import { store } from "state";
 import { CharacterStore } from "state/character-store";
 import { clothingStore, PedClothing } from "state/clothing-store";
@@ -10,6 +11,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
 
     let skipped = 0;
 
+    let inputTick: number | undefined;
     const topsMenus = componentsToInclude.reduce((menus, compGroup, compIndex) => {
         const comps = pedComponents[compGroup];
         iterateDrawables(comps, (drawableId, _, textures) => {
@@ -48,11 +50,19 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                             menu: NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, labelText, '', true, true),
                             items: [] as typeof menus[typeof locateLabel]['items']
                         };
+                        NativeUI.Menu.AddInstructionButton(menus[locateLabel].menu, GetControlInstructionalButton(2, ForceApplyControlId, true), 'Force Apply');
                         created = true;
                         NativeUI.setEventListener(menus[locateLabel].menu, 'OnItemSelect', (_, item, index) => {
                             console.log('OnItemSelect was called!!');
                             if (menus[locateLabel].items[index - 1]) {
                                 menus[locateLabel].items[index - 1].onSelected();
+                            }
+                        });
+
+                        NativeUI.setEventListener(menus[locateLabel].menu, 'OnMenuClosed', () => {
+                            if (typeof inputTick === 'number') {
+                                clearTick(inputTick);
+                                inputTick = undefined;
                             }
                         });
                     }
@@ -64,7 +74,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                         const item = NativeUI.CreateItem(`${label} (${locate}): ${labelText}`, '');
                         NativeUI.Menu.AddItem(menus[locateLabel].menu, item);
                         menus[locateLabel].items.push({
-                            onSelected() {
+                            onSelected(force = false) {
                                 console.log(`activated ${labelText}`);
                                 console.log(`fixedDrawableId: ${drawableId}, originalDrawableId: ${_}`)
                                 console.log(`setting ${PedComponents[compGroup]} to drawable ${drawableId} + ${offset}, texture ${textureId}`);
@@ -72,143 +82,145 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                 const finalDrawableId = drawableId + offset;
 
                                 const finalTextureId = textureId;
-                                let valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
-                                if (!valid) {
-                                    console.log(`${compGroup} is invalid!`);
-                                }
-                                let componentsTried = 0; // prevent infinite loop
-                                const selectedCompHash = GetHashNameForComponent(PlayerPedId(), componentSlot, finalDrawableId, textureId);
-                                const forcedComponents = GetNumForcedComponents(selectedCompHash);
-                                for (let forcedCompIndex = 0; forcedCompIndex < forcedComponents && componentsTried <= 11; forcedCompIndex++) {
-                                    const [forcedCompHash, enumValue, forcedCompSlot] = GetForcedComponent(selectedCompHash, forcedCompIndex);
-                                    const forcedCompSlotName = PedComponents[forcedCompSlot];
-                                    console.log(`forcing ${forcedCompSlotName}: ${enumValue} (${forcedCompHash.toString(16)})`);
-
-                                    // Try find a matching hash for a drawable & texture ID combination in the clothing store, 
-                                    // and use the drawable & texture ID to set the ped's component variation.
-
-                                    let drawableId = enumValue;
-                                    let textureId = GetPedTextureVariation(PlayerPedId(), forcedCompSlot);
-
-                                    const clothes = store.character.gender === 'Male'
-                                        ? clothingStore.mp_m_freemode_01
-                                        : clothingStore.mp_f_freemode_01;
-                                    const drawables = clothes[forcedCompSlotName as keyof typeof clothes];
-                                    for (const drawableIdString in drawables) {
-                                        const forcedTextureId = [0, textureId].reduce((ret, textureId) => {
-                                            if (typeof ret === 'undefined') {
-                                                const hash = GetHashNameForComponent(PlayerPedId(), forcedCompSlot, Number(drawableIdString), textureId);
-                                                if (hash === forcedCompHash) {
-                                                    return textureId;
-                                                }
-                                            }
-
-                                            return undefined;
-                                        }, undefined);
-
-                                        if (typeof forcedTextureId === 'number') {
-                                            drawableId = Number(drawableIdString);
-                                            textureId = forcedTextureId;
-                                            break;
-                                        }
+                                if (!force) {
+                                    let valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
+                                    if (!valid) {
+                                        console.log(`${compGroup} is invalid!`);
                                     }
+                                    let componentsTried = 0; // prevent infinite loop
+                                    const selectedCompHash = GetHashNameForComponent(PlayerPedId(), componentSlot, finalDrawableId, textureId);
+                                    const forcedComponents = GetNumForcedComponents(selectedCompHash);
+                                    for (let forcedCompIndex = 0; forcedCompIndex < forcedComponents && componentsTried <= 11; forcedCompIndex++) {
+                                        const [forcedCompHash, enumValue, forcedCompSlot] = GetForcedComponent(selectedCompHash, forcedCompIndex);
+                                        const forcedCompSlotName = PedComponents[forcedCompSlot];
+                                        console.log(`forcing ${forcedCompSlotName}: ${enumValue} (${forcedCompHash.toString(16)})`);
 
-                                    if (![PedComponents.armour].includes(forcedCompSlot)) {
-                                        switch (forcedCompSlot) {
-                                            case PedComponents.accessories:
-                                                drawableId = Math.max(0, drawableId - 30);
+                                        // Try find a matching hash for a drawable & texture ID combination in the clothing store, 
+                                        // and use the drawable & texture ID to set the ped's component variation.
+
+                                        let drawableId = enumValue;
+                                        let textureId = GetPedTextureVariation(PlayerPedId(), forcedCompSlot);
+
+                                        const clothes = store.character.gender === 'Male'
+                                            ? clothingStore.mp_m_freemode_01
+                                            : clothingStore.mp_f_freemode_01;
+                                        const drawables = clothes[forcedCompSlotName as keyof typeof clothes];
+                                        for (const drawableIdString in drawables) {
+                                            const forcedTextureId = [0, textureId].reduce((ret, textureId) => {
+                                                if (typeof ret === 'undefined') {
+                                                    const hash = GetHashNameForComponent(PlayerPedId(), forcedCompSlot, Number(drawableIdString), textureId);
+                                                    if (hash === forcedCompHash) {
+                                                        return textureId;
+                                                    }
+                                                }
+
+                                                return undefined;
+                                            }, undefined);
+
+                                            if (typeof forcedTextureId === 'number') {
+                                                drawableId = Number(drawableIdString);
+                                                textureId = forcedTextureId;
                                                 break;
+                                            }
                                         }
-                                        SetPedComponentVariation(PlayerPedId(), forcedCompSlot, drawableId, textureId, 0);
-                                        store.character.customOutfit[forcedCompSlot] = [drawableId, textureId];
+
+                                        if (![PedComponents.armour].includes(forcedCompSlot)) {
+                                            switch (forcedCompSlot) {
+                                                case PedComponents.accessories:
+                                                    drawableId = Math.max(0, drawableId - 30);
+                                                    break;
+                                            }
+                                            SetPedComponentVariation(PlayerPedId(), forcedCompSlot, drawableId, textureId, 0);
+                                            store.character.customOutfit[forcedCompSlot] = [drawableId, textureId];
+                                        }
+                                        valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
+                                        componentsTried++;
                                     }
-                                    valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
-                                    componentsTried++;
-                                }
 
-                                const variantComponents = GetShopPedApparelVariantComponentCount(selectedCompHash);
-                                for (let variant = 0; variant < variantComponents; variant++) {
-                                    const [variantCompHash, enumValue, variantCompSlot] = GetVariantComponent(selectedCompHash, variant);
-                                    const variantCompSlotName = PedComponents[variantCompSlot];
-                                    console.log(`found variant for ${variantCompSlotName}: ${enumValue} (${variantCompHash.toString(16)})`);
+                                    const variantComponents = GetShopPedApparelVariantComponentCount(selectedCompHash);
+                                    for (let variant = 0; variant < variantComponents; variant++) {
+                                        const [variantCompHash, enumValue, variantCompSlot] = GetVariantComponent(selectedCompHash, variant);
+                                        const variantCompSlotName = PedComponents[variantCompSlot];
+                                        console.log(`found variant for ${variantCompSlotName}: ${enumValue} (${variantCompHash.toString(16)})`);
 
-                                    // Try find a matching hash for a drawable & texture ID combination in the clothing store, 
-                                    // and use the drawable & texture ID to set the ped's component variation.
+                                        // Try find a matching hash for a drawable & texture ID combination in the clothing store, 
+                                        // and use the drawable & texture ID to set the ped's component variation.
 
-                                    let drawableId = enumValue;
-                                    let textureId = GetPedTextureVariation(PlayerPedId(), variantCompSlot);
+                                        let drawableId = enumValue;
+                                        let textureId = GetPedTextureVariation(PlayerPedId(), variantCompSlot);
 
-                                    const clothes = store.character.gender === 'Male'
-                                        ? clothingStore.mp_m_freemode_01
-                                        : clothingStore.mp_f_freemode_01;
-                                    const drawables = clothes[variantCompSlotName as keyof typeof clothes];
-                                    for (const drawableIdString in drawables) {
-                                        const variantTextureId = [0, textureId].reduce((ret, textureId) => {
-                                            if (typeof ret === 'undefined') {
-                                                const hash = GetHashNameForComponent(PlayerPedId(), variantCompSlot, Number(drawableIdString), textureId);
-                                                if (hash === variantCompHash) {
-                                                    return textureId;
+                                        const clothes = store.character.gender === 'Male'
+                                            ? clothingStore.mp_m_freemode_01
+                                            : clothingStore.mp_f_freemode_01;
+                                        const drawables = clothes[variantCompSlotName as keyof typeof clothes];
+                                        for (const drawableIdString in drawables) {
+                                            const variantTextureId = [0, textureId].reduce((ret, textureId) => {
+                                                if (typeof ret === 'undefined') {
+                                                    const hash = GetHashNameForComponent(PlayerPedId(), variantCompSlot, Number(drawableIdString), textureId);
+                                                    if (hash === variantCompHash) {
+                                                        return textureId;
+                                                    }
                                                 }
-                                            }
 
-                                            return ret;
-                                        }, undefined);
+                                                return ret;
+                                            }, undefined);
 
-                                        if (typeof variantTextureId === 'number') {
-                                            if (drawableId !== Number(drawableIdString)) {
-                                                textureId = variantTextureId;
+                                            if (typeof variantTextureId === 'number') {
+                                                if (drawableId !== Number(drawableIdString)) {
+                                                    textureId = variantTextureId;
+                                                }
+                                                drawableId = Number(drawableIdString);
+                                                break;
                                             }
-                                            drawableId = Number(drawableIdString);
-                                            break;
                                         }
-                                    }
 
-                                    if (![PedComponents.armour].includes(variantCompSlot)) {
-                                        // switch (variantCompSlot) {
-                                        //     case PedComponents.accessories:
-                                        //         drawableId = Math.max(0, drawableId - 30);
-                                        //         break;
-                                        // }
-                                        console.log(`setting variant component ${variantCompSlotName} to [${drawableId}, ${textureId}]`);
-                                        SetPedComponentVariation(PlayerPedId(), variantCompSlot, drawableId, textureId, 0);
-                                        store.character.customOutfit[variantCompSlot] = [drawableId, textureId];
-                                    }
-                                    valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
-                                    componentsTried++;
-                                }
-                                // TODO: if it's still invalid, reset all other components to default, then apply the ones that are compatible.
-                                // Avoid changing the forced component slots.
-
-                                if (!valid) {
-                                    const existingVariations: Record<Extract<PedComponents, number>, [drawable: number, texture: number]> = Object.keys(PedComponents)
-                                        .reduce((obj, comp) => {
-                                            if (typeof comp === 'number' && ![PedComponents.hair].includes(comp)) {
-                                                const compId = Number(comp);
-
-                                                obj[compId as PedComponents] = [GetPedDrawableVariation(PlayerPedId(), compId), GetPedTextureVariation(PlayerPedId(), compId)];
-                                            }
-
-                                            return obj;
-                                        }, {} as Record<Extract<PedComponents, number>, [drawable: number, texture: number]>);
-
-                                    SetPedDefaultComponentVariation(PlayerPedId());
-                                    SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId, 0);
-                                    store.character.customOutfit[componentSlot] = [finalDrawableId, finalTextureId];
-
-                                    Object.entries(existingVariations).forEach(([comp, [drawable, texture]]) => {
-                                        type ComponentIdInteger = Extract<typeof comp, number>;
-
-                                        if (IsPedComponentVariationValid(PlayerPedId(), comp as ComponentIdInteger, drawable, texture)) {
-                                            SetPedComponentVariation(PlayerPedId(), comp as ComponentIdInteger, drawable, texture, 0);
-                                            store.character.customOutfit[comp] = [drawable, texture];
-                                            console.log(`Reset ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}]`);
-                                        } else {
-                                            console.log(`Tried setting ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}] but this would've made the component variation invalid.`);
+                                        if (![PedComponents.armour].includes(variantCompSlot)) {
+                                            // switch (variantCompSlot) {
+                                            //     case PedComponents.accessories:
+                                            //         drawableId = Math.max(0, drawableId - 30);
+                                            //         break;
+                                            // }
+                                            console.log(`setting variant component ${variantCompSlotName} to [${drawableId}, ${textureId}]`);
+                                            SetPedComponentVariation(PlayerPedId(), variantCompSlot, drawableId, textureId, 0);
+                                            store.character.customOutfit[variantCompSlot] = [drawableId, textureId];
                                         }
-                                    })
+                                        valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
+                                        componentsTried++;
+                                    }
+                                    // TODO: if it's still invalid, reset all other components to default, then apply the ones that are compatible.
+                                    // Avoid changing the forced component slots.
+
+                                    if (!valid) {
+                                        const existingVariations: Record<Extract<PedComponents, number>, [drawable: number, texture: number]> = Object.keys(PedComponents)
+                                            .reduce((obj, comp) => {
+                                                if (typeof comp === 'number' && ![PedComponents.hair].includes(comp)) {
+                                                    const compId = Number(comp);
+
+                                                    obj[compId as PedComponents] = [GetPedDrawableVariation(PlayerPedId(), compId), GetPedTextureVariation(PlayerPedId(), compId)];
+                                                }
+
+                                                return obj;
+                                            }, {} as Record<Extract<PedComponents, number>, [drawable: number, texture: number]>);
+
+                                        SetPedDefaultComponentVariation(PlayerPedId());
+                                        SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId, 0);
+                                        store.character.customOutfit[componentSlot] = [finalDrawableId, finalTextureId];
+
+                                        Object.entries(existingVariations).forEach(([comp, [drawable, texture]]) => {
+                                            type ComponentIdInteger = Extract<typeof comp, number>;
+
+                                            if (IsPedComponentVariationValid(PlayerPedId(), comp as ComponentIdInteger, drawable, texture)) {
+                                                SetPedComponentVariation(PlayerPedId(), comp as ComponentIdInteger, drawable, texture, 0);
+                                                store.character.customOutfit[comp] = [drawable, texture];
+                                                console.log(`Reset ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}]`);
+                                            } else {
+                                                console.log(`Tried setting ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}] but this would've made the component variation invalid.`);
+                                            }
+                                        })
+                                    }
                                 }
 
-                                if (IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)) {
+                                if (force || IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)) {
                                     store.character.customOutfit[componentSlot] = [finalDrawableId, textureId];
 
                                     SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, textureId, 0);
@@ -221,6 +233,20 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
         });
 
         return menus;
-    }, {} as Record<`CSHOP_ITEM${number}`, { menu: Menu, items: Array<{ onSelected: () => void }> }>)
+    }, {} as Record<`CSHOP_ITEM${number}`, { menu: Menu, items: Array<{ onSelected: (force?: boolean) => void }> }>)
 
+
+    NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
+        const validMenu = Object.entries(topsMenus).find(([label, { menu: _menu }]) => _menu === menu);
+        if (validMenu) {
+            if (inputTick === undefined) {
+                inputTick = setTick(() => {
+                    if (IsDisabledControlJustReleased(2, ForceApplyControlId) || IsControlJustReleased(2, ForceApplyControlId)) {
+                        const index = NativeUI.Menu.CurrentSelection(menu);
+                        topsMenus[validMenu[0] as keyof typeof topsMenus].items[index - 1].onSelected(true);
+                    }
+                });
+            }
+        }
+    });
 }

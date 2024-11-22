@@ -1,5 +1,5 @@
 import { animateCharCreatorIntro, animateCharCreatorOutro } from 'anim';
-import { ActiveCharacterKvpName } from 'constants/misc';
+import { ActiveCharacterKvpName, ForceApplyControlId } from 'constants/misc';
 import vMenuPlugin from 'plugins/vmenu';
 import { inputState, store } from 'state';
 import { addMenuApparel } from './menus/apparel';
@@ -82,4 +82,5 @@ export async function RunUI() {
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, creatorMainMenu, store);
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, creatorMainMenu);
+
 }
