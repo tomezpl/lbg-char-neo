@@ -20,6 +20,7 @@ interface MenuGlobal {
     Clear(menu: Menu): void;
     AddInstructionButton(menu: Menu, button: string, text: string): InstructionButton;
     CurrentSelection(menu: Menu): number;
+    DisEnableControls(menu: Menu, controlsEnabled: boolean): void;
 }
 
 interface MenuItemGlobal {
@@ -135,7 +136,8 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuListItem:doesPanelExist': 1,
     'Menu:Clear': 1,
     'Menu:AddInstructionButton': 1,
-    'Menu:CurrentSelection': 1
+    'Menu:CurrentSelection': 1,
+    'Menu:DisEnableControls': 1
 };
 
 type EventTarget = Menu | MenuItem;

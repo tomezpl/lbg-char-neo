@@ -1,4 +1,4 @@
-import { Character, DefaultCharacter, MPMale } from "constants/character";
+import { Character, DefaultCharacter, MPMale, SavedCharacterSlotPrefix } from "constants/character";
 import { store } from "state";
 import { UIContext } from "ui";
 import { addMenuAppearance } from "ui/menus/appearance";
@@ -17,7 +17,7 @@ interface ICharacterStore {
     actions: CharacterStoreActions;
 }
 
-type SavedCharacter = {
+export type SavedCharacter = {
     character: Character;
     slotName: string;
 }
@@ -61,8 +61,8 @@ export class CharacterStore implements ICharacterStore {
     }
 }
 
-function restoreSavedCharacters() {
-    const prefix = 'lbg-char-neo:saved-char-';
+export function restoreSavedCharacters() {
+    const prefix = SavedCharacterSlotPrefix;
     const kvpHandle = StartFindKvp(prefix);
     let savedCharKey: string | undefined;
     do {

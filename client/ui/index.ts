@@ -7,6 +7,7 @@ import { addMenuAppearance } from './menus/appearance';
 import { addMenuFaceShape } from './menus/face-shape';
 import { addMenuGender } from './menus/gender';
 import { addMenuHeritage } from './menus/heritage';
+import { addSavedCharactersMenu, UISavedCharactersMenuContext } from './menus/saved-characters';
 import { addMenuUpperBody } from './menus/upper-body';
 import { Menu, MenuPool, NativeUI } from './native-ui-wrapper';
 export * from './native-ui-wrapper';
@@ -50,6 +51,16 @@ export async function RunUI() {
                 });
             });
         }
+        if (menu === UISavedCharactersMenuContext.menuQuick) {
+            UISavedCharactersMenuContext.blockInput = false;
+            UISavedCharactersMenuContext.refresh(UISavedCharactersMenuContext.menuQuick);
+            const tick = setTick(() => {
+                UISavedCharactersMenuContext.tick(UISavedCharactersMenuContext.menuQuick);
+            });
+            NativeUI.setEventListener(UISavedCharactersMenuContext.menuQuick, 'OnMenuClosed', () => {
+                clearTick(tick);
+            });
+        }
     });
 
     UIContext.creatorMainMenu = creatorMainMenu;
@@ -73,12 +84,27 @@ export async function RunUI() {
         });
     });
 
+    NativeUI.setEventListener(creatorMainMenu, 'OnMenuChanged', (parent, menu) => {
+        if (menu === UISavedCharactersMenuContext.menu) {
+            UISavedCharactersMenuContext.blockInput = false;
+            UISavedCharactersMenuContext.refresh(UISavedCharactersMenuContext.menu);
+            const tick = setTick(() => {
+                UISavedCharactersMenuContext.tick(UISavedCharactersMenuContext.menu);
+            });
+            NativeUI.setEventListener(UISavedCharactersMenuContext.menu, 'OnMenuClosed', () => {
+                clearTick(tick);
+            });
+        }
+    });
+
     addMenuGender(creatorMainMenu, store);
     addMenuHeritage(menuPool, creatorMainMenu, store);
     addMenuFaceShape(menuPool, creatorMainMenu, store);
     addMenuAppearance(menuPool, creatorMainMenu, store);
     addMenuUpperBody(menuPool, creatorMainMenu, store);
     await addMenuApparel(menuPool, creatorMainMenu, store);
+    addSavedCharactersMenu(menuPool, creatorMainMenu, 'menu');
+    addSavedCharactersMenu(menuPool, mainMenu, 'menuQuick');
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, creatorMainMenu, store);
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, creatorMainMenu);

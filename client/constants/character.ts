@@ -92,3 +92,5 @@ export type Character = Writable<Omit<typeof defaultCharacter, "gender" | "ogd" 
 export type LegacyCharacter = Omit<Character, 'version'>;
 
 export const DefaultCharacter: Readonly<Character> = defaultCharacter;
+
+export const SavedCharacterSlotPrefix = 'lbg-char-neo:saved-char-';
