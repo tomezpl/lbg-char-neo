@@ -54,6 +54,9 @@ export class CharacterStore implements ICharacterStore {
         };
 
         this.mdhash = GetHashKey(MPMale);
+
+        // Load saved characters.
+        restoreSavedCharacters(this);
     }
 
     public get character(): Character {
@@ -61,7 +64,12 @@ export class CharacterStore implements ICharacterStore {
     }
 }
 
-export function restoreSavedCharacters() {
+/**
+ * Populates saved character slots in {@link store}
+ * 
+ * @param store Store to populate saved character data in.
+ */
+export function restoreSavedCharacters(store: CharacterStore) {
     const prefix = SavedCharacterSlotPrefix;
     const kvpHandle = StartFindKvp(prefix);
     let savedCharKey: string | undefined;
