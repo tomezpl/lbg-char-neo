@@ -82,7 +82,7 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
     NativeUI.setEventListener(submenu, "OnListChange", (sender, item, index) => {
         if (item === outfitItem) {
             store.actions.setOutfit(index - 1);
-            ChangeComponents(false);
+            ChangeComponents();
         }
 
         /*

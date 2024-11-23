@@ -2,13 +2,17 @@ import { ComponentVariation, PedComponents } from "constants/clothing";
 import { DefaultHairDecor, HairDecor } from "constants/hair";
 import { FemaleOutfits, MaleOutfits } from "constants/outfit";
 import { store } from "state"
+import { Logger } from "utils/logger";
 
-export function ChangeComponents(shouldChangeModel?: boolean) {
-	const Character = store.character;
+/**
+ * Applies a character's appearance: facial features, overlays, hair, clothing, etc.
+ * 
+ * The currently active character from {@link store} is used for this.
+ */
+export function ChangeComponents(Character = store.character) {
+	Logger.log('Changing player ped components/face features/overlays/decorations.');
 
 	const immediate = setImmediate(() => {
-		//the shouldChangeModel parameter is here for legacy purposes, because I am lazy to change up any lines of code
-		//containing it. it is not requires, as it is not used.
 		SetPedDefaultComponentVariation(PlayerPedId());
 		SetPedHeadBlendData(PlayerPedId(), Character["mom"], Character["dad"], 0, Character["mom"], Character["dad"], 0, Character["resemblance"], Character["skintone"], 0, true);
 		SetPedComponentVariation(PlayerPedId(), 2, Character["hair"], 0, 2);
@@ -52,8 +56,12 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 		SetPedFaceFeature(PlayerPedId(), 2, Character['nose_3'])
 		SetPedFaceFeature(PlayerPedId(), 1, Character['nose_2'])
 		SetPedFaceFeature(PlayerPedId(), 0, Character['nose_1'])
+
 		const outfits = Character.gender === "Male" ? MaleOutfits : FemaleOutfits;
-		if (outfits[Character.outfit]) {
+		const hasCustomOutfit = Object.keys(Character.customOutfit || {}).length > 0;
+
+		// If the character has a legacy preset outfit applied and no custom outfit set, continue with the legacy outfit logic.
+		if (!hasCustomOutfit && outfits[Character.outfit]) {
 			Object.entries(outfits[Character.outfit]).forEach((entry) => {
 				let [component, [drawable, texture]] = entry as unknown as [number | string, ComponentVariation];
 
@@ -64,7 +72,8 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 
 				SetPedComponentVariation(PlayerPedId(), Number(component), drawable, texture, 2);
 			});
-		} else if (Object.keys(Character.customOutfit || {}).length > 0) {
+		} else if (hasCustomOutfit) {
+			// Otherwise if we do have a custom outfit, just apply each component variation.
 			Object.entries(Character.customOutfit).forEach((entry) => {
 				const [component, [drawable, texture]] = entry as [`${number}`, ComponentVariation];
 
@@ -80,6 +89,7 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 			SetPedHeadOverlayColor(PlayerPedId(), 5, 2, Character['blush_3'], 0)
 		}
 
+		// If the active character does not have custom props, then just continue with the legacy glasses logic.
 		if (Object.keys(typeof Character.customProps === 'object' ? Character.customProps : {}).length === 0) {
 			if (Character["glasses"] === 0) {
 				if (Character["gender"] === "Male") {
@@ -95,6 +105,7 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 				}
 			}
 		} else {
+			// If the character does have custom props, apply them all here.
 			Object.entries(Character.customProps).forEach((entry) => {
 				const [prop, [drawable, texture]] = entry as [`${number}`, ComponentVariation];
 
@@ -105,8 +116,14 @@ export function ChangeComponents(shouldChangeModel?: boolean) {
 		clearImmediate(immediate);
 	});
 }
+
+/**
+ * Re-sets the player ped's model.
+ * @param force False to only refresh if the gender (ped model) changed, true to refresh regardless.
+ * @param character Character data to apply.
+ */
 export function RefreshModel(force = false, character = store.character) {
-	console.log('Refreshmodel')
+	Logger.log(`Refreshing player ped (force: ${force === true})`);
 	const { mdhash } = store;
 	const { mom, dad, resemblance, skintone } = character || store.character;
 	const tickerHandle = setTick(() => {
@@ -115,9 +132,10 @@ export function RefreshModel(force = false, character = store.character) {
 				RequestModel(mdhash)
 			}
 			else {
-				SetPlayerModel(PlayerId(), mdhash)
+				Logger.log('Changing player ped model');
+				SetPlayerModel(PlayerId(), mdhash);
 				SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, resemblance, skintone, 0, true);
-				ChangeComponents();
+				ChangeComponents(character || store.character);
 				clearTick(tickerHandle);
 			}
 		}

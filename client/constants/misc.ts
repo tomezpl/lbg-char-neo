@@ -1,4 +1,5 @@
-export const ActiveCharacterKvpName = 'lbg-char-info' as const;
+export const OldLbgCharKvpName = 'lbg-char-info' as const;
+export const ActiveCharacterKvpName = 'lbg-char-neo-current-char' as const;
 
 export const ForceApplyControlId = 75 as const;
 

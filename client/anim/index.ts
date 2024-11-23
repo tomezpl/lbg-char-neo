@@ -24,7 +24,7 @@ async function animateCameraIntro() {
     DestroyAllCams(true);
     initPos = GetEntityCoords(PlayerPedId(), false) as [number, number, number];
     RefreshModel()
-    ChangeComponents(true)
+    ChangeComponents()
     cam2 = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", cameraShots.body.x, cameraShots.body.y, cameraShots.body.z, 0.00, 0.00, 0.00, cameraShots.body.fov, false, 0);
     SetCamActive(cam2, true)
     RenderScriptCams(true, false, 2000, true, true)
@@ -74,7 +74,7 @@ async function animateCameraOutro(doWalkAnim: boolean, { character }: CharacterS
     RenderScriptCams(false, false, 0, true, true)
     DisplayRadar(true)
     await delay(1000)
-    ChangeComponents(false)
+    ChangeComponents()
     DoScreenFadeOut(10)
     await delay(1000)
     SetCamActive(camSkin, false)

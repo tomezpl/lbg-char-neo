@@ -2,7 +2,6 @@ import { DefaultHairDecor, HairDecor, OldDLCHairMap } from "constants/hair";
 import { clothingStore } from "state/clothing-store";
 import { CharacterStore } from "state/character-store";
 import { Menu, MenuItem, MenuPool, NativeUI, Panel, UIContext } from "ui";
-import { ensureArray } from "utils/misc";
 import { cameraShots } from "constants/camera";
 import { createSkinCamera } from "anim";
 
