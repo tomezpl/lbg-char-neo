@@ -1,18 +1,23 @@
+/** Ped component slot names mapped to their IDs and vice-versa
+ * 
+ * Don't mess with the order of these as it needs to match the game's IDs
+ */
 export enum PedComponents {
-    "head",
-    "beard",
-    "hair",
-    "upper",
-    "lower",
-    "hands",
-    "feet",
-    "teeth",
-    "accessories",
-    "armour",
-    "badge",
-    "torso"
+    'head',
+    'beard',
+    'hair',
+    'upper',
+    'lower',
+    'hands',
+    'feet',
+    'teeth',
+    'accessories',
+    'armour',
+    'badge',
+    'torso'
 };
 
+/** A tuple type defining a component's drawable and texture IDs */
 export type ComponentVariation = [drawable: number, texture: number];
 
 /**
@@ -27,59 +32,20 @@ export enum ClothingItemCategories {
     Masks,
 }
 
-/** The offsets from DLC items' <locate> values to their respective CSHOP_ITEM indices. If a DLC isn't defined here, assume 41 */
-export const ClothingItemLocateOffsets = {
-    /** Heists DLC */
-    HST: 39,
-    131: 39,
-    165: 40,
-    30: 21,
-
-    // For some reason one of the biker fishnet denims has both locate=30 and locate=-99 and I assume the -99 takes precedence?
-    '-99': 150,
-
-    44: -23,
-
-    20: 143,
-    169: -6,
-
-    210: 25,
-
-    153: 39,
-
-    19: -8,
-
-    22: 32,
-
-    CLO_X6: 44
-} as const;
-
-export const DLCG9Offsets = {
-    CLO_X6: {
-        [PedComponents.torso]: -10
-    }
-} as const;
-
-export function getDLCItemOffset(compType: PedComponents, label: string): number {
-    const dlcOffsets = Object.entries(DLCG9Offsets).find(([key]) => label.startsWith(key))?.[1];
-    if (dlcOffsets && compType in dlcOffsets) {
-        return dlcOffsets[compType as keyof typeof dlcOffsets] || 0;
-    }
-
-    return 0;
-}
-
-export const LastPreGen9ECLabel = 'CLO_SB' as const;
-
-export const KnownGen9ECLabels = [
-    'CLO_E1'
-] as const;
-
 /**
  * Returns a GXT label for a given clothing component's locate value.
+ * 
+ * The assumption here is that the locate value of a clothing component can be used to find the category/group to place it in in the shop UI.
+ * This function attempts to return the correct GXT label to find the clothing category's name.
  */
 export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_ITEM${number}` {
-    // "control points" for the mapper
+    // The following act as "control points" for the mapper.
+    // Essentially, the tuples are key-value pairs where the first element is the key (the "locate" value from an example component in a shop metadata file),
+    // and the second element is the value: a number that, when appended to the CSHOP_ITEM string,
+    // produces a GXT label pointing at the string that names the example component's group.
+    // 
+    // These were found by manually compiling a list of clothing items from various categories, bruteforce searching from all CSHOP_ITEM labels,
+    // then mapping the numbers from the labels to the clothing items' locate values.
     const mappings = [
         [131, 170],
         [122, 161],
@@ -111,7 +77,10 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         [173, 214],
         [21, 53],
         [27, 130],
+
+        // if lower body, -1 should match 198
         [-1, label.match(/^CLO_[A-Z]+_L_/) ? 198 : 197],
+
         [8, 92],
 
         // For uppr components from drug wars, locate 9 seems to point to Denim Jackets. Otherwise it's Bikinis
@@ -146,11 +115,10 @@ export function GetTextLabelForLocate(locate: number, label?: string): `CSHOP_IT
         [44, 21]
     ] as const;
 
-    // Find the highest locate that's less than or equal to the target locate,
-    // then take the offset from the control point, and apply that to the target locate.
-
+    // Find the highest locate that's less than or equal to the input locate,
+    // then take the target offset from the control point, and apply that to the input locate.
+    // Yes. This is confusing, and I don't understand why it works, but it does.
     let offset: number | null = null;
-
     const sortedMappings = [...mappings].sort(([a], [b]) => Math.max(-1, Math.min(1, a - b)))
     for (let i = 0; i < sortedMappings.length; i++) {
         if (i === 0 || sortedMappings[i][0] <= locate) {

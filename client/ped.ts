@@ -1,8 +1,9 @@
-import { ComponentVariation, PedComponents } from "constants/clothing";
-import { DefaultHairDecor, HairDecor } from "constants/hair";
-import { FemaleOutfits, MaleOutfits } from "constants/outfit";
-import { store } from "state"
-import { Logger } from "utils/logger";
+import { PropsCollection } from 'constants/character';
+import { ComponentVariation, PedComponents } from 'constants/clothing';
+import { DefaultHairDecor, HairDecor } from 'constants/hair';
+import { FemaleOutfits, MaleOutfits, Outfit } from 'constants/outfit';
+import { store } from 'state'
+import { Logger } from 'utils/logger';
 
 /**
  * Applies a character's appearance: facial features, overlays, hair, clothing, etc.
@@ -14,12 +15,12 @@ export function ChangeComponents(Character = store.character) {
 
 	const immediate = setImmediate(() => {
 		SetPedDefaultComponentVariation(PlayerPedId());
-		SetPedHeadBlendData(PlayerPedId(), Character["mom"], Character["dad"], 0, Character["mom"], Character["dad"], 0, Character["resemblance"], Character["skintone"], 0, true);
-		SetPedComponentVariation(PlayerPedId(), 2, Character["hair"], 0, 2);
+		SetPedHeadBlendData(PlayerPedId(), Character['mom'], Character['dad'], 0, Character['mom'], Character['dad'], 0, Character['resemblance'], Character['skintone'], 0, true);
+		SetPedComponentVariation(PlayerPedId(), 2, Character['hair'], 0, 2);
 		SetPedHairColor(PlayerPedId(), Character['hair_color_1'], 0);
 
 		ClearPedDecorations(PlayerPedId());
-		if (HairDecor[Character.gender][Character["hair"]] !== undefined) {
+		if (HairDecor[Character.gender][Character['hair']] !== undefined) {
 			AddPedDecorationFromHashes(PlayerPedId(), ...(HairDecor[Character.gender][GetPedDrawableVariation(PlayerPedId(), 2)]));
 		} else {
 			AddPedDecorationFromHashes(PlayerPedId(), ...DefaultHairDecor);
@@ -57,12 +58,13 @@ export function ChangeComponents(Character = store.character) {
 		SetPedFaceFeature(PlayerPedId(), 1, Character['nose_2'])
 		SetPedFaceFeature(PlayerPedId(), 0, Character['nose_1'])
 
-		const outfits = Character.gender === "Male" ? MaleOutfits : FemaleOutfits;
-		const hasCustomOutfit = Object.keys(Character.customOutfit || {}).length > 0;
+		const outfits = Character.gender === 'Male' ? MaleOutfits : FemaleOutfits;
+		const hasCustomOutfit = Object.keys((Character.customOutfit as Outfit) || {}).length > 0;
 
 		// If the character has a legacy preset outfit applied and no custom outfit set, continue with the legacy outfit logic.
 		if (!hasCustomOutfit && outfits[Character.outfit]) {
 			Object.entries(outfits[Character.outfit]).forEach((entry) => {
+				// eslint-disable-next-line prefer-const
 				let [component, [drawable, texture]] = entry as unknown as [number | string, ComponentVariation];
 
 				// Reverse-map the component name to component ID if needed.
@@ -74,31 +76,31 @@ export function ChangeComponents(Character = store.character) {
 			});
 		} else if (hasCustomOutfit) {
 			// Otherwise if we do have a custom outfit, just apply each component variation.
-			Object.entries(Character.customOutfit).forEach((entry) => {
+			Object.entries(Character.customOutfit as Outfit).forEach((entry) => {
 				const [component, [drawable, texture]] = entry as [`${number}`, ComponentVariation];
 
 				SetPedComponentVariation(PlayerPedId(), Number(component), drawable, texture, 2);
 			})
 		}
 
-		if (Character["gender"] === "Male") {
+		if (Character['gender'] === 'Male') {
 			SetPedHeadOverlay(PlayerPedId(), 1, Character['beard'], Character['beard_2'])
 			SetPedHeadOverlayColor(PlayerPedId(), 1, 1, Character['beard_3'], 0)
-		} else if (Character["gender"] === "Female") {
+		} else if (Character['gender'] === 'Female') {
 			SetPedHeadOverlay(PlayerPedId(), 5, Character['blush_1'], Character['blush_2'])
 			SetPedHeadOverlayColor(PlayerPedId(), 5, 2, Character['blush_3'], 0)
 		}
 
 		// If the active character does not have custom props, then just continue with the legacy glasses logic.
-		if (Object.keys(typeof Character.customProps === 'object' ? Character.customProps : {}).length === 0) {
-			if (Character["glasses"] === 0) {
-				if (Character["gender"] === "Male") {
+		if (Object.keys(typeof Character.customProps === 'object' ? (Character.customProps as PropsCollection) : {}).length === 0) {
+			if (Character['glasses'] === 0) {
+				if (Character['gender'] === 'Male') {
 					SetPedPropIndex(PlayerPedId(), 1, 11, 0, false);
 				} else {
 					SetPedPropIndex(PlayerPedId(), 1, 5, 0, false);
 				}
 			} else {
-				if (Character["gender"] === "Male") {
+				if (Character['gender'] === 'Male') {
 					SetPedPropIndex(PlayerPedId(), 1, 5, 0, false);
 				} else {
 					SetPedPropIndex(PlayerPedId(), 1, 11, 0, false);
@@ -106,7 +108,7 @@ export function ChangeComponents(Character = store.character) {
 			}
 		} else {
 			// If the character does have custom props, apply them all here.
-			Object.entries(Character.customProps).forEach((entry) => {
+			Object.entries(Character.customProps as PropsCollection).forEach((entry) => {
 				const [prop, [drawable, texture]] = entry as [`${number}`, ComponentVariation];
 
 				SetPedPropIndex(PlayerPedId(), Number(prop), drawable, texture || 0, true);

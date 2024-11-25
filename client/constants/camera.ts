@@ -1,4 +1,4 @@
-import { ICameraState } from "types/camera-state";
+import { ICameraState } from 'types/camera-state';
 
 const _cameraShots: Record<'face' | 'body', ICameraState> = {
     face: {
@@ -16,4 +16,7 @@ const _cameraShots: Record<'face' | 'body', ICameraState> = {
     },
 };
 
+/**
+ * Camera parameters for different cameras used in the character creator screen.
+ */
 export const cameraShots = Object.freeze(_cameraShots);

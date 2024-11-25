@@ -1,7 +1,7 @@
-import { MPFemale, MPMale } from "constants/character";
-import { RefreshModel } from "ped";
-import { CharacterStore } from "state/character-store";
-import { PedComponents, ComponentVariation } from "constants/clothing";
+import { MPFemale, MPMale } from 'constants/character';
+import { RefreshModel } from 'ped';
+import { CharacterStore } from 'state/character-store';
+import { ComponentVariation } from 'constants/clothing';
 
 export interface IVMenuCharacter {
     PedHeadBlendData: IVMenuPedHeadBlendData;
@@ -13,12 +13,14 @@ export interface IVMenuCharacter {
     PedTatttoos: IVMenuPedTattoos;
 
     // vMenu doesn't seem to implement these
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     PedFacePaints: {};
 
     ModelHash: number;
     Version: number;
     WalkingStyle: string | null;
     FacialExpression: string | null;
+    SaveName: string;
 }
 
 interface IVMenuPedHeadBlendData {
@@ -95,37 +97,35 @@ interface IVMenuPedTattoos {
 }
 
 export function applyVMenuCharacter(character: IVMenuCharacter, store: CharacterStore) {
-    // TODO: this function needs to also update the ui state
-
     const { actions } = store;
 
     // Character gender
     let mdHash = MPMale;
     if (character.IsMale == true) {
-        actions.setGender("Male")
-        actions.setOgd("M")
-        actions.setLcgd("male")
+        actions.setGender('Male')
+        actions.setOgd('M')
+        actions.setLcgd('male')
     } else {
-        actions.setGender("Female")
-        actions.setOgd("F")
-        actions.setLcgd("female")
+        actions.setGender('Female')
+        actions.setOgd('F')
+        actions.setLcgd('female')
         mdHash = MPFemale;
     }
     store.mdhash = GetHashKey(mdHash);
 
     //these fields come from PedHeadBlendData serialized in vMenu mp_ped_ KVP strings
-    let headBlend = character.PedHeadBlendData
-    let momID = headBlend.FirstFaceShape
-    let dadID = headBlend.SecondFaceShape
-    let shapeMix = headBlend.ParentFaceShapePercent
-    let skinMix = headBlend.ParentSkinTonePercent
+    const headBlend = character.PedHeadBlendData
+    const momID = headBlend.FirstFaceShape
+    const dadID = headBlend.SecondFaceShape
+    const shapeMix = headBlend.ParentFaceShapePercent
+    const skinMix = headBlend.ParentSkinTonePercent
     actions.setMom(momID);
     actions.setDad(dadID);
     actions.setResemblance(shapeMix);
     actions.setSkintone(skinMix);
 
     //Copy vMenu PedAppearance
-    let appearance = character.PedAppearance;
+    const appearance = character.PedAppearance;
     actions.setHair(appearance.hairStyle);
     actions.setHair_color_1(appearance.hairColor);
     //TODO: hair highlights colour ?
@@ -164,26 +164,26 @@ export function applyVMenuCharacter(character: IVMenuCharacter, store: Character
     //Copy vMenu FaceShapeFeatures
     const { features: faceShapeFeatures } = character.FaceShapeFeatures;
 
-    actions.setNeck_thick(faceShapeFeatures["19"])
-    actions.setChin_hole(faceShapeFeatures["18"])
-    actions.setChin_width(faceShapeFeatures["17"])
-    actions.setChin_length(faceShapeFeatures["16"])
-    actions.setChin_height(faceShapeFeatures["15"])
-    actions.setJaw_2(faceShapeFeatures["14"])
-    actions.setJaw_1(faceShapeFeatures["13"])
-    actions.setLips_thick(faceShapeFeatures["12"])
-    actions.setEye_open(faceShapeFeatures["11"])
-    actions.setCheeks_3(faceShapeFeatures["10"])
-    actions.setCheeks_2(faceShapeFeatures["9"])
-    actions.setCheeks_1(faceShapeFeatures["8"])
-    actions.setEyebrows_6(faceShapeFeatures["6"]);
-    actions.setEyebrows_5(faceShapeFeatures["7"])
-    actions.setNose_6(faceShapeFeatures["5"])
-    actions.setNose_5(faceShapeFeatures["4"])
-    actions.setNose_4(faceShapeFeatures["3"])
-    actions.setNose_3(faceShapeFeatures["2"])
-    actions.setNose_2(faceShapeFeatures["1"])
-    actions.setNose_1(faceShapeFeatures["0"])
+    actions.setNeck_thick(faceShapeFeatures['19'])
+    actions.setChin_hole(faceShapeFeatures['18'])
+    actions.setChin_width(faceShapeFeatures['17'])
+    actions.setChin_length(faceShapeFeatures['16'])
+    actions.setChin_height(faceShapeFeatures['15'])
+    actions.setJaw_2(faceShapeFeatures['14'])
+    actions.setJaw_1(faceShapeFeatures['13'])
+    actions.setLips_thick(faceShapeFeatures['12'])
+    actions.setEye_open(faceShapeFeatures['11'])
+    actions.setCheeks_3(faceShapeFeatures['10'])
+    actions.setCheeks_2(faceShapeFeatures['9'])
+    actions.setCheeks_1(faceShapeFeatures['8'])
+    actions.setEyebrows_6(faceShapeFeatures['6']);
+    actions.setEyebrows_5(faceShapeFeatures['7'])
+    actions.setNose_6(faceShapeFeatures['5'])
+    actions.setNose_5(faceShapeFeatures['4'])
+    actions.setNose_4(faceShapeFeatures['3'])
+    actions.setNose_3(faceShapeFeatures['2'])
+    actions.setNose_2(faceShapeFeatures['1'])
+    actions.setNose_1(faceShapeFeatures['0'])
 
     // Setting the lbg outfit index to -1 as the character will have their own outfit.
     actions.setOutfit(-1);

@@ -1,4 +1,4 @@
-const logPrefix = '[lbg-char-neo]'
+const logPrefix = '[lbg-char-neo]';
 
 export class Logger {
     public static log(...values: ReadonlyArray<unknown>) {

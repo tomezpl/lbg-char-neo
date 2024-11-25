@@ -1,31 +1,45 @@
-import { GetTextLabelForLocate, PedComponents } from "constants/clothing";
-import { ForceApplyControlId } from "constants/misc";
-import { store } from "state";
-import { CharacterStore } from "state/character-store";
-import { clothingStore, PedClothing } from "state/clothing-store";
-import { Menu, MenuPool, NativeUI } from "ui";
-import { iterateDrawables } from "./stupid-drawable-index-fix";
+import { GetTextLabelForLocate, PedComponents } from 'constants/clothing';
+import { ForceApplyControlId } from 'constants/misc';
+import { store } from 'state';
+import { clothingStore, PedClothing } from 'state/clothing-store';
+import { Menu, MenuPool, NativeUI } from 'ui';
+import { iterateDrawables } from './stupid-drawable-index-fix';
+import { Outfit } from 'constants/outfit';
+import { Logger } from 'utils/logger';
 
+/**
+ * Creates a submenu of clothing categories for a top-level category.
+ * 
+ * E.g. for "Tops" this submenu will contain "T-Shirts", "Hoodies", "Jackets" submenus etc.
+ * Since a top-level category may affect more than one component slot, these need to be defined in {@link componentsToInclude}
+ */
 export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Menu, pedComponents: PedClothing, componentsToInclude: ReadonlyArray<keyof PedClothing>, offsets: ReadonlyArray<Record<string, number>> = []) {
     const playerPedEntity = PlayerPedId();
 
-    let skipped = 0;
-
+    // Needed for the force apply button.
     let inputTick: number | undefined;
-    const topsMenus = componentsToInclude.reduce((menus, compGroup, compIndex) => {
+
+    // This will iterate over all drawables from componentsToInclude,
+    // and then create UI items for them automatically placed in the appropriate subcategories.
+    const itemCategoryMenus = componentsToInclude.reduce((menus, compGroup, compIndex) => {
         const comps = pedComponents[compGroup];
+
+        // Iterate over all drawables for the current component.
         iterateDrawables(comps, (drawableId, _, textures) => {
             if (IsPedComponentVariationGen9Exclusive(playerPedEntity, PedComponents[compGroup], drawableId)) {
                 return;
             }
 
             Object.entries(textures).forEach(([textureIdString, { label, locate }]) => {
+                // Ignore empty labels, don't want them anyway
                 if (label.length === 0) {
                     return;
                 }
 
+                // Get the texture ID integer from the key (should also be an integer but stored as a string)
                 const textureId = Number(textureIdString);
 
+                // Apply any offset the caller may have set for specific DLC names.
                 let offset = 0;
                 if (typeof offsets[compIndex] === 'object') {
                     for (const [dlc, dlcCompOffset] of Object.entries(offsets[compIndex])) {
@@ -40,25 +54,32 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                     return;
                 }
 
+                // Try get the correct subcategory name for this clothing item.
                 const locateLabel = GetTextLabelForLocate(Number(locate), label);
 
                 let created = locateLabel in menus;
+                // If the submenu for a given subcategory doesn't exist yet then create it now
                 if (!created) {
                     if (DoesTextLabelExist(locateLabel)) {
                         const labelText = GetLabelText(locateLabel);
+
                         menus[locateLabel] = {
                             menu: NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, labelText, '', true, true),
                             items: [] as typeof menus[typeof locateLabel]['items']
                         };
+
+                        // Add a "Force Apply" button in the bottom-right when this submenu is open.
                         NativeUI.Menu.AddInstructionButton(menus[locateLabel].menu, GetControlInstructionalButton(2, ForceApplyControlId, true), 'Force Apply');
+
                         created = true;
+
                         NativeUI.setEventListener(menus[locateLabel].menu, 'OnItemSelect', (_, item, index) => {
-                            console.log('OnItemSelect was called!!');
                             if (menus[locateLabel].items[index - 1]) {
                                 menus[locateLabel].items[index - 1].onSelected();
                             }
                         });
 
+                        // Remove the input tick if necessary so we don't accidentally Force Apply after closing the menu.
                         NativeUI.setEventListener(menus[locateLabel].menu, 'OnMenuClosed', () => {
                             if (typeof inputTick === 'number') {
                                 clearTick(inputTick);
@@ -68,6 +89,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                     }
                 }
 
+                // Add the clothing item to the submenu
                 if (created) {
                     if (DoesTextLabelExist(label)) {
                         const labelText = GetLabelText(label);
@@ -75,17 +97,16 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                         NativeUI.Menu.AddItem(menus[locateLabel].menu, item);
                         menus[locateLabel].items.push({
                             onSelected(force = false) {
-                                console.log(`activated ${labelText}`);
-                                console.log(`fixedDrawableId: ${drawableId}, originalDrawableId: ${_}`)
-                                console.log(`setting ${PedComponents[compGroup]} to drawable ${drawableId} + ${offset}, texture ${textureId}`);
-                                const componentSlot = PedComponents[compGroup];
+                                Logger.log(`selected '${labelText}', drawable ID ${_} (${drawableId} with offset applied), texture ${textureId}, component ${PedComponents[compGroup]}`)
+                                const componentSlot = PedComponents[compGroup] as Extract<PedComponents, number>;
+
                                 const finalDrawableId = drawableId + offset;
 
                                 const finalTextureId = textureId;
                                 if (!force) {
                                     let valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
                                     if (!valid) {
-                                        console.log(`${compGroup} is invalid!`);
+                                        Logger.warn(`${compGroup} is invalid!`);
                                     }
                                     let componentsTried = 0; // prevent infinite loop
                                     const selectedCompHash = GetHashNameForComponent(PlayerPedId(), componentSlot, finalDrawableId, textureId);
@@ -93,7 +114,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                     for (let forcedCompIndex = 0; forcedCompIndex < forcedComponents && componentsTried <= 11; forcedCompIndex++) {
                                         const [forcedCompHash, enumValue, forcedCompSlot] = GetForcedComponent(selectedCompHash, forcedCompIndex);
                                         const forcedCompSlotName = PedComponents[forcedCompSlot];
-                                        console.log(`forcing ${forcedCompSlotName}: ${enumValue} (${forcedCompHash.toString(16)})`);
+                                        Logger.log(`forcing ${forcedCompSlotName}: ${enumValue} (${forcedCompHash.toString(16)})`);
 
                                         // Try find a matching hash for a drawable & texture ID combination in the clothing store, 
                                         // and use the drawable & texture ID to set the ped's component variation.
@@ -124,14 +145,15 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                             }
                                         }
 
+                                        // For whatever reason some clothes like shirts force an armour vest which makes no sense
                                         if (![PedComponents.armour].includes(forcedCompSlot)) {
-                                            switch (forcedCompSlot) {
+                                            switch (forcedCompSlot as PedComponents) {
                                                 case PedComponents.accessories:
                                                     drawableId = Math.max(0, drawableId - 30);
                                                     break;
                                             }
                                             SetPedComponentVariation(PlayerPedId(), forcedCompSlot, drawableId, textureId, 0);
-                                            store.character.customOutfit[forcedCompSlot] = [drawableId, textureId];
+                                            (store.character.customOutfit as Outfit)[forcedCompSlot as Extract<PedComponents, number>] = [drawableId, textureId];
                                         }
                                         valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
                                         componentsTried++;
@@ -141,7 +163,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                     for (let variant = 0; variant < variantComponents; variant++) {
                                         const [variantCompHash, enumValue, variantCompSlot] = GetVariantComponent(selectedCompHash, variant);
                                         const variantCompSlotName = PedComponents[variantCompSlot];
-                                        console.log(`found variant for ${variantCompSlotName}: ${enumValue} (${variantCompHash.toString(16)})`);
+                                        Logger.log(`found variant for ${variantCompSlotName}: ${enumValue} (${variantCompHash.toString(16)})`);
 
                                         // Try find a matching hash for a drawable & texture ID combination in the clothing store, 
                                         // and use the drawable & texture ID to set the ped's component variation.
@@ -175,22 +197,17 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                         }
 
                                         if (![PedComponents.armour].includes(variantCompSlot)) {
-                                            // switch (variantCompSlot) {
-                                            //     case PedComponents.accessories:
-                                            //         drawableId = Math.max(0, drawableId - 30);
-                                            //         break;
-                                            // }
-                                            console.log(`setting variant component ${variantCompSlotName} to [${drawableId}, ${textureId}]`);
+                                            Logger.log(`setting variant component ${variantCompSlotName} to [${drawableId}, ${textureId}]`);
                                             SetPedComponentVariation(PlayerPedId(), variantCompSlot, drawableId, textureId, 0);
-                                            store.character.customOutfit[variantCompSlot] = [drawableId, textureId];
+                                            (store.character.customOutfit as Outfit)[variantCompSlot as Extract<PedComponents, number>] = [drawableId, textureId];
                                         }
                                         valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
                                         componentsTried++;
                                     }
-                                    // TODO: if it's still invalid, reset all other components to default, then apply the ones that are compatible.
+                                    // if it's still invalid, reset all other components to default, then apply the ones that are compatible.
                                     // Avoid changing the forced component slots.
 
-                                    if (!valid) {
+                                    /*if (!valid) {
                                         const existingVariations: Record<Extract<PedComponents, number>, [drawable: number, texture: number]> = Object.keys(PedComponents)
                                             .reduce((obj, comp) => {
                                                 if (typeof comp === 'number' && ![PedComponents.hair].includes(comp)) {
@@ -204,24 +221,24 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
 
                                         SetPedDefaultComponentVariation(PlayerPedId());
                                         SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId, 0);
-                                        store.character.customOutfit[componentSlot] = [finalDrawableId, finalTextureId];
+                                        (store.character.customOutfit as Outfit)[componentSlot] = [finalDrawableId, finalTextureId];
 
                                         Object.entries(existingVariations).forEach(([comp, [drawable, texture]]) => {
                                             type ComponentIdInteger = Extract<typeof comp, number>;
 
                                             if (IsPedComponentVariationValid(PlayerPedId(), comp as ComponentIdInteger, drawable, texture)) {
                                                 SetPedComponentVariation(PlayerPedId(), comp as ComponentIdInteger, drawable, texture, 0);
-                                                store.character.customOutfit[comp] = [drawable, texture];
-                                                console.log(`Reset ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}]`);
+                                                (store.character.customOutfit as Outfit)[comp as unknown as PedComponents] = [drawable, texture];
+                                                Logger.warn(`Reset ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}]`);
                                             } else {
-                                                console.log(`Tried setting ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}] but this would've made the component variation invalid.`);
+                                                Logger.warn(`Tried setting ${PedComponents[comp as ComponentIdInteger]} to [${drawable}, ${texture}] but this would've made the component variation invalid.`);
                                             }
                                         })
-                                    }
+                                    }*/
                                 }
 
                                 if (force || IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)) {
-                                    store.character.customOutfit[componentSlot] = [finalDrawableId, textureId];
+                                    (store.character.customOutfit as Outfit)[componentSlot] = [finalDrawableId, textureId];
 
                                     SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, textureId, 0);
                                 }
@@ -237,13 +254,16 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
 
 
     NativeUI.setEventListener(parentMenu, 'OnMenuChanged', (parent, menu) => {
-        const validMenu = Object.entries(topsMenus).find(([label, { menu: _menu }]) => _menu === menu);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const validMenu = Object.entries(itemCategoryMenus).find(([_, { menu: _menu }]) => _menu === menu);
         if (validMenu) {
             if (inputTick === undefined) {
+                // Create a tick function to listen to the F (keyboard) or Y (controller) control being pressed,
+                // and call onSelected on the currently highlighted item with the "force" flag if pressed.
                 inputTick = setTick(() => {
                     if (IsDisabledControlJustReleased(2, ForceApplyControlId) || IsControlJustReleased(2, ForceApplyControlId)) {
                         const index = NativeUI.Menu.CurrentSelection(menu);
-                        topsMenus[validMenu[0] as keyof typeof topsMenus].items[index - 1].onSelected(true);
+                        itemCategoryMenus[validMenu[0] as keyof typeof itemCategoryMenus].items[index - 1].onSelected(true);
                     }
                 });
             }

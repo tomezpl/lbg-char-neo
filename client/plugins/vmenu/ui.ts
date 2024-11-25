@@ -1,34 +1,40 @@
-import { Character, DefaultCharacter } from "constants/character";
-import { OldDLCHairMap } from "constants/hair";
-import { FemaleParentIds, MaleParentIds } from "constants/parents";
-import { store } from "state";
-import { CharacterStore } from "state/character-store";
-import { clothingStore } from "state/clothing-store";
-import { Menu, MenuPool, NativeUI } from "ui";
-import { UIAppearanceMenuContext } from "ui/menus/appearance";
-import { UIFaceShapeMenuContext } from "ui/menus/face-shape";
-import { UIGenderMenuContext } from "ui/menus/gender";
-import { UIHeritageMenuContext } from "ui/menus/heritage";
-import { getZtOIndex } from "utils/misc";
-import { getVMenuCharacters } from "./import"
-import { applyVMenuCharacter, IVMenuCharacter } from "./ped";
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { Character, DefaultCharacter } from 'constants/character';
+import { OldDLCHairMap } from 'constants/hair';
+import { FemaleParentIds, MaleParentIds } from 'constants/parents';
+import { CharacterStore } from 'state/character-store';
+import { clothingStore } from 'state/clothing-store';
+import { Menu, MenuPool, NativeUI } from 'ui';
+import { UIAppearanceMenuContext } from 'ui/menus/appearance';
+import { UIFaceShapeMenuContext } from 'ui/menus/face-shape';
+import { UIGenderMenuContext } from 'ui/menus/gender';
+import { UIHeritageMenuContext } from 'ui/menus/heritage';
+import { getZtOIndex } from 'utils/misc';
+import { getVMenuCharacters } from './import'
+import { applyVMenuCharacter, IVMenuCharacter } from './ped';
 
 
+/**
+ * Adds an "Import from vMenu" submenu to {@link parentMenu}
+ * @param menuPool 
+ * @param parentMenu 
+ * @param store 
+ */
 export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
     const characters = getVMenuCharacters();
 
     if (characters && Object.keys(characters).length > 0) {
-        const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Import from vMenu", "Import multiplayer character data created using vMenu.", true, true);
+        const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Import from vMenu', 'Import multiplayer character data created using vMenu.', true, true);
 
-        let characterItemIndices = new Array<string>();
+        const characterItemIndices = new Array<string>();
 
-        Object.entries(characters).forEach(([charName, charData]) => {
-            const menuItem = NativeUI.CreateItem(charName, "Import this character");
+        Object.entries(characters).forEach(([charName]) => {
+            const menuItem = NativeUI.CreateItem(charName, 'Import this character');
             NativeUI.Menu.AddItem(submenu, menuItem);
             characterItemIndices.push(charName);
         });
 
-        NativeUI.setEventListener(submenu, "OnItemSelect", (sender, item, index) => {
+        NativeUI.setEventListener(submenu, 'OnItemSelect', (sender, item, index) => {
             const charName = characterItemIndices[index - 1];
             applyVMenuCharacter(characters[charName], store);
             console.log('logging updated character');
@@ -38,6 +44,11 @@ export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, stor
     }
 }
 
+/**
+ * Updates the UI state to display the new values.
+ * @param vMenuCharacter 
+ * @param character 
+ */
 function updateMenuItemValues(vMenuCharacter: IVMenuCharacter, character: Character) {
     updateGenderItemValue(vMenuCharacter);
     updateAppearanceMenuItemValues(vMenuCharacter);
@@ -49,22 +60,12 @@ function updateFaceShapeMenuItemValues(character: Character) {
     Object.keys(DefaultCharacter).forEach((key) => {
         if (`${key}_item` in UIFaceShapeMenuContext) {
             const uiItem = UIFaceShapeMenuContext[`${key}_item` as keyof typeof UIFaceShapeMenuContext];
-            const value = character[key as keyof Character];
+            const value: number = character[key as keyof Character] as number;
             const index = (value + 1) * 10 + 1;
             console.log(`setting ${key} UI item to ${value} (index: ${index})`);
             uiItem && NativeUI.MenuListItem.Index(uiItem, index);
         }
     });
-
-    /*const { eye_open_item } = UIFaceShapeMenuContext;
-    eye_open_item && NativeUI.MenuListItem.Index(eye_open_item, (character.eye_open + 1) * 10 + 1);
-
-    const { cheeks_1_item, cheeks_2_item, cheeks_3_item } = UIFaceShapeMenuContext;
-    Object.entries({ cheeks_1_item, cheeks_2_item, cheeks_3_item }).forEach(([key, item]) => item && NativeUI.MenuListItem.Index(item, (character[key.replace("_item", "") as keyof Character] + 1) * 10 + 1));
-
-    const { jaw_1_item, jaw_2_item } = UIFaceShapeMenuContext;
-    jaw_1_item && NativeUI.MenuListItem.Index(jaw_1_item, (character.jaw_1 + 1) * 10 + 1);
-    jaw_2_item && NativeUI.MenuListItem.Index(jaw_2_item, (character.jaw_2 + 1) * 10 + 1);*/
 }
 
 function updateGenderItemValue({ IsMale: isMale }: Pick<IVMenuCharacter, 'IsMale'>) {
@@ -121,7 +122,7 @@ function updateAppearanceMenuItemValues({ PedAppearance: appearance, IsMale: isM
         }, [] as [string, number[]][])];
     }));
     const haircutNames = baseHaircutNames[isMale ? 'm' : 'f'];
-    const hairIndex = haircutNames.findIndex(([_, indices]) => indices.includes(appearance.hairStyle));
+    const hairIndex = haircutNames.findIndex(([, indices]) => indices.includes(appearance.hairStyle));
 
     // TODO: Hair highlights
     const { hairItem, hairColourPanel } = UIAppearanceMenuContext;

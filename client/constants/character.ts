@@ -1,8 +1,11 @@
-import { ComponentVariation } from "./clothing";
-import type { Outfit } from "./outfit";
+import { ComponentVariation } from './clothing';
+import type { Outfit } from './outfit';
 
-export const MPMale = "mp_m_freemode_01";
-export const MPFemale = "mp_f_freemode_01";
+/** Male ped name */
+export const MPMale = 'mp_m_freemode_01';
+
+/** Female ped name */
+export const MPFemale = 'mp_f_freemode_01';
 
 const defaultCharacter = Object.freeze({
 	resemblance: 0.8,
@@ -11,9 +14,9 @@ const defaultCharacter = Object.freeze({
 	dmom: 0,
 	mom: 21,
 	dad: 0,
-	gender: "Male" as const,
-	ogd: "M" as const,
-	lcgd: "male" as const,
+	gender: 'Male' as const,
+	ogd: 'M' as const,
+	lcgd: 'male' as const,
 	hair: 13,
 	hair_color_1: 0,
 	outfit: 0,
@@ -78,19 +81,21 @@ type Writable<T> = {
 
  * Keep in mind the UI expects 1-indexed IDs due to being implemented in Lua.
  */
-export type Character = Writable<Omit<typeof defaultCharacter, "gender" | "ogd" | "lcgd">> & {
-	gender: "Male" | "Female";
-	ogd: "M" | "F";
-	lcgd: "male" | "female";
+export type Character = Writable<Omit<typeof defaultCharacter, 'gender' | 'ogd' | 'lcgd'>> & {
+	gender: 'Male' | 'Female';
+	ogd: 'M' | 'F';
+	lcgd: 'male' | 'female';
 	customOutfit?: Outfit;
-	customProps?: Record<number, ComponentVariation>;
+	customProps?: PropsCollection;
 
 	/** 2.0 is incompatible with 1.x character data */
 	version: '2';
 };
 
-export type LegacyCharacter = Omit<Character, 'version'>;
+export type LegacyCharacter = Omit<Character, 'version' | 'customOutfit' | 'customProps'>;
 
 export const DefaultCharacter: Readonly<Character> = defaultCharacter;
+
+export type PropsCollection = Record<number, ComponentVariation>;
 
 export const SavedCharacterSlotPrefix = 'lbg-char-neo:saved-char-';

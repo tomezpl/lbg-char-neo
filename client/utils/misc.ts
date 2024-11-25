@@ -2,7 +2,7 @@
  * Returns an array of values from zero to one with 0.1 intervals
  */
 export function getZtO(): [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] {
-    return [...Array(11)].map((_, i) => i / 10) as ReturnType<typeof getZtO>;
+    return [...Array<number>(11)].map((_, i) => i / 10) as ReturnType<typeof getZtO>;
 }
 
 /**

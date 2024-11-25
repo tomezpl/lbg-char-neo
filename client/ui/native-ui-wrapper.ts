@@ -36,8 +36,8 @@ interface MenuListItemGlobal extends MenuItemGlobal {
     setPanelValue(panel: Panel, value: number): void;
     setPanelValue(panel: [Panel, Panel], value: [number, number]): void;
     setPanelEnabled(menuItem: MenuItem, panelIndex: number, enabled: boolean): void;
-    getProp<TResult = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string): TResult;
-    setProp<TResult = unknown, TValue = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items' | string, propValue: TValue): TResult;
+    getProp<TResult = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items'): TResult;
+    setProp<TResult = unknown, TValue = unknown>(menuItem: MenuItem, propName: 'Panels' | 'Items', propValue: TValue): TResult;
     doesPanelExist(menuItem: MenuItem, panelIndex: number): boolean;
 }
 
@@ -45,32 +45,35 @@ interface WindowGlobal {
     Index(window: Window, ...indices: ReadonlyArray<number>): void;
 }
 
-const NativeUIEvents = [
-    'OnListChange',
-    'OnListChanged',
-    'OnSliderChange',
-    'OnSliderChanged',
-    'OnMenuChanged',
-    'OnMenuClosed',
-    'Activated',
-    'OnItemSelect',
-] as const;
-
-type NativeUIEvent = typeof NativeUIEvents[number];
+type NativeUIEvent =
+    'OnListChange' |
+    'OnListChanged' |
+    'OnSliderChange' |
+    'OnSliderChanged' |
+    'OnMenuChanged' |
+    'OnMenuClosed' |
+    'Activated' |
+    'OnItemSelect';
 
 const defaultEventHandlers = {
     // Triggered on parent menu
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     OnListChange(sender: unknown, item: MenuItem, index: number) { },
     // Triggered on a menu list item
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     OnListChanged(parentMenu: never, item: MenuItem, index: number) { },
 
     // this one is usually registered on menus
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     OnSliderChange(sender: unknown, item: MenuItem, index: number) { },
     // this one is registered on menu items
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     OnSliderChanged(sender: unknown, item: MenuItem, index: number) { },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     OnMenuChanged(parent: Menu, menu: Menu) { },
     OnMenuClosed() { },
     Activated() { },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     OnItemSelect(sender: never, item: never, index: number) { }
 } as const;
 
@@ -113,7 +116,7 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuPool:Add': 1,
     'MenuPool:ProcessMenus': 1,
     'Menu:Visible': 1,
-    "Menu:AddItem": 1,
+    'Menu:AddItem': 1,
     'CreateItem': 1,
     'CreateListItem': 1,
     'MenuPool:AddSubMenu': 1,
@@ -148,14 +151,21 @@ const eventCount: Partial<Record<EventName, number>> = {
 
 };
 
+/**
+ * A wrapper for the NativeUILua resource.
+ * 
+ * If you want to access a new export, you need to add it to {@link exportsKeys} as a `className:funcName` string.
+ */
 export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) => {
     const value = exports.NativeUI[key];
-    // console.log(key, typeof value);
+
+    // Populate the object with functions exported by NativeUILua. Only the functions included in exportsKeys will be populated.
     if (key.includes(':')) {
         const [className, funcName] = key.split(':');
-        (obj[className as keyof typeof obj] as unknown as Record<any, unknown>) ??= {};
-        (obj[className as keyof typeof obj] as unknown as Record<any, unknown>)[funcName] = value;
-        // console.log(obj)
+        if (!(className in obj)) {
+            Object.assign(obj, { [className]: {} });
+        }
+        Object.assign(obj[className as keyof typeof obj], { [funcName]: value });
     } else {
         Object.assign(obj, { [key]: value });
     }
@@ -168,6 +178,7 @@ export const NativeUI: INativeUI = Object.keys(exportsKeys).reduce((obj, key) =>
         count++;
         const eventName = `${baseEventName}${count}`;
         on(eventName, handler);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         exports.NativeUI._setEventListener(target, event, eventName);
         eventCount[baseEventName] = count;
     }

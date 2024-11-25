@@ -1,9 +1,8 @@
-import { createSkinCamera } from "anim";
-import { cameraShots } from "constants/camera";
-import { MaleOutfits } from "constants/outfit";
-import { FemaleParentIds, FemaleParents, MaleParentIds, MaleParents } from "constants/parents";
-import { CharacterStore } from "state/character-store";
-import { Menu, MenuItem, MenuPool, NativeUI, Window } from "ui"
+import { createSkinCamera } from 'anim';
+import { cameraShots } from 'constants/camera';
+import { FemaleParentIds, FemaleParents, MaleParentIds, MaleParents } from 'constants/parents';
+import { CharacterStore } from 'state/character-store';
+import { Menu, MenuItem, MenuPool, NativeUI, Window } from 'ui';
 
 interface IUIHeritageMenuContext {
     mumItem: MenuItem;
@@ -18,7 +17,7 @@ export const UIHeritageMenuContext: Partial<IUIHeritageMenuContext> = {
 };
 
 export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
-    const parents = [...Array(46)].map((_, i) => `${i}`.padStart(2, '0'));
+    const parents = [...Array<number>(46)].map((_, i) => `${i}`.padStart(2, '0'));
 
     const moms = FemaleParentIds;
     const dads = MaleParentIds;
@@ -26,7 +25,7 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
     const parentNames = parents.map((parentId) => FemaleParents[moms.indexOf(parentId as typeof moms[number])] ?? MaleParents[dads.indexOf(parentId as typeof dads[number])]);
 
     const { character: Character } = store;
-    const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Heritage", "Select to choose your parents.", true, true);
+    const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Heritage', 'Select to choose your parents.', true, true);
 
     function getParentIndex([firstParents, secondParents]: [typeof moms, typeof dads] | [typeof dads, typeof moms], parentId: number): number | `-${number}` {
         const index = secondParents.findIndex((secondParentId) => Number(secondParentId) === parentId);
@@ -45,11 +44,11 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
     NativeUI.Menu.AddWindow(submenu, heritage);
     UIHeritageMenuContext.heritageWindow = heritage;
 
-    const momItem = NativeUI.CreateListItem("Parent #1", parentNames, Character["mom"] + 1, "Select your Mom.");
+    const momItem = NativeUI.CreateListItem('Parent #1', parentNames, Character['mom'] + 1, 'Select your Mom.');
     NativeUI.Menu.AddItem(submenu, momItem);
     UIHeritageMenuContext.mumItem = momItem;
 
-    const dadItem = NativeUI.CreateListItem("Parent #2", parentNames, Character["dad"] + 1, "Select your Dad.");
+    const dadItem = NativeUI.CreateListItem('Parent #2', parentNames, Character['dad'] + 1, 'Select your Dad.');
     NativeUI.Menu.AddItem(submenu, dadItem);
     UIHeritageMenuContext.dadItem = dadItem;
 
@@ -57,19 +56,19 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
     NativeUI.setEventListener(submenu, 'OnListChange', (sender, item, index) => {
         if (item === dadItem) {
             store.actions.setDdad(index - 1);
-            store.actions.setDad(Number(parents[index - 1]))
+            store.actions.setDad(Number(parents[index - 1]));
         } else if (item === momItem) {
             store.actions.setDmom(index - 1);
-            store.actions.setMom(Number(parents[index - 1]))
+            store.actions.setMom(Number(parents[index - 1]));
         }
         const parent1 = dads.find((d) => Number(d) === Character.mom) ? `-${dads.findIndex((d) => Number(d) === Character.mom)}` : moms.findIndex((m) => Number(m) === Character.mom);
         const parent2 = moms.find((m) => Number(m) === Character.dad) ? `-${moms.findIndex((m) => Number(m) === Character.dad)}` : dads.findIndex((d) => Number(d) === Character.dad);
         NativeUI.Window.Index(heritage, parent1 as number, parent2 as number);
         const immediate = setImmediate(() => {
-            SetPedHeadBlendData(PlayerPedId(), Character["mom"], Character["dad"], 0, Character["mom"], Character["dad"], 0, Character["resemblance"], Character["skintone"], 0, true);
+            SetPedHeadBlendData(PlayerPedId(), Character['mom'], Character['dad'], 0, Character['mom'], Character['dad'], 0, Character['resemblance'], Character['skintone'], 0, true);
             clearImmediate(immediate);
         });
-    })
+    });
 
 
     // array  that counts from 0 to 1 with decimals
@@ -81,11 +80,11 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
     const resemblanceIndex = 1 + ZtO.reduce((closestIdx, decimal, idx) => Math.abs(ZtO[closestIdx] - Character.resemblance) > Math.abs(decimal - Character.resemblance) ? idx : closestIdx, 0);
     const skintoneIndex = 1 + ZtO.reduce((closestIdx, decimal, idx) => Math.abs(ZtO[closestIdx] - Character.skintone) > Math.abs(decimal - Character.skintone) ? idx : closestIdx, 0);
 
-    const resemblanceItem = NativeUI.CreateSliderItem("Resemblance", ZtO, resemblanceIndex, "Select if your features are influenced more by your Mother or Father.", true);
+    const resemblanceItem = NativeUI.CreateSliderItem('Resemblance', ZtO, resemblanceIndex, 'Select if your features are influenced more by your Mother or Father.', true);
     NativeUI.Menu.AddItem(submenu, resemblanceItem);
     UIHeritageMenuContext.resemblanceItem = resemblanceItem;
 
-    const skintoneItem = NativeUI.CreateSliderItem("Skin Tone", ZtO, skintoneIndex, "Select if your skin tone is influenced more by your Mother or Father.", true)
+    const skintoneItem = NativeUI.CreateSliderItem('Skin Tone', ZtO, skintoneIndex, 'Select if your skin tone is influenced more by your Mother or Father.', true);
     NativeUI.Menu.AddItem(submenu, skintoneItem);
     UIHeritageMenuContext.skinToneItem = skintoneItem;
 
@@ -93,17 +92,17 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
         if (item === resemblanceItem || item === skintoneItem) {
             switch (item) {
                 case resemblanceItem:
-                    console.log(`changing resemblance to ${ZtO[index - 1]}`)
+                    console.log(`changing resemblance to ${ZtO[index - 1]}`);
                     store.actions.setResemblance(ZtO[index - 1]);
                     break;
                 case skintoneItem:
-                    console.log(`changing skin tone to ${ZtO[index - 1]}`)
+                    console.log(`changing skin tone to ${ZtO[index - 1]}`);
                     store.actions.setSkintone(ZtO[index - 1]);
                     break;
             }
 
             const immediate = setImmediate(() => {
-                SetPedHeadBlendData(PlayerPedId(), Character["mom"], Character["dad"], 0, Character["mom"], Character["dad"], 0, Character["resemblance"], Character["skintone"], 0, true)
+                SetPedHeadBlendData(PlayerPedId(), Character['mom'], Character['dad'], 0, Character['mom'], Character['dad'], 0, Character['resemblance'], Character['skintone'], 0, true);
                 clearImmediate(immediate);
             });
         }

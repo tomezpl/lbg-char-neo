@@ -1,4 +1,4 @@
-import { delay } from "./delay";
+import { delay } from './delay';
 
 export async function loadAnim(animDict: string) {
     const retries = 10;

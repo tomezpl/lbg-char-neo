@@ -1,1 +1,1 @@
-console.log("[lbg-char] Server Resource Started");
+console.log('[lbg-char] Server Resource Started');

@@ -1,9 +1,9 @@
-import { SavedCharacterSlotPrefix } from "constants/character";
-import { BackspaceControlId, EnterControlId, SaveCharacterControlId } from "constants/misc";
-import { RefreshModel } from "ped";
-import { store } from "state";
-import { restoreSavedCharacters, SavedCharacter } from "state/character-store";
-import { Menu, MenuPool, NativeUI } from "ui";
+import { SavedCharacterSlotPrefix } from 'constants/character';
+import { SaveCharacterControlId } from 'constants/misc';
+import { RefreshModel } from 'ped';
+import { store } from 'state';
+import { restoreSavedCharacters, SavedCharacter } from 'state/character-store';
+import { Menu, MenuPool, NativeUI } from 'ui';
 
 interface IUISavedCharactersMenuContext {
     menu: Menu | null;
@@ -51,7 +51,7 @@ export const UISavedCharactersMenuContext: IUISavedCharactersMenuContext = {
                 function save(name: string) {
                     const savedChar: SavedCharacter = { slotName: name, character: store.character };
                     SetResourceKvp(`${SavedCharacterSlotPrefix}${index - 1}`, JSON.stringify(savedChar));
-                    restoreSavedCharacters();
+                    restoreSavedCharacters(store);
                     UISavedCharactersMenuContext.refresh(menu);
                 }
                 // TODO: backspace doesn't fucking work because NativeUI hijacks it so add custom names at a later point...
@@ -81,7 +81,7 @@ export const UISavedCharactersMenuContext: IUISavedCharactersMenuContext = {
 };
 
 export function addSavedCharactersMenu(menuPool: MenuPool, parentMenu: Menu, menuIndex: Extract<keyof IUISavedCharactersMenuContext, 'menu' | 'menuQuick'>) {
-    const menu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Saved Characters", "Apply one of your saved character appearance presets.", false, false);
+    const menu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Saved Characters', 'Apply one of your saved character appearance presets.', false, false);
 
     UISavedCharactersMenuContext[menuIndex] = menu;
     UISavedCharactersMenuContext.refresh(UISavedCharactersMenuContext[menuIndex]);

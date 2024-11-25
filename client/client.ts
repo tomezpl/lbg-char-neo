@@ -1,14 +1,12 @@
-import { animateCharCreatorIntro } from "anim";
-import { Character, MPFemale, MPMale } from "constants/character";
-import { PedComponents } from "constants/clothing";
-import { ActiveCharacterKvpName, OldLbgCharKvpName } from "constants/misc";
-import { RefreshModel } from "ped";
-import { store } from "state";
-import { CharacterStoreActions } from "state/character-store";
-import { RunUI, NativeUI, UIContext } from "ui";
-import { Logger } from "utils/logger";
+import { Character, MPFemale, MPMale } from 'constants/character';
+import { ActiveCharacterKvpName, OldLbgCharKvpName } from 'constants/misc';
+import { RefreshModel } from 'ped';
+import { store } from 'state';
+import { CharacterStoreActions } from 'state/character-store';
+import { RunUI, NativeUI, UIContext } from 'ui';
+import { Logger } from 'utils/logger';
 
-Logger.log("Client Resource Started");
+Logger.log('Client Resource Started');
 
 function RestoreSavedCharacter() {
     let key: string = ActiveCharacterKvpName;
@@ -45,6 +43,8 @@ function RestoreSavedCharacter() {
 }
 
 RestoreSavedCharacter();
+
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 RunUI();
 
 on('lbg-openChar', () => {
@@ -52,11 +52,11 @@ on('lbg-openChar', () => {
 });
 
 // TODO: add an (optional) key binding too
-RegisterCommand("charedit", () => {
-    emit("lbg-openChar");
+RegisterCommand('charedit', () => {
+    emit('lbg-openChar');
 }, false);
 
-RegisterCommand("die", () => {
+RegisterCommand('die', () => {
     SetEntityHealth(PlayerPedId(), 0);
 }, false);
 

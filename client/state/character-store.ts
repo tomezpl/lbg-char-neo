@@ -1,7 +1,4 @@
-import { Character, DefaultCharacter, MPMale, SavedCharacterSlotPrefix } from "constants/character";
-import { store } from "state";
-import { UIContext } from "ui";
-import { addMenuAppearance } from "ui/menus/appearance";
+import { Character, DefaultCharacter, MPMale, SavedCharacterSlotPrefix } from 'constants/character';
 
 type ExtractPrimitiveType<T> = T extends number ? number : T;
 
@@ -23,7 +20,7 @@ export type SavedCharacter = {
 }
 
 export class CharacterStore implements ICharacterStore {
-    private _character: Character = JSON.parse(JSON.stringify(DefaultCharacter));
+    private _character: Character = JSON.parse(JSON.stringify(DefaultCharacter)) as Character;
     private _savedCharacters: Record<number, SavedCharacter> = {};
     public readonly currentSavedCharacter: number = -1;
 
@@ -32,9 +29,10 @@ export class CharacterStore implements ICharacterStore {
     mdhash: number;
 
     public constructor() {
+        // Autogenerate setter actions for most properties.
         this.actions = Object.fromEntries((Object.keys(DefaultCharacter) as Array<keyof Character>).map((prop: keyof Character) => {
             return [`set${prop.slice(0, 1).toUpperCase()}${prop.slice(1)}` as keyof CharacterStoreActions, (...[value]: Parameters<CharacterStoreActions[keyof CharacterStoreActions]>) => {
-                const newValue = (typeof value !== 'undefined' ? value : 0) as Character[typeof prop];
+                const newValue: unknown = (typeof value !== 'undefined' ? value : 0);
                 Object.assign(this._character, { [prop]: newValue });
             }] as [keyof CharacterStoreActions, CharacterStoreActions[keyof CharacterStoreActions]];
         })) as CharacterStoreActions;
@@ -48,7 +46,7 @@ export class CharacterStore implements ICharacterStore {
 
         this.actions.setSavedCharacter = (slotIndex) => {
             if (slotIndex in this._savedCharacters) {
-                this._character = JSON.parse(JSON.stringify(this._savedCharacters[slotIndex].character));
+                this._character = JSON.parse(JSON.stringify(this._savedCharacters[slotIndex].character)) as Character;
                 (this as { currentSavedCharacter: number }).currentSavedCharacter = slotIndex;
             }
         };
@@ -77,7 +75,7 @@ export function restoreSavedCharacters(store: CharacterStore) {
         savedCharKey = FindKvp(kvpHandle);
         if (savedCharKey) {
             const characterJson = GetResourceKvpString(savedCharKey);
-            const parsedChar: SavedCharacter = JSON.parse(characterJson);
+            const parsedChar: SavedCharacter = JSON.parse(characterJson) as SavedCharacter;
             const index = Number(savedCharKey.replace(prefix, ''));
             if (Number.isInteger(index) && !Number.isNaN(index) && ['m', 'f'].includes(parsedChar?.character?.ogd?.toLowerCase())) {
                 (store as unknown as { _savedCharacters: Record<number, SavedCharacter> })._savedCharacters[index] = parsedChar;

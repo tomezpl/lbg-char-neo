@@ -1,8 +1,10 @@
-import { PedComponents, ComponentVariation } from "./clothing"
+import { PedComponents, ComponentVariation } from './clothing'
 
-export interface Outfit extends Partial<Record<Extract<PedComponents, number>, ComponentVariation>> {
-}
+export type Outfit = Partial<Record<Extract<PedComponents, number>, ComponentVariation>>;
 
+/**
+ * Preset outfits for mp_m_freemode_01
+ */
 export const MaleOutfits: Array<Outfit> = [
 	{
 		3: [18, 0],
@@ -40,6 +42,9 @@ export const MaleOutfits: Array<Outfit> = [
 	}
 ];
 
+/**
+ * Preset outfits for mp_f_freemode_01
+ */
 export const FemaleOutfits: Array<Outfit> = [
 	{
 		3: [60, 0],

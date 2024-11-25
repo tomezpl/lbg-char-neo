@@ -1,37 +1,32 @@
-import { ClothingItemCategories, ClothingItemLocateOffsets, getDLCItemOffset, GetTextLabelForLocate, KnownGen9ECLabels, LastPreGen9ECLabel, PedComponents } from "constants/clothing";
-import { ChangeComponents } from "ped";
-import { CharacterStore } from "state/character-store";
-import { clothingStore, ComponentDrawables } from "state/clothing-store";
-import { Menu, MenuItem, MenuPool, NativeUI } from "ui";
-import { createClothingCategorySubmenu } from "./apparel/clothing-category-menu";
+import { ClothingItemCategories } from 'constants/clothing';
+import { ChangeComponents } from 'ped';
+import { CharacterStore } from 'state/character-store';
+import { clothingStore } from 'state/clothing-store';
+import { Menu, MenuPool, NativeUI } from 'ui';
+import { createClothingCategorySubmenu } from './apparel/clothing-category-menu';
 
 export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
-    const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, "Apparel", "Select to change your Apparel.", true, true);
+    const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Apparel', 'Select to change your Apparel.', true, true);
 
     const { character } = store;
 
     const outfits = [
-        "Racing Default",
-        "Biker Apparel",
-        "Freemode Classic",
-        "Double Agent",
-        "lambdaguy101"
+        'Racing Default',
+        'Biker Apparel',
+        'Freemode Classic',
+        'Double Agent',
+        'lambdaguy101'
     ] as const;
 
-    const haveGlasses = ["No", "Yes"] as const;
-
-    const femaleGlassesDrawables = [5, 11] as const;
-    const maleGlassesDrawables = [11, 5] as const;
-
-    const outfitItem = NativeUI.CreateListItem("Outfit", outfits, character.outfit, "Make changes to your Apparel.")
+    const outfitItem = NativeUI.CreateListItem('Outfit', outfits, character.outfit, 'Make changes to your Apparel.')
     NativeUI.Menu.AddItem(submenu, outfitItem);
 
     // const glassesItem = NativeUI.CreateListItem("Aviators", haveGlasses, character.glasses + 1, "Make changes to your Apparel.");
     // NativeUI.Menu.AddItem(submenu, glassesItem);
 
-    RequestAdditionalText("CLO_MNU", 0);
+    RequestAdditionalText('CLO_MNU', 0);
     for (let i = 0; i < 5 && !HasAdditionalTextLoaded(0); i++) {
-        await new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve) => {
             setTimeout(resolve, 200);
         });
     }
@@ -50,22 +45,18 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
             {} as Record<`CSHOP_ITEM${number}`, Menu>);
 
 
-    NativeUI.setEventListener(submenu, "OnMenuChanged", (parent, menu) => {
+    NativeUI.setEventListener(submenu, 'OnMenuChanged', (parent, menu) => {
         if (menu === parent || menu === submenu || menu === parentMenu) {
             return;
         }
 
         NativeUI.Menu.Clear(menu);
 
-        const [categoryLabel] = Object.entries(clothingGroupMenus).find(([label, _menu]) => _menu === menu) || [];
-
-        const playerPedEntity = PlayerPedId();
-
-        type ClothingStore = typeof clothingStore;
+        const [categoryLabel] = Object.entries(clothingGroupMenus).find(([, _menu]) => _menu === menu) || [];
 
         const pedComponents = clothingStore[`mp_${character.gender[0].toLowerCase()}_freemode_01` as keyof typeof clothingStore];
 
-        switch (Number(categoryLabel?.slice('CSHOP_ITEM'.length))) {
+        switch (Number(categoryLabel?.slice('CSHOP_ITEM'.length)) as typeof ClothingItemCategories[keyof typeof ClothingItemCategories]) {
             case ClothingItemCategories.Tops:
                 createClothingCategorySubmenu(menuPool, menu, pedComponents, ['torso', 'upper', 'armour']);
                 break;
@@ -79,7 +70,7 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
         }
     });
 
-    NativeUI.setEventListener(submenu, "OnListChange", (sender, item, index) => {
+    NativeUI.setEventListener(submenu, 'OnListChange', (sender, item, index) => {
         if (item === outfitItem) {
             store.actions.setOutfit(index - 1);
             ChangeComponents();

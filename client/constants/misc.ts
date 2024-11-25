@@ -1,9 +1,6 @@
-export const OldLbgCharKvpName = 'lbg-char-info' as const;
-export const ActiveCharacterKvpName = 'lbg-char-neo-current-char' as const;
+export const OldLbgCharKvpName = 'lbg-char-info';
+export const ActiveCharacterKvpName = 'lbg-char-neo-current-char';
 
-export const ForceApplyControlId = 75 as const;
+export const ForceApplyControlId = 75;
 
-export const SaveCharacterControlId = 216 as const;
-
-export const EnterControlId = 201 as const;
-export const BackspaceControlId = 202 as const;
+export const SaveCharacterControlId = 216;
