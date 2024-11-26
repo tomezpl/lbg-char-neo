@@ -63,3 +63,6 @@ RegisterCommand('die', () => {
 on('playerSpawned', () => {
     RefreshModel(true, store.character);
 });
+
+RegisterKeyMapping('charedit', 'Open lbg-char-neo character menu.', 'keyboard', 'm');
+RegisterKeyMapping('charedit', 'Open lbg-char-neo character menu.', 'pad_digitalbutton', 'select_index');
