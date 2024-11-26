@@ -31,4 +31,4 @@ type PedComponent = |
  * 
  * This should only be loaded once as it's a quite massive JSON
  */
-export const clothingStore = JSON.parse(LoadResourceFile('lbg-char', 'assets/clothesdump/dist/clothingdump.patched.json')) as IClothingDump;
+export const clothingStore = JSON.parse(LoadResourceFile(GetCurrentResourceName(), 'assets/clothesdump/dist/clothingdump.patched.json')) as IClothingDump;
