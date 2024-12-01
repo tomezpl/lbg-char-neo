@@ -1,4 +1,4 @@
-import { GetTextLabelForLocate, PedComponents } from 'constants/clothing';
+import { GetTextLabelForLocate, PedComponents, PedProps } from 'constants/clothing';
 import { ForceApplyControlId } from 'constants/misc';
 import { store } from 'state';
 import { clothingStore, PedClothing } from 'state/clothing-store';
@@ -22,6 +22,11 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
     // This will iterate over all drawables from componentsToInclude,
     // and then create UI items for them automatically placed in the appropriate subcategories.
     const itemCategoryMenus = componentsToInclude.reduce((menus, compGroup, compIndex) => {
+        const isProp = !!`${compGroup as string}`.match(/^ph?_/);
+        if (isProp) {
+            Logger.log(`Applying prop ${compGroup}`);
+        }
+
         const comps = pedComponents[compGroup];
 
         // Iterate over all drawables for the current component.
@@ -97,22 +102,31 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                         NativeUI.Menu.AddItem(menus[locateLabel].menu, item);
                         menus[locateLabel].items.push({
                             onSelected(force = false) {
-                                Logger.log(`selected '${labelText}', drawable ID ${_} (${drawableId} with offset applied), texture ${textureId}, component ${PedComponents[compGroup]}`)
-                                const componentSlot = PedComponents[compGroup] as Extract<PedComponents, number>;
+                                Logger.log(`selected '${labelText}', drawable ID ${_} (${drawableId} with offset applied), texture ${textureId}, component ${PedComponents[compGroup] ?? PedProps[compGroup]}`)
+                                const componentSlot = isProp
+                                    ? PedProps[compGroup] as Extract<PedProps, number>
+                                    : PedComponents[compGroup] as Extract<PedComponents, number>;
 
                                 const finalDrawableId = drawableId + offset;
 
                                 const finalTextureId = textureId;
                                 if (!force) {
-                                    let valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
+                                    let valid = isProp
+                                        ? IsPedPropValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId)
+                                        : IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
+
                                     if (!valid) {
                                         Logger.warn(`${compGroup} is invalid!`);
                                     }
                                     let componentsTried = 0; // prevent infinite loop
-                                    const selectedCompHash = GetHashNameForComponent(PlayerPedId(), componentSlot, finalDrawableId, textureId);
-                                    const forcedComponents = GetNumForcedComponents(selectedCompHash);
-                                    for (let forcedCompIndex = 0; forcedCompIndex < forcedComponents && componentsTried <= 11; forcedCompIndex++) {
-                                        const [forcedCompHash, enumValue, forcedCompSlot] = GetForcedComponent(selectedCompHash, forcedCompIndex);
+                                    const selectedCompHash = isProp
+                                        ? GetHashNameForProp(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId)
+                                        : GetHashNameForComponent(PlayerPedId(), componentSlot, finalDrawableId, textureId);
+                                    const forcedComponents = isProp ? 13 : GetNumForcedComponents(selectedCompHash);
+                                    for (let forcedCompIndex = 0; forcedCompIndex < forcedComponents && (isProp || componentsTried <= 11); forcedCompIndex++) {
+                                        const [forcedCompHash, enumValue, forcedCompSlot] = isProp
+                                            ? GetForcedProp(selectedCompHash, forcedCompIndex)
+                                            : GetForcedComponent(selectedCompHash, forcedCompIndex);
                                         const forcedCompSlotName = PedComponents[forcedCompSlot];
                                         Logger.log(`forcing ${forcedCompSlotName}: ${enumValue} (${forcedCompHash.toString(16)})`);
 
@@ -120,7 +134,9 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                         // and use the drawable & texture ID to set the ped's component variation.
 
                                         let drawableId = enumValue;
-                                        let textureId = GetPedTextureVariation(PlayerPedId(), forcedCompSlot);
+                                        let textureId = isProp
+                                            ? GetPedPropTextureIndex(PlayerPedId(), forcedCompSlot)
+                                            : GetPedTextureVariation(PlayerPedId(), forcedCompSlot);
 
                                         const clothes = store.character.gender === 'Male'
                                             ? clothingStore.mp_m_freemode_01
@@ -129,7 +145,9 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                         for (const drawableIdString in drawables) {
                                             const forcedTextureId = [0, textureId].reduce((ret, textureId) => {
                                                 if (typeof ret === 'undefined') {
-                                                    const hash = GetHashNameForComponent(PlayerPedId(), forcedCompSlot, Number(drawableIdString), textureId);
+                                                    const hash = isProp
+                                                        ? GetHashNameForProp(PlayerPedId(), forcedCompSlot, Number(drawableId), textureId)
+                                                        : GetHashNameForComponent(PlayerPedId(), forcedCompSlot, Number(drawableIdString), textureId);
                                                     if (hash === forcedCompHash) {
                                                         return textureId;
                                                     }
@@ -152,16 +170,26 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                                     drawableId = Math.max(0, drawableId - 30);
                                                     break;
                                             }
-                                            SetPedComponentVariation(PlayerPedId(), forcedCompSlot, drawableId, textureId, 0);
+                                            if (isProp) {
+                                                SetPedPropIndex(PlayerPedId(), forcedCompSlot, drawableId, textureId, true);
+                                            } else {
+                                                SetPedComponentVariation(PlayerPedId(), forcedCompSlot, drawableId, textureId, 0);
+                                            }
                                             (store.character.customOutfit as Outfit)[forcedCompSlot as Extract<PedComponents, number>] = [drawableId, textureId];
                                         }
-                                        valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
+                                        valid = isProp
+                                            ? IsPedPropValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId)
+                                            : IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
                                         componentsTried++;
                                     }
 
-                                    const variantComponents = GetShopPedApparelVariantComponentCount(selectedCompHash);
+                                    const variantComponents = isProp
+                                        ? GetShopPedApparelVariantPropCount(selectedCompHash)
+                                        : GetShopPedApparelVariantComponentCount(selectedCompHash);
                                     for (let variant = 0; variant < variantComponents; variant++) {
-                                        const [variantCompHash, enumValue, variantCompSlot] = GetVariantComponent(selectedCompHash, variant);
+                                        const [variantCompHash, enumValue, variantCompSlot] = isProp
+                                            ? GetVariantProp(selectedCompHash, variant)
+                                            : GetVariantComponent(selectedCompHash, variant);
                                         const variantCompSlotName = PedComponents[variantCompSlot];
                                         Logger.log(`found variant for ${variantCompSlotName}: ${enumValue} (${variantCompHash.toString(16)})`);
 
@@ -169,7 +197,9 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                         // and use the drawable & texture ID to set the ped's component variation.
 
                                         let drawableId = enumValue;
-                                        let textureId = GetPedTextureVariation(PlayerPedId(), variantCompSlot);
+                                        let textureId = isProp
+                                            ? GetPedPropTextureIndex(PlayerPedId(), variantCompSlot)
+                                            : GetPedTextureVariation(PlayerPedId(), variantCompSlot);
 
                                         const clothes = store.character.gender === 'Male'
                                             ? clothingStore.mp_m_freemode_01
@@ -178,7 +208,9 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                         for (const drawableIdString in drawables) {
                                             const variantTextureId = [0, textureId].reduce((ret, textureId) => {
                                                 if (typeof ret === 'undefined') {
-                                                    const hash = GetHashNameForComponent(PlayerPedId(), variantCompSlot, Number(drawableIdString), textureId);
+                                                    const hash = isProp
+                                                        ? GetHashNameForProp(PlayerPedId(), variantCompSlot, Number(drawableIdString), textureId)
+                                                        : GetHashNameForComponent(PlayerPedId(), variantCompSlot, Number(drawableIdString), textureId);
                                                     if (hash === variantCompHash) {
                                                         return textureId;
                                                     }
@@ -198,10 +230,16 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
 
                                         if (![PedComponents.armour].includes(variantCompSlot)) {
                                             Logger.log(`setting variant component ${variantCompSlotName} to [${drawableId}, ${textureId}]`);
-                                            SetPedComponentVariation(PlayerPedId(), variantCompSlot, drawableId, textureId, 0);
+                                            if (isProp) {
+                                                SetPedPropIndex(PlayerPedId(), variantCompSlot, drawableId, textureId, true);
+                                            } else {
+                                                SetPedComponentVariation(PlayerPedId(), variantCompSlot, drawableId, textureId, 0);
+                                            }
                                             (store.character.customOutfit as Outfit)[variantCompSlot as Extract<PedComponents, number>] = [drawableId, textureId];
                                         }
-                                        valid = IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
+                                        valid = isProp
+                                            ? IsPedPropValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId)
+                                            : IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, finalTextureId);
                                         componentsTried++;
                                     }
                                     // if it's still invalid, reset all other components to default, then apply the ones that are compatible.
@@ -237,10 +275,17 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                     }*/
                                 }
 
-                                if (force || IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)) {
+                                const valid = isProp
+                                    ? IsPedPropValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)
+                                    : IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId);
+                                if (force || valid) {
                                     (store.character.customOutfit as Outfit)[componentSlot] = [finalDrawableId, textureId];
 
-                                    SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, textureId, 0);
+                                    if (isProp) {
+                                        SetPedPropIndex(PlayerPedId(), componentSlot, finalDrawableId, textureId, true);
+                                    } else {
+                                        SetPedComponentVariation(PlayerPedId(), componentSlot, finalDrawableId, textureId, 0);
+                                    }
                                 }
                             }
                         });

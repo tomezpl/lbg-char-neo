@@ -64,8 +64,16 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
                 createClothingCategorySubmenu(menuPool, menu, pedComponents, ['lower', 'upper']);
                 break;
             case ClothingItemCategories.Shoes:
-                console.log('creating shoes');
                 createClothingCategorySubmenu(menuPool, menu, pedComponents, ['feet'], [{ X6: -1 }]);
+                break;
+            case ClothingItemCategories.Glasses:
+                createClothingCategorySubmenu(menuPool, menu, pedComponents, ['p_eyes']);
+                break;
+            case ClothingItemCategories.Hats:
+                createClothingCategorySubmenu(menuPool, menu, pedComponents, ['p_head']);
+                break;
+            case ClothingItemCategories.Masks:
+                createClothingCategorySubmenu(menuPool, menu, pedComponents, ['p_mouth', 'beard']);
                 break;
         }
     });
