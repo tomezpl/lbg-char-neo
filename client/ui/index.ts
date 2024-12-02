@@ -3,6 +3,7 @@ import { ActiveCharacterKvpName } from 'constants/misc';
 import vMenuPlugin from 'plugins/vmenu';
 import { inputState, store } from 'state';
 import { addMenuApparel } from './menus/apparel';
+import { addAdvancedApparelMenu } from './menus/apparel/advanced';
 import { addMenuAppearance } from './menus/appearance';
 import { addMenuFaceShape } from './menus/face-shape';
 import { addMenuGender } from './menus/gender';
@@ -101,7 +102,8 @@ export async function RunUI() {
     addMenuHeritage(menuPool, creatorMainMenu, store);
     addMenuFaceShape(menuPool, creatorMainMenu, store);
     addMenuAppearance(menuPool, creatorMainMenu, store);
-    addMenuUpperBody(menuPool, creatorMainMenu, store);
+    // addMenuUpperBody(menuPool, creatorMainMenu, store);
+    addAdvancedApparelMenu(menuPool, creatorMainMenu, store);
     await addMenuApparel(menuPool, creatorMainMenu, store);
     addSavedCharactersMenu(menuPool, creatorMainMenu, 'menu');
     addSavedCharactersMenu(menuPool, mainMenu, 'menuQuick');

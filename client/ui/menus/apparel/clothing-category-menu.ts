@@ -279,7 +279,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                     ? IsPedPropValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)
                                     : IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId);
                                 if (force || valid) {
-                                    (store.character.customOutfit as Outfit)[componentSlot] = [finalDrawableId, textureId];
+                                    (isProp ? store.character.customProps : store.character.customOutfit as Outfit)[componentSlot] = [finalDrawableId, textureId];
 
                                     if (isProp) {
                                         SetPedPropIndex(PlayerPedId(), componentSlot, finalDrawableId, textureId, true);
