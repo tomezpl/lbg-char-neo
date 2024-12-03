@@ -29,7 +29,9 @@ export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
             SetResourceKvp(ActiveCharacterKvpName, JSON.stringify(store.character));
             console.log('!!!! SAVING CHARACTER !!!!')
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            animateCharCreatorOutro();
+            animateCharCreatorOutro().then(() => {
+                inputState.setInCreator(false);
+            });
             NativeUI.Menu.Visible(finishButton, false);
             NativeUI.Menu.Visible(parentMenu, false);
         }
@@ -45,6 +47,7 @@ export async function RunUI() {
         if (menu === creatorMainMenu && !inputState.blockMenuButtons/* && Boolean(GetConvar("lbgchar_disableCreator", "false")) !== true*/) {
             const immediate = setImmediate(() => {
                 NativeUI.Menu.Visible(creatorMainMenu, false);
+                inputState.setInCreator(true);
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 animateCharCreatorIntro().then(() => {
                     clearImmediate(immediate);
@@ -77,6 +80,7 @@ export async function RunUI() {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 animateCharCreatorOutro(false).then(() => {
                     inputState.blockMenuButtons = false;
+                    inputState.setInCreator(false);
                 });
             } else {
                 NativeUI.Menu.Visible(creatorMainMenu, true);
