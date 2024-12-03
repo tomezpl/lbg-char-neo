@@ -44,7 +44,7 @@ export function addMenuGender(parentMenu: Menu, store: CharacterStore) {
             RequestModel(store.mdhash)
             store.actions.setResemblance(1.0 - character.resemblance);
             store.actions.setSkintone(1.0 - character.resemblance);
-            RefreshModel()
+            RefreshModel(true)
         }
     })
 }
