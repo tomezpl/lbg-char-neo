@@ -1,8 +1,11 @@
 import { createSkinCamera } from 'anim';
 import { cameraShots } from 'constants/camera';
 import { FemaleParentIds, FemaleParents, MaleParentIds, MaleParents } from 'constants/parents';
+import { store } from 'state';
 import { CharacterStore } from 'state/character-store';
 import { Menu, MenuItem, MenuPool, NativeUI, Window } from 'ui';
+import { Logger } from 'utils/logger';
+import { getZtOIndex } from 'utils/misc';
 
 interface IUIHeritageMenuContext {
     mumItem: MenuItem;
@@ -92,16 +95,18 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
         if (item === resemblanceItem || item === skintoneItem) {
             switch (item) {
                 case resemblanceItem:
-                    console.log(`changing resemblance to ${ZtO[index - 1]}`);
+                    Logger.log(`changing resemblance to ${ZtO[index - 1]}`);
                     store.actions.setResemblance(ZtO[index - 1]);
                     break;
                 case skintoneItem:
-                    console.log(`changing skin tone to ${ZtO[index - 1]}`);
+                    Logger.log(`changing skin tone to ${ZtO[index - 1]}`);
                     store.actions.setSkintone(ZtO[index - 1]);
                     break;
             }
 
             const immediate = setImmediate(() => {
+                const { character: Character } = store;
+                Logger.log(`resemblance: ${Character.resemblance}, skintone: ${Character.skintone}`);
                 SetPedHeadBlendData(PlayerPedId(), Character['mom'], Character['dad'], 0, Character['mom'], Character['dad'], 0, Character['resemblance'], Character['skintone'], 0, true);
                 clearImmediate(immediate);
             });
@@ -120,4 +125,23 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
         createSkinCamera(cameraShots.body);
         // CreateSkinCam('body')
     });
+}
+
+/**
+ * Resets the heritage menu values to current values from the store.
+ * @param param0 
+ */
+export function resetMenuHeritage({ character }: CharacterStore = store) {
+    UIHeritageMenuContext.mumItem && NativeUI.MenuListItem.Index(UIHeritageMenuContext.mumItem, character.mom + 1);
+    UIHeritageMenuContext.dadItem && NativeUI.MenuListItem.Index(UIHeritageMenuContext.dadItem, character.dad + 1);
+    UIHeritageMenuContext.resemblanceItem && NativeUI.MenuListItem.Index(UIHeritageMenuContext.resemblanceItem, getZtOIndex(character.resemblance) + 1);
+    UIHeritageMenuContext.skinToneItem && NativeUI.MenuListItem.Index(UIHeritageMenuContext.skinToneItem, getZtOIndex(character.skintone) + 1);
+
+    if (UIHeritageMenuContext.heritageWindow) {
+        const moms = FemaleParentIds;
+        const dads = MaleParentIds;
+        const parent1 = dads.find((d) => Number(d) === character.mom) ? `-${dads.findIndex((d) => Number(d) === character.mom)}` : moms.findIndex((m) => Number(m) === character.mom);
+        const parent2 = moms.find((m) => Number(m) === character.dad) ? `-${moms.findIndex((m) => Number(m) === character.dad)}` : dads.findIndex((d) => Number(d) === character.dad);
+        NativeUI.Window.Index(UIHeritageMenuContext.heritageWindow, parent1 as number, parent2 as number);
+    }
 }

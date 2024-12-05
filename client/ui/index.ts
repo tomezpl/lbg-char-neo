@@ -2,12 +2,13 @@ import { animateCharCreatorIntro, animateCharCreatorOutro } from 'anim';
 import { ActiveCharacterKvpName } from 'constants/misc';
 import vMenuPlugin from 'plugins/vmenu';
 import { inputState, store } from 'state';
+import { CharacterStore } from 'state/character-store';
 import { addMenuApparel } from './menus/apparel';
 import { addAdvancedApparelMenu } from './menus/apparel/advanced';
-import { addMenuAppearance } from './menus/appearance';
-import { addMenuFaceShape } from './menus/face-shape';
-import { addMenuGender } from './menus/gender';
-import { addMenuHeritage } from './menus/heritage';
+import { addMenuAppearance, resetMenuAppearance } from './menus/appearance';
+import { addMenuFaceShape, resetMenuFaceShape } from './menus/face-shape';
+import { addMenuGender, resetMenuGender } from './menus/gender';
+import { addMenuHeritage, resetMenuHeritage } from './menus/heritage';
 import { addSavedCharactersMenu, UISavedCharactersMenuContext } from './menus/saved-characters';
 import { addMenuUpperBody } from './menus/upper-body';
 import { Menu, MenuPool, NativeUI } from './native-ui-wrapper';
@@ -115,4 +116,11 @@ export async function RunUI() {
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, creatorMainMenu);
 
+}
+
+export function resetMenus(charStore: CharacterStore) {
+    resetMenuGender(charStore);
+    resetMenuHeritage(charStore);
+    resetMenuFaceShape(charStore);
+    resetMenuAppearance(charStore);
 }

@@ -1,4 +1,4 @@
-import { Character, DefaultCharacter, MPMale, SavedCharacterSlotPrefix } from 'constants/character';
+import { Character, DefaultCharacter, MPFemale, MPMale, SavedCharacterSlotPrefix } from 'constants/character';
 
 type ExtractPrimitiveType<T> = T extends number ? number : T;
 
@@ -47,6 +47,7 @@ export class CharacterStore implements ICharacterStore {
         this.actions.setSavedCharacter = (slotIndex) => {
             if (slotIndex in this._savedCharacters) {
                 this._character = JSON.parse(JSON.stringify(this._savedCharacters[slotIndex].character)) as Character;
+                this.mdhash = this._character.ogd.toLowerCase() === 'm' ? GetHashKey(MPMale) : GetHashKey(MPFemale);
                 (this as { currentSavedCharacter: number }).currentSavedCharacter = slotIndex;
             }
         };

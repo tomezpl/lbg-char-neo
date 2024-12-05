@@ -4,7 +4,7 @@ import { OldDLCHairMap } from 'constants/hair';
 import { FemaleParentIds, MaleParentIds } from 'constants/parents';
 import { CharacterStore } from 'state/character-store';
 import { clothingStore } from 'state/clothing-store';
-import { Menu, MenuPool, NativeUI } from 'ui';
+import { Menu, MenuPool, NativeUI, resetMenus } from 'ui';
 import { UIAppearanceMenuContext } from 'ui/menus/appearance';
 import { UIFaceShapeMenuContext } from 'ui/menus/face-shape';
 import { UIGenderMenuContext } from 'ui/menus/gender';
@@ -50,10 +50,11 @@ export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, stor
  * @param character 
  */
 function updateMenuItemValues(vMenuCharacter: IVMenuCharacter, character: Character) {
-    updateGenderItemValue(vMenuCharacter);
-    updateAppearanceMenuItemValues(vMenuCharacter);
-    updateHeritageMenuItemValues(vMenuCharacter);
-    updateFaceShapeMenuItemValues(character);
+    // updateGenderItemValue(vMenuCharacter);
+    // updateAppearanceMenuItemValues(vMenuCharacter);
+    // updateHeritageMenuItemValues(vMenuCharacter);
+    // updateFaceShapeMenuItemValues(character);
+    resetMenus({ character });
 }
 
 function updateFaceShapeMenuItemValues(character: Character) {

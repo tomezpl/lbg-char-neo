@@ -2,6 +2,7 @@ import { CharacterStore } from 'state/character-store';
 import { Menu, MenuItem, NativeUI } from 'ui'
 import type { Character } from 'constants/character';
 import { RefreshModel } from 'ped';
+import { store } from 'state';
 
 interface IUIGenderMenuContext {
     genderItem: MenuItem;
@@ -42,9 +43,17 @@ export function addMenuGender(parentMenu: Menu, store: CharacterStore) {
             }
 
             RequestModel(store.mdhash)
-            store.actions.setResemblance(1.0 - character.resemblance);
-            store.actions.setSkintone(1.0 - character.resemblance);
+            // store.actions.setResemblance(1.0 - character.resemblance);
+            // store.actions.setSkintone(1.0 - character.resemblance);
             RefreshModel(true)
         }
     })
+}
+
+/**
+ * Resets gender menu values to current characte from the store.
+ * @param param0 
+ */
+export function resetMenuGender({ character }: CharacterStore = store) {
+    UIGenderMenuContext.genderItem && NativeUI.MenuListItem.Index(UIGenderMenuContext.genderItem, character.gender === 'Female' ? 2 : 1);
 }

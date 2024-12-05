@@ -2,6 +2,10 @@ import { MPFemale, MPMale } from 'constants/character';
 import { RefreshModel } from 'ped';
 import { CharacterStore } from 'state/character-store';
 import { ComponentVariation } from 'constants/clothing';
+import { OldDLCHairMap } from 'constants/hair';
+import { clothingStore } from 'state/clothing-store';
+import { NativeUI } from 'ui';
+import { UIAppearanceMenuContext } from 'ui/menus/appearance';
 
 export interface IVMenuCharacter {
     PedHeadBlendData: IVMenuPedHeadBlendData;
@@ -124,11 +128,59 @@ export function applyVMenuCharacter(character: IVMenuCharacter, store: Character
     actions.setResemblance(shapeMix);
     actions.setSkintone(skinMix);
 
+    // Get hairstyle names from the GXT files.
+    const baseHaircutNames = Object.fromEntries((['f', 'm'] as const).map((gender) => {
+        const pedName = `mp_${gender}_freemode_01` as const;
+        return [gender, Object.entries(clothingStore[pedName].hair).reduce((hair, [hairIndex, hairNames], i) => {
+            const label = `HAIR_GROUP_${gender.toUpperCase()}${i}`;
+
+            let text: string;
+
+            // There's like a random NVG headset in the middle of the hair styles that causes some of them to be offset by one...
+            if (!(hairNames?.[0]?.label.length > 0) && Number(hairIndex) >= 16) {
+                return hair;
+            }
+            if (DoesTextLabelExist(label)) {
+                text = GetLabelText(label);
+            } else if (hairNames?.[0] && hairNames[0]?.label in OldDLCHairMap && DoesTextLabelExist(OldDLCHairMap[hairNames?.[0]?.label as keyof typeof OldDLCHairMap])) {
+                text = GetLabelText(OldDLCHairMap[hairNames?.[0]?.label as keyof typeof OldDLCHairMap]);
+            } else if (DoesTextLabelExist(hairNames?.[0]?.label)) {
+                text = GetLabelText(hairNames[0]?.label)
+            }
+
+            if (text) {
+                const existingTextIndex = hair.findIndex(([existingText]) => existingText === text);
+                if (existingTextIndex === -1) {
+                    hair.push([text, [i]]);
+                } else {
+                    hair[existingTextIndex][1].push(i);
+                }
+            }
+
+            return hair;
+        }, [] as [string, number[]][])];
+    }));
+    const haircutNames = baseHaircutNames[character.IsMale ? 'm' : 'f'];
+
     //Copy vMenu PedAppearance
-    const appearance = character.PedAppearance;
-    actions.setHair(appearance.hairStyle);
-    actions.setHair_color_1(appearance.hairColor);
-    //TODO: hair highlights colour ?
+    const { PedAppearance: appearance } = character;
+
+    // TODO: Hair highlights
+    const hairIndex = haircutNames.findIndex(([, indices]) => indices.includes(appearance.hairStyle));
+    actions.setHair(haircutNames[hairIndex][1][0]);
+    actions.setHair_color_1(appearance.hairColor)
+
+    actions.setMakeup_1(appearance.makeupStyle + 1);
+    actions.setMakeup_3(appearance.makeupColor);
+    actions.setMakeup_2(appearance.makeupOpacity);
+
+    actions.setBlush_1(appearance.blushStyle + 1);
+    actions.setBlush_3(appearance.blushColor)
+    actions.setBlush_2(appearance.blushOpacity);
+
+    actions.setLipstick_1(appearance.lipstickStyle + 1);
+    actions.setLipstick_3(appearance.lipstickColor);
+    actions.setLipstick_2(appearance.lipstickOpacity);
 
     actions.setEyebrows(appearance.eyebrowsStyle);
     actions.setEyebrows_2(appearance.eyebrowsOpacity);
@@ -139,18 +191,6 @@ export function applyVMenuCharacter(character: IVMenuCharacter, store: Character
 
     actions.setComplexion_1(appearance.complexionStyle);
     actions.setComplexion_2(appearance.complexionOpacity);
-
-    actions.setMakeup_1(appearance.makeupStyle);
-    actions.setMakeup_2(appearance.makeupOpacity);
-    actions.setMakeup_3(appearance.makeupColor);
-
-    actions.setLipstick_1(appearance.lipstickStyle);
-    actions.setLipstick_2(appearance.lipstickOpacity);
-    actions.setLipstick_3(appearance.lipstickColor);
-
-    actions.setBlush_1(appearance.blushStyle);
-    actions.setBlush_2(appearance.blushOpacity);
-    actions.setBlush_3(appearance.blushColor);
 
     actions.setBeard(appearance.beardStyle);
     actions.setBeard_2(appearance.beardOpacity);

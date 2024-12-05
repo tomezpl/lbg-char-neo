@@ -1,11 +1,36 @@
 import { createSkinCamera } from 'anim';
 import { cameraShots } from 'constants/camera';
 import { Character } from 'constants/character';
+import { store } from 'state';
 import { CharacterStore } from 'state/character-store';
 import { Menu, MenuItem, MenuPool, NativeUI } from 'ui';
+import { getZtOIndex } from 'utils/misc';
 
 export const UIFaceShapeMenuContext: Partial<Record<`${keyof Character}_item`, MenuItem>> = {
 }
+
+export const FaceFeatureNameMap: ReadonlyArray<[name: string, featureName: keyof Character, featureIndex?: number]> = [
+	['Nose Width', 'nose_1'],
+	['Nose Peak Height', 'nose_2'],
+	['Nose Peak Length', 'nose_3'],
+	['Nose Bone Height', 'nose_4'],
+	['Nose Peak Lowering', 'nose_5'],
+	['Nose Bone Twist', 'nose_6'],
+	['Eyebrow Depth', 'eyebrows_5', 7],
+	['Eyebrow Height', 'eyebrows_6', 6],
+	['Cheekbones Height', 'cheeks_1', 8],
+	['Cheekbones Width', 'cheeks_2'],
+	['Cheeks Width', 'cheeks_3'],
+	['Eye Opening', 'eye_open'],
+	['Lips Thickness', 'lips_thick'],
+	['Jaw Bone Width', 'jaw_1'],
+	['Jaw Bone Depth', 'jaw_2'],
+	['Chin Height', 'chin_height'],
+	['Chin Depth', 'chin_length'],
+	['Chin Width', 'chin_width'],
+	['Chin Hole Size', 'chin_hole'],
+	['Neck Thickness', 'neck_thick']
+];
 
 export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
 	const listItems = new Array<string>();
@@ -17,28 +42,7 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 
 	const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Features', 'Select to alter your facial Features.', true, false)
 
-	const features: Array<[name: string, featureName: keyof Character, featureIndex?: number]> = [
-		['Nose Width', 'nose_1'],
-		['Nose Peak Height', 'nose_2'],
-		['Nose Peak Length', 'nose_3'],
-		['Nose Bone Height', 'nose_4'],
-		['Nose Peak Lowering', 'nose_5'],
-		['Nose Bone Twist', 'nose_6'],
-		['Eyebrow Depth', 'eyebrows_5', 7],
-		['Eyebrow Height', 'eyebrows_6', 6],
-		['Cheekbones Height', 'cheeks_1', 8],
-		['Cheekbones Width', 'cheeks_2'],
-		['Cheeks Width', 'cheeks_3'],
-		['Eye Opening', 'eye_open'],
-		['Lips Thickness', 'lips_thick'],
-		['Jaw Bone Width', 'jaw_1'],
-		['Jaw Bone Depth', 'jaw_2'],
-		['Chin Height', 'chin_height'],
-		['Chin Depth', 'chin_length'],
-		['Chin Width', 'chin_width'],
-		['Chin Hole Size', 'chin_hole'],
-		['Neck Thickness', 'neck_thick']
-	];
+	const features = FaceFeatureNameMap;
 
 	features.reduce((featureIndex, [name, featureName, currentFeatureIndex]) => {
 		if (typeof currentFeatureIndex === 'number') {
@@ -72,4 +76,14 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 		createSkinCamera(cameraShots.body);
 		// CreateSkinCam('body');
 	});
+}
+
+export function resetMenuFaceShape({ character }: CharacterStore = store) {
+	FaceFeatureNameMap.forEach(([name, featureName]) => {
+		const item = UIFaceShapeMenuContext[`${featureName}_item`];
+		if (item) {
+			const value = character[featureName];
+			NativeUI.MenuListItem.Index(item, (value + 1) * 10 + 1);
+		}
+	})
 }

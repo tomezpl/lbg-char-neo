@@ -54,7 +54,7 @@ export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, sto
 
             let clampedTextureIndex = currentTextureIndex;
 
-            if (currentTextureIndex >= numTextures) {
+            if (currentTextureIndex > numTextures) {
                 clampedTextureIndex = numTextures;
                 NativeUI.MenuListItem.Index(textureItem, clampedTextureIndex);
             }
@@ -78,7 +78,7 @@ export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, sto
                 : GetNumberOfPedTextureVariations(PlayerPedId(), compSlot, drawableIndex);
 
             // Wrap index
-            if (index >= numTextures) {
+            if (index > numTextures) {
                 index = 1;
                 NativeUI.MenuListItem.Index(textureItem, index);
             }

@@ -4,6 +4,7 @@ import { CharacterStore } from 'state/character-store';
 import { Menu, MenuItem, MenuPool, NativeUI, Panel } from 'ui';
 import { cameraShots } from 'constants/camera';
 import { createSkinCamera } from 'anim';
+import { store } from 'state';
 
 let submenu: Menu;
 
@@ -580,4 +581,78 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	submenu.OnMenuClosed = function()
 		CreateSkinCam('body')
 	end*/
+}
+
+export function resetMenuAppearance({ character }: CharacterStore = store) {
+	const { hairItem, hairColourPanel } = UIAppearanceMenuContext;
+	if (hairItem) {
+		NativeUI.MenuListItem.Index(hairItem, character.hair + 1);
+		NativeUI.MenuListItem.setPanelValue(hairColourPanel, character.hair_color_1);
+	}
+
+	const { eyebrowsItem, eyebrowsPercentagePanel, eyebrowsColourPanel } = UIAppearanceMenuContext;
+	if (eyebrowsItem) {
+		NativeUI.MenuListItem.Index(eyebrowsItem, character.eyebrows + 1);
+		NativeUI.MenuListItem.setPanelValue([eyebrowsPercentagePanel, eyebrowsColourPanel], [character.eyebrows_2, character.eyebrows_3 + 1]);
+	}
+
+	const { beardItem, beardColourPanel, beardPercentagePanel } = UIAppearanceMenuContext;
+	if (beardItem) {
+		NativeUI.MenuListItem.Index(beardItem, character.beard + 1);
+		NativeUI.MenuListItem.setPanelValue(beardColourPanel, character.beard_3);
+		NativeUI.MenuListItem.setPanelValue(beardPercentagePanel, character.beard_2);
+	}
+
+	const { blemishesItem, blemishesOpacityPanel } = UIAppearanceMenuContext;
+	if (blemishesItem) {
+		NativeUI.MenuListItem.Index(blemishesItem, character.bodyb_1 + 1);
+		NativeUI.MenuListItem.setPanelValue(blemishesOpacityPanel, character.bodyb_2);
+	}
+
+	const { agingItem, agingOpacityPanel } = UIAppearanceMenuContext;
+	if (agingItem) {
+		NativeUI.MenuListItem.Index(agingItem, character.age_1 + 1);
+		NativeUI.MenuListItem.setPanelValue(agingOpacityPanel, character.age_2);
+	}
+
+	const { complexionItem, complexionOpacityPanel } = UIAppearanceMenuContext;
+	if (complexionItem) {
+		NativeUI.MenuListItem.Index(complexionItem, character.complexion_1 + 1);
+		NativeUI.MenuListItem.setPanelValue(complexionOpacityPanel, character.complexion_2);
+	}
+
+	const { molesItem, molesOpacityPanel } = UIAppearanceMenuContext;
+	if (molesItem) {
+		NativeUI.MenuListItem.Index(molesItem, character.moles_1 + 1);
+		NativeUI.MenuListItem.setPanelValue(molesOpacityPanel, character.moles_2);
+	}
+
+	const { sunDamageItem, sunDamageOpacityPanel } = UIAppearanceMenuContext;
+	if (sunDamageItem) {
+		NativeUI.MenuListItem.Index(sunDamageItem, character.sun_1 + 1);
+		NativeUI.MenuListItem.setPanelValue(sunDamageOpacityPanel, character.sun_2);
+	}
+
+	const { eyeColourItem } = UIAppearanceMenuContext;
+	if (eyeColourItem) {
+		NativeUI.MenuListItem.Index(eyeColourItem, character.eye_color + 1);
+	}
+
+	const { makeupItem, makeupColourPanel, makeupOpacityPanel } = UIAppearanceMenuContext;
+	if (makeupItem) {
+		NativeUI.MenuListItem.Index(makeupItem, character.makeup_1 + 2);
+		NativeUI.MenuListItem.setPanelValue([makeupOpacityPanel, makeupColourPanel], [character.makeup_2, character.makeup_3]);
+	}
+
+	const { blushItem, blushColourPanel, blushOpacityPanel } = UIAppearanceMenuContext;
+	if (blushItem) {
+		NativeUI.MenuListItem.Index(blushItem, character.blush_1 + 1);
+		NativeUI.MenuListItem.setPanelValue([blushOpacityPanel, blushColourPanel], [character.blush_2, character.blush_3]);
+	}
+
+	const { lipstickItem, lipstickColourPanel, lipstickOpacityPanel } = UIAppearanceMenuContext;
+	if (lipstickItem) {
+		NativeUI.MenuListItem.Index(lipstickItem, character.lipstick_1 + 1);
+		NativeUI.MenuListItem.setPanelValue([lipstickOpacityPanel, lipstickColourPanel], [character.lipstick_2, character.lipstick_3]);
+	}
 }
