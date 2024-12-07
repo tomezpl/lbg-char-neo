@@ -1,7 +1,7 @@
-import { PedComponents, PedProps } from "constants/clothing";
-import { CharacterStore } from "state/character-store";
-import { Menu, MenuPool, NativeUI } from "ui";
-import { Logger } from "utils/logger";
+import { PedComponents, PedProps } from 'constants/clothing';
+import { CharacterStore } from 'state/character-store';
+import { Menu, MenuPool, NativeUI } from 'ui';
+import { Logger } from 'utils/logger';
 
 export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
     const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Advanced Apparel Options', 'Select to manually tweak character component slots.', true, true);
@@ -10,40 +10,45 @@ export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, sto
         ...[PedComponents, PedProps].flatMap((names) => Object.keys(names).filter((k) => Number.isNaN(Number(k)))),
     ];
 
-    const menus = compNames.map((compName) => {
+    type CompName = Extract<keyof (typeof PedProps | typeof PedComponents), 'string'>;
+    const menus = compNames.map((compName: CompName) => {
         const isProp = !!(compName as string)?.match(/^ph?_/);
-        const nameText = `${isProp ? 'Prop' : 'Component'} #${isProp ? PedProps[compName] : PedComponents[compName]} (${compName})`;
+        const nameText = `${isProp ? 'Prop' : 'Component'} #${isProp ? PedProps[compName] : PedComponents[compName]} (${compName as string})`;
 
         const compMenu = NativeUI.MenuPool.AddSubMenu(menuPool, submenu, nameText, '', true, true);
 
         return compMenu;
     });
 
-    function createLists(menu: Menu, compName: string) {
+    function createLists(menu: Menu, compName: CompName) {
         NativeUI.Menu.Clear(menu);
 
         const isProp = !!(compName as string)?.match(/^ph?_/);
 
-        const compSlot = isProp ? PedProps[compName] : PedComponents[compName];
+        const compSlot = (isProp ? PedProps[compName] : PedComponents[compName]) as unknown as number;
 
         const numDrawables = isProp
             ? GetNumberOfPedPropDrawableVariations(PlayerPedId(), compSlot)
             : GetNumberOfPedDrawableVariations(PlayerPedId(), compSlot);
 
+        function getTargetObject(isProp: boolean): Record<number, [drawable: number, texture: number]> {
+            return (isProp ? store.character.customProps : store.character.customOutfit) as Record<number, [drawable: number, texture: number]>;
+        }
+
         const drawableItem = NativeUI.CreateListItem(
             'Drawable',
-            [...Array(numDrawables)].map((_, i) => `${i}`),
-            (((isProp ? store.character.customProps : store.character.customOutfit)[compSlot || -1])?.[0] || 0) + 1,
+            [...Array<string>(numDrawables)].map((_, i) => `${i}`),
+            (((getTargetObject(isProp))[compSlot || -1])?.[0] || 0) + 1,
             '');
         NativeUI.Menu.AddItem(menu, drawableItem);
 
         const textureItem = NativeUI.CreateListItem(
             'Texture',
-            [...Array(100)].map((_, i) => `${i}`),
-            (((isProp ? store.character.customProps : store.character.customOutfit)[compSlot || -1])?.[1] || 0) + 1,
+            [...Array<string>(100)].map((_, i) => `${i}`),
+            (((getTargetObject(isProp))[compSlot || -1])?.[1] || 0) + 1,
             '');
         NativeUI.Menu.AddItem(menu, textureItem);
-        Logger.log(`created list for ${compName}`);
+        Logger.log(`created list for ${compName as string}`);
 
         NativeUI.setEventListener(drawableItem, 'OnListChanged', (parent, item, index) => {
             const currentTextureIndex = NativeUI.MenuListItem.Index(textureItem);
@@ -61,11 +66,10 @@ export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, sto
 
             const drawableIndex = index - 1;
 
+            getTargetObject(isProp)[compSlot] = [drawableIndex, clampedTextureIndex - 1];
             if (isProp) {
-                store.character.customProps[compSlot] = [drawableIndex, clampedTextureIndex - 1];
                 SetPedPropIndex(PlayerPedId(), compSlot, drawableIndex, clampedTextureIndex - 1, true);
             } else {
-                store.character.customOutfit[compSlot] = [drawableIndex, clampedTextureIndex - 1];
                 SetPedComponentVariation(PlayerPedId(), compSlot, drawableIndex, clampedTextureIndex - 1, 0);
             }
         });
@@ -83,11 +87,10 @@ export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, sto
                 NativeUI.MenuListItem.Index(textureItem, index);
             }
 
+            getTargetObject(isProp)[compSlot] = [drawableIndex, index - 1];
             if (isProp) {
-                store.character.customProps[compSlot] = [drawableIndex, index - 1];
                 SetPedPropIndex(PlayerPedId(), compSlot, drawableIndex, index - 1, true);
             } else {
-                store.character.customOutfit[compSlot] = [drawableIndex, index - 1];
                 SetPedComponentVariation(PlayerPedId(), compSlot, drawableIndex, index - 1, 0);
             }
         });
@@ -96,9 +99,7 @@ export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, sto
     NativeUI.setEventListener(submenu, 'OnMenuChanged', (parent, menu) => {
         const menuIndex = menus.indexOf(menu);
         if (menuIndex !== -1) {
-            createLists(menu, compNames[menuIndex]);
+            createLists(menu, compNames[menuIndex] as never);
         }
     });
-
-    const { character } = store;
 }

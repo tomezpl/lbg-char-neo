@@ -10,7 +10,6 @@ import { addMenuFaceShape, resetMenuFaceShape } from './menus/face-shape';
 import { addMenuGender, resetMenuGender } from './menus/gender';
 import { addMenuHeritage, resetMenuHeritage } from './menus/heritage';
 import { addSavedCharactersMenu, UISavedCharactersMenuContext } from './menus/saved-characters';
-import { addMenuUpperBody } from './menus/upper-body';
 import { Menu, MenuPool, NativeUI } from './native-ui-wrapper';
 export * from './native-ui-wrapper';
 
@@ -118,7 +117,7 @@ export async function RunUI() {
 
 }
 
-export function resetMenus(charStore: CharacterStore) {
+export function resetMenus(charStore: Pick<CharacterStore, 'character'>) {
     resetMenuGender(charStore);
     resetMenuHeritage(charStore);
     resetMenuFaceShape(charStore);

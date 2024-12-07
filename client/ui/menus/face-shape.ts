@@ -4,7 +4,6 @@ import { Character } from 'constants/character';
 import { store } from 'state';
 import { CharacterStore } from 'state/character-store';
 import { Menu, MenuItem, MenuPool, NativeUI } from 'ui';
-import { getZtOIndex } from 'utils/misc';
 
 export const UIFaceShapeMenuContext: Partial<Record<`${keyof Character}_item`, MenuItem>> = {
 }
@@ -78,11 +77,11 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 	});
 }
 
-export function resetMenuFaceShape({ character }: CharacterStore = store) {
-	FaceFeatureNameMap.forEach(([name, featureName]) => {
+export function resetMenuFaceShape({ character }: Pick<CharacterStore, 'character'> = store) {
+	FaceFeatureNameMap.forEach(([, featureName]) => {
 		const item = UIFaceShapeMenuContext[`${featureName}_item`];
 		if (item) {
-			const value = character[featureName];
+			const value = character[featureName] as number;
 			NativeUI.MenuListItem.Index(item, (value + 1) * 10 + 1);
 		}
 	})

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { createSkinCamera } from 'anim';
 import { cameraShots } from 'constants/camera';
 import { FemaleParentIds, FemaleParents, MaleParentIds, MaleParents } from 'constants/parents';
@@ -131,7 +132,7 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
  * Resets the heritage menu values to current values from the store.
  * @param param0 
  */
-export function resetMenuHeritage({ character }: CharacterStore = store) {
+export function resetMenuHeritage({ character }: Pick<CharacterStore, 'character'> = store) {
     UIHeritageMenuContext.mumItem && NativeUI.MenuListItem.Index(UIHeritageMenuContext.mumItem, character.mom + 1);
     UIHeritageMenuContext.dadItem && NativeUI.MenuListItem.Index(UIHeritageMenuContext.dadItem, character.dad + 1);
     UIHeritageMenuContext.resemblanceItem && NativeUI.MenuListItem.Index(UIHeritageMenuContext.resemblanceItem, getZtOIndex(character.resemblance) + 1);

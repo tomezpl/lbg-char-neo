@@ -31,7 +31,7 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
 
         // Iterate over all drawables for the current component.
         iterateDrawables(comps, (drawableId, _, textures) => {
-            if (IsPedComponentVariationGen9Exclusive(playerPedEntity, PedComponents[compGroup], drawableId)) {
+            if (IsPedComponentVariationGen9Exclusive(playerPedEntity, PedComponents[compGroup as keyof typeof PedComponents], drawableId)) {
                 return;
             }
 
@@ -102,10 +102,10 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                         NativeUI.Menu.AddItem(menus[locateLabel].menu, item);
                         menus[locateLabel].items.push({
                             onSelected(force = false) {
-                                Logger.log(`selected '${labelText}', drawable ID ${_} (${drawableId} with offset applied), texture ${textureId}, component ${PedComponents[compGroup] ?? PedProps[compGroup]}`)
+                                Logger.log(`selected '${labelText}', drawable ID ${_} (${drawableId} with offset applied), texture ${textureId}, component ${PedComponents[compGroup as keyof typeof PedComponents] ?? PedProps[compGroup as keyof typeof PedProps]}`)
                                 const componentSlot = isProp
-                                    ? PedProps[compGroup] as Extract<PedProps, number>
-                                    : PedComponents[compGroup] as Extract<PedComponents, number>;
+                                    ? PedProps[compGroup as keyof typeof PedProps] as Extract<PedProps, number>
+                                    : PedComponents[compGroup as keyof typeof PedComponents] as Extract<PedComponents, number>;
 
                                 const finalDrawableId = drawableId + offset;
 
@@ -279,7 +279,8 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                                     ? IsPedPropValid(PlayerPedId(), componentSlot, finalDrawableId, textureId)
                                     : IsPedComponentVariationValid(PlayerPedId(), componentSlot, finalDrawableId, textureId);
                                 if (force || valid) {
-                                    (isProp ? store.character.customProps : store.character.customOutfit as Outfit)[componentSlot] = [finalDrawableId, textureId];
+                                    const targetObj = (isProp ? store.character.customProps : store.character.customOutfit as Outfit) as Record<typeof componentSlot, [drawable: number, texture: number]>;
+                                    targetObj[componentSlot] = [finalDrawableId, textureId];
 
                                     if (isProp) {
                                         SetPedPropIndex(PlayerPedId(), componentSlot, finalDrawableId, textureId, true);

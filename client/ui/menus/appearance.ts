@@ -583,7 +583,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	end*/
 }
 
-export function resetMenuAppearance({ character }: CharacterStore = store) {
+export function resetMenuAppearance({ character }: Pick<CharacterStore, 'character'> = store) {
 	const { hairItem, hairColourPanel } = UIAppearanceMenuContext;
 	if (hairItem) {
 		NativeUI.MenuListItem.Index(hairItem, character.hair + 1);

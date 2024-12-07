@@ -18,6 +18,7 @@ let hidePedsTick: ReturnType<typeof setTick> | null = null;
 export const inputState: IInputState = {
     disableMovement: false,
     blockMenuButtons: false,
+    inCreator: false,
     setDisableMovement(disableMovement: boolean) {
         const thisState = this as IInputState;
         (thisState as { disableMovement: boolean }).disableMovement = disableMovement;

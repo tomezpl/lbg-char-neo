@@ -4,8 +4,6 @@ import { CharacterStore } from 'state/character-store';
 import { ComponentVariation } from 'constants/clothing';
 import { OldDLCHairMap } from 'constants/hair';
 import { clothingStore } from 'state/clothing-store';
-import { NativeUI } from 'ui';
-import { UIAppearanceMenuContext } from 'ui/menus/appearance';
 
 export interface IVMenuCharacter {
     PedHeadBlendData: IVMenuPedHeadBlendData;

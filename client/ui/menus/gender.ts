@@ -54,6 +54,7 @@ export function addMenuGender(parentMenu: Menu, store: CharacterStore) {
  * Resets gender menu values to current characte from the store.
  * @param param0 
  */
-export function resetMenuGender({ character }: CharacterStore = store) {
+export function resetMenuGender({ character }: Pick<CharacterStore, 'character'> = store) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     UIGenderMenuContext.genderItem && NativeUI.MenuListItem.Index(UIGenderMenuContext.genderItem, character.gender === 'Female' ? 2 : 1);
 }

@@ -18,19 +18,19 @@ export enum PedComponents {
 };
 
 export enum PedProps {
-    "p_head",
-    "p_eyes",
-    "p_ears",
-    "p_mouth",
-    "p_lhand",
-    "p_rhand",
-    "p_lwrist",
-    "p_rwrist",
-    "p_lhip",
-    "p_lfoot",
-    "p_rfoot",
-    "ph_lhand",
-    "ph_rhand"
+    'p_head',
+    'p_eyes',
+    'p_ears',
+    'p_mouth',
+    'p_lhand',
+    'p_rhand',
+    'p_lwrist',
+    'p_rwrist',
+    'p_lhip',
+    'p_lfoot',
+    'p_rfoot',
+    'ph_lhand',
+    'ph_rhand'
 };
 
 /** A tuple type defining a component's drawable and texture IDs */
