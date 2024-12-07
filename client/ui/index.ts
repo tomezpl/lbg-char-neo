@@ -115,6 +115,7 @@ export async function RunUI() {
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, creatorMainMenu);
 
+    NativeUI.MenuPool.MouseEdgeEnabled(menuPool, false);
 }
 
 export function resetMenus(charStore: Pick<CharacterStore, 'character'>) {

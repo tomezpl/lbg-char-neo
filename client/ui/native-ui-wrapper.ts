@@ -11,6 +11,7 @@ interface MenuPoolGlobal {
     Add(menuPool: MenuPool, menu: Menu): void;
     ProcessMenus(menuPool: MenuPool): void;
     AddSubMenu(menuPool: MenuPool, parentMenu: Menu, text: string, description: string, keepPosition: boolean, keepBanner: boolean): Menu;
+    MouseEdgeEnabled(menuPool: MenuPool, enabled: boolean): void;
 }
 
 interface MenuGlobal {
@@ -138,7 +139,8 @@ const exportsKeys: Record<keyof Omit<INativeUIRoot, 'setEventListener'> | AllNes
     'MenuListItem:doesPanelExist': 1,
     'Menu:Clear': 1,
     'Menu:AddInstructionButton': 1,
-    'Menu:CurrentSelection': 1
+    'Menu:CurrentSelection': 1,
+    'MenuPool:MouseEdgeEnabled': 1
 };
 
 type EventTarget = Menu | MenuItem;
