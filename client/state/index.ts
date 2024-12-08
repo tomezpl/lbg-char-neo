@@ -47,6 +47,10 @@ export const inputState: IInputState = {
             });
         }
 
+        const thisState = this as IInputState;
+
+        (thisState as { inCreator: boolean }).inCreator = inCreator;
+
         emit(inCreator ? EnteredCharCreatorEventName : ExitedCharCreatorEventName);
     },
 
