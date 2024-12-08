@@ -1,5 +1,5 @@
 import { animateCharCreatorIntro, animateCharCreatorOutro } from 'anim';
-import { ActiveCharacterKvpName, BlockCharCreatorConvar, ExitedCharCreatorEventName, ForceCharCreatorExitEventName } from 'constants/misc';
+import { ActiveCharacterKvpName, BlockCharCreatorConvar, ForceCharCreatorExitEventName } from 'constants/misc';
 import vMenuPlugin from 'plugins/vmenu';
 import { inputState, store } from 'state';
 import { CharacterStore } from 'state/character-store';
@@ -92,9 +92,6 @@ export async function RunUI() {
                     inputState.blockMenuButtons = false;
                     inputState.setInCreator(false);
                     inputState.setLeavingCreator(false);
-
-                    // Notify other resources the player has left the creator.
-                    emit(ExitedCharCreatorEventName);
                 });
             } else {
                 if (inputState.inCreator) {
@@ -136,13 +133,13 @@ export async function RunUI() {
     // Listen on other resources requesting the player to exit the character creator.
     on(ForceCharCreatorExitEventName, () => {
         if (inputState.inCreator && !inputState.isLeavingCreator) {
+            // Hide the character creator menu.
+            NativeUI.Menu.Visible(creatorMainMenu, false);
+
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             animateCharCreatorOutro(false).then(() => {
                 inputState.blockMenuButtons = false;
                 inputState.setInCreator(false);
-
-                // Notify other resources the player has left the creator.
-                emit(ExitedCharCreatorEventName);
             });
         }
     });
