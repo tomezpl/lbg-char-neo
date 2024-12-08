@@ -1,8 +1,9 @@
 import { animateCharCreatorIntro, animateCharCreatorOutro } from 'anim';
-import { ActiveCharacterKvpName } from 'constants/misc';
+import { ActiveCharacterKvpName, BlockCharCreatorConvar, ExitedCharCreatorEventName, ForceCharCreatorExitEventName } from 'constants/misc';
 import vMenuPlugin from 'plugins/vmenu';
 import { inputState, store } from 'state';
 import { CharacterStore } from 'state/character-store';
+import { Logger } from 'utils/logger';
 import { addMenuApparel } from './menus/apparel';
 import { addAdvancedApparelMenu } from './menus/apparel/advanced';
 import { addMenuAppearance, resetMenuAppearance } from './menus/appearance';
@@ -44,7 +45,10 @@ export async function RunUI() {
     const creatorMainMenu = NativeUI.MenuPool.AddSubMenu(menuPool, mainMenu, 'Character Creator', 'Create a GTA Online character.', true, false);
 
     NativeUI.setEventListener(mainMenu, 'OnMenuChanged', (parent, menu) => {
-        if (menu === creatorMainMenu && !inputState.blockMenuButtons/* && Boolean(GetConvar("lbgchar_disableCreator", "false")) !== true*/) {
+        const blocked = !!GetConvar(BlockCharCreatorConvar, "false").match(/\"?true\"?/i);
+
+        Logger.log(`${BlockCharCreatorConvar} is currently set to ${blocked}`);
+        if (menu === creatorMainMenu && !inputState.blockMenuButtons && blocked !== true) {
             const immediate = setImmediate(() => {
                 NativeUI.Menu.Visible(creatorMainMenu, false);
                 inputState.setInCreator(true);
@@ -54,6 +58,10 @@ export async function RunUI() {
                 });
             });
         }
+        else if (menu === creatorMainMenu) {
+            NativeUI.Menu.Visible(creatorMainMenu, false);
+        }
+
         if (menu === UISavedCharactersMenuContext.menuQuick) {
             UISavedCharactersMenuContext.blockInput = false;
             UISavedCharactersMenuContext.refresh(UISavedCharactersMenuContext.menuQuick);
@@ -77,14 +85,22 @@ export async function RunUI() {
         inputState.blockMenuButtons = true;
         TriggerEvent('alertbox:message', 'alert', 'Are you sure you want to exit? Unsaved changes will be lost.', ['YES', 'BACK_ESC'], undefined, undefined, true, undefined, (_: never, outcome: 'YES' | 'BACK_ESC') => {
             if (outcome === 'YES') {
+                inputState.setLeavingCreator(true);
+
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 animateCharCreatorOutro(false).then(() => {
                     inputState.blockMenuButtons = false;
                     inputState.setInCreator(false);
+                    inputState.setLeavingCreator(false);
+
+                    // Notify other resources the player has left the creator.
+                    emit(ExitedCharCreatorEventName);
                 });
             } else {
-                NativeUI.Menu.Visible(creatorMainMenu, true);
-                inputState.blockMenuButtons = false;
+                if (inputState.inCreator) {
+                    NativeUI.Menu.Visible(creatorMainMenu, true);
+                    inputState.blockMenuButtons = false;
+                }
             }
         });
     });
@@ -116,6 +132,19 @@ export async function RunUI() {
     addFinishButton(menuPool, creatorMainMenu);
 
     NativeUI.MenuPool.MouseEdgeEnabled(menuPool, false);
+
+    // Listen on other resources requesting the player to exit the character creator.
+    on(ForceCharCreatorExitEventName, () => {
+        if (inputState.inCreator && !inputState.isLeavingCreator) {
+            animateCharCreatorOutro(false).then(() => {
+                inputState.blockMenuButtons = false;
+                inputState.setInCreator(false);
+
+                // Notify other resources the player has left the creator.
+                emit(ExitedCharCreatorEventName);
+            });
+        }
+    });
 }
 
 export function resetMenus(charStore: Pick<CharacterStore, 'character'>) {
