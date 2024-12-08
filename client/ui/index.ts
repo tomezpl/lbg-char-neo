@@ -45,7 +45,7 @@ export async function RunUI() {
     const creatorMainMenu = NativeUI.MenuPool.AddSubMenu(menuPool, mainMenu, 'Character Creator', 'Create a GTA Online character.', true, false);
 
     NativeUI.setEventListener(mainMenu, 'OnMenuChanged', (parent, menu) => {
-        const blocked = !!GetConvar(BlockCharCreatorConvar, "false").match(/\"?true\"?/i);
+        const blocked = !!GetConvar(BlockCharCreatorConvar, 'false').match(/"?true"?/i);
 
         Logger.log(`${BlockCharCreatorConvar} is currently set to ${blocked}`);
         if (menu === creatorMainMenu && !inputState.blockMenuButtons && blocked !== true) {
