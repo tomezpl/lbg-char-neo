@@ -136,6 +136,7 @@ export async function RunUI() {
     // Listen on other resources requesting the player to exit the character creator.
     on(ForceCharCreatorExitEventName, () => {
         if (inputState.inCreator && !inputState.isLeavingCreator) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             animateCharCreatorOutro(false).then(() => {
                 inputState.blockMenuButtons = false;
                 inputState.setInCreator(false);
