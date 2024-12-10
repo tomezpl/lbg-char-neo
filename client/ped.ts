@@ -83,13 +83,14 @@ export function ChangeComponents(Character = store.character) {
 			})
 		}
 
-		if (Character['gender'] === 'Male') {
-			SetPedHeadOverlay(PlayerPedId(), 1, Character['beard'], Character['beard_2'])
-			SetPedHeadOverlayColor(PlayerPedId(), 1, 1, Character['beard_3'], 0)
-		} else if (Character['gender'] === 'Female') {
-			SetPedHeadOverlay(PlayerPedId(), 5, Character['blush_1'], Character['blush_2'])
-			SetPedHeadOverlayColor(PlayerPedId(), 5, 2, Character['blush_3'], 0)
-		}
+		// if (Character['gender'] === 'Male') {
+		Logger.log(`setting beard ${Character.beard} ${Character.beard_2} ${Character.beard_3}`);
+		SetPedHeadOverlay(PlayerPedId(), 1, Character['beard'] - 1, Character['beard_2'])
+		SetPedHeadOverlayColor(PlayerPedId(), 1, 1, Character['beard_3'], 0)
+		// } else if (Character['gender'] === 'Female') {
+		SetPedHeadOverlay(PlayerPedId(), 5, Character['blush_1'], Character['blush_2'])
+		SetPedHeadOverlayColor(PlayerPedId(), 5, 2, Character['blush_3'], 0)
+		// }
 
 		// If the active character does not have custom props, then just continue with the legacy glasses logic.
 		if (Object.keys(typeof Character.customProps === 'object' ? (Character.customProps as PropsCollection) : {}).length === 0) {

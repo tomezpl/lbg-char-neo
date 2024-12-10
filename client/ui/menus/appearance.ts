@@ -5,6 +5,8 @@ import { Menu, MenuItem, MenuPool, NativeUI, Panel } from 'ui';
 import { cameraShots } from 'constants/camera';
 import { createSkinCamera } from 'anim';
 import { store } from 'state';
+import { Logger } from 'utils/logger';
+import { ChangeComponents, RefreshModel } from 'ped';
 
 let submenu: Menu;
 
@@ -184,16 +186,17 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 						// Percentage
 						case 1:
 							value = Number(NativeUI.MenuListItem.getPanelValue(panels[0]) ?? 1);
-							SetPedHeadOverlay(PlayerPedId(), overlayId, (index - 1) + indexOffset, value);
+							// SetPedHeadOverlay(PlayerPedId(), overlayId, (index - 1) + indexOffset, value);
 							break;
 						// Colour
 						case 2:
 							value = Number(NativeUI.MenuListItem.getPanelValue(panels[1]) || 1) - 1;
-							SetPedHeadOverlayColor(PlayerPedId(), overlayId, colourType, value, 0);
+							// SetPedHeadOverlayColor(PlayerPedId(), overlayId, colourType, value, 0);
 							break;
 					}
 
 					actions[`set${prop[0].toUpperCase()}${prop.slice(1)}` as keyof typeof actions](value as never);
+					ChangeComponents(store.character);
 				});
 			}
 		});
@@ -283,7 +286,7 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 		'The Ambrose',
 		'Lincoln Curtain'
 	] as const;
-	const { overlayItem: beardItem, panels: [beardOpacityPanel, beardColourPanel] } = createOverlayItem(beard, 'Facial Hair', 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], -1, 1);
+	const { overlayItem: beardItem, panels: [beardOpacityPanel, beardColourPanel] } = createOverlayItem(beard, 'Facial Hair', 1, character.beard + 1, ['beard', 'beard_2', 'beard_3'], 0, 1);
 	UIAppearanceMenuContext.beardItem = beardItem;
 	UIAppearanceMenuContext.beardPercentagePanel = beardOpacityPanel;
 	UIAppearanceMenuContext.beardColourPanel = beardColourPanel;
@@ -598,6 +601,7 @@ export function resetMenuAppearance({ character }: Pick<CharacterStore, 'charact
 
 	const { beardItem, beardColourPanel, beardPercentagePanel } = UIAppearanceMenuContext;
 	if (beardItem) {
+		Logger.log(`character's beard is ${character.beard}`);
 		NativeUI.MenuListItem.Index(beardItem, character.beard + 1);
 		NativeUI.MenuListItem.setPanelValue(beardColourPanel, character.beard_3);
 		NativeUI.MenuListItem.setPanelValue(beardPercentagePanel, character.beard_2);

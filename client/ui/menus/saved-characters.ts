@@ -32,8 +32,8 @@ export const UISavedCharactersMenuContext: IUISavedCharactersMenuContext = {
                     // Loads the character when selected.
                     NativeUI.setEventListener(charItem, 'Activated', () => {
                         store.actions.setSavedCharacter(i);
-                        RefreshModel(true, store.character);
-                        updateMenuValues(store.character);
+                        RefreshModel(true, savedChar.character);
+                        updateMenuValues(savedChar.character);
                     });
                 }
             } else {
