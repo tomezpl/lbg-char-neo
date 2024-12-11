@@ -1,12 +1,13 @@
 {
   "name": "lbg-char",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "index.js",
   "author": "you",
   "license": "MIT",
   "scripts": {
     "build": "node build.js --mode=production",
-    "watch": "node build.js",
+    "build-dev": "node build.js --mode=development",
+    "watch": "node build.js --mode=development",
     "type-check": "npx tsc --noEmit --project client/tsconfig.json",
     "lint": "npx eslint",
     "lint-only-errors": "npx eslint --quiet",

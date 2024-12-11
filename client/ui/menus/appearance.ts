@@ -6,7 +6,7 @@ import { cameraShots } from 'constants/camera';
 import { createSkinCamera } from 'anim';
 import { store } from 'state';
 import { Logger } from 'utils/logger';
-import { ChangeComponents, RefreshModel } from 'ped';
+import { ChangeComponents } from 'ped';
 
 let submenu: Menu;
 

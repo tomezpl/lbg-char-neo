@@ -25,11 +25,12 @@ const client = {
 };
 
 async function build() {
-  for (const context of [ 'client', 'server' ]) {
+  for (const context of ['client', 'server']) {
     const options = {
       bundle: true,
       entryPoints: [`${context}/${context}.ts`],
       outfile: `dist/${context}.js`,
+      define: { BUILD_ENVIRONMENT: JSON.stringify(production ? 'prod' : 'dev') },
       // watch: production ? false : {
       //   onRebuild: onRebuild(context),
       // },
@@ -38,7 +39,7 @@ async function build() {
     const ctx = await esbuild.context(options);
 
     try {
-      if(production) {
+      if (production) {
         await ctx.rebuild();
         console.log(`[${context}]: Built successfully!`);
       }
@@ -52,7 +53,7 @@ async function build() {
     }
   }
 
-  if(production) {
+  if (production) {
     process.exit(0);
   }
 }

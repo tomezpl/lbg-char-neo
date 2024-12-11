@@ -98,7 +98,8 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                 if (created) {
                     if (DoesTextLabelExist(label)) {
                         const labelText = GetLabelText(label);
-                        const item = NativeUI.CreateItem(`${label} (${locate}): ${labelText}`, '');
+                        const itemTitle = BUILD_ENVIRONMENT === 'prod' ? labelText : `${label} (${locate}): ${labelText}`;
+                        const item = NativeUI.CreateItem(itemTitle, '');
                         NativeUI.Menu.AddItem(menus[locateLabel].menu, item);
                         menus[locateLabel].items.push({
                             onSelected(force = false) {
