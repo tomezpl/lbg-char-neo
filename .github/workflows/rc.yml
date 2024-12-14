@@ -7,13 +7,18 @@ on:
 jobs:
     create-tag:
         runs-on: ubuntu-latest
+        outputs:
+            version_output: ${{steps.rc_version_step.outputs.next_version}}
         steps:
             - uses: actions/checkout@v4
             - name: Install NPM deps
               run: |
                 npm install
-            - name: Get new rc tag name
-              run: node ./scripts/get-next-version.js ${{github.ref_name}} rc >> ./next-version
+            - id: rc_version_step
+              name: Get new rc tag name
+              run: |
+                node ./scripts/get-next-version.js ${{github.ref_name}} rc >> ./next-version
+                echo "next_version=$(cat ./next-version)" >> $GITHUB_OUTPUT
             - name: Write new rc tag name as version
               run: node ./scripts/write-version.js $(cat ./next-version)
             - name: Tag
@@ -26,3 +31,36 @@ jobs:
                 git commit -F ./commit-msg
                 git tag -a -F ./next-version $(cat ./next-version)
                 git push origin tag $(cat ./next-version)
+    release:
+        runs-on: ubuntu-latest
+        needs: create-tag
+        steps:
+            - uses: actions/checkout@v4
+            - name: Clone deps
+              run: |
+                bash ./scripts/clone-deps.sh
+            - name: Install NPM deps
+              run: |
+                npm install
+            - name: Build
+              run: |
+                npm run build
+            - name: Package
+              run: |
+                bash ./scripts/package.sh
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: build
+                path: build
+            - name: Create release
+              env: 
+                NEXT_VERSION: ${{needs.create-tag.outputs.version_output}}
+              run: |
+                apt install zip
+                zip -r $NEXT_VERSION.zip ./build/
+            - name: Upload RC
+              env: 
+                NEXT_VERSION: ${{needs.create-tag.outputs.version_output}}
+              run: |
+                gh release create $NEXT_VERSION -p --verify-tag --notes-from-tag './$NEXT_VERSION.zip#lbg-char-neo $NEXT_VERSION and dependencies'
