@@ -7,6 +7,7 @@ import { RunUI, NativeUI, UIContext } from 'ui';
 import { Logger } from 'utils/logger';
 
 Logger.log('Client Resource Started');
+Logger.log('testing');
 
 function RestoreSavedCharacter() {
     let key: string = ActiveCharacterKvpName;
