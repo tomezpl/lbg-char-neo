@@ -57,7 +57,7 @@ jobs:
               env: 
                 NEXT_VERSION: ${{needs.create-tag.outputs.version_output}}
               run: |
-                apt install zip
+                sudo apt-get install zip
                 zip -r $NEXT_VERSION.zip ./build/
             - name: Upload RC
               env: 
