@@ -17,6 +17,7 @@ jobs:
             - id: rc_version_step
               name: Get new rc tag name
               run: |
+                git fetch --all --tags
                 node ./scripts/get-next-version.js ${{github.ref_name}} rc >> ./next-version
                 echo "next_version=$(cat ./next-version)" >> $GITHUB_OUTPUT
             - name: Write new rc tag name as version
