@@ -24,5 +24,5 @@ jobs:
                 git add package.json
                 node ./scripts/write-commit-message.js >> ./commit-msg
                 git commit -F ./commit-msg
-                git tag -s -F ./next-version $(cat ./next-version)
+                git tag -a -F ./next-version $(cat ./next-version)
                 git push origin tag $(cat ./next-version)
