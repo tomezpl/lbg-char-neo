@@ -15,7 +15,7 @@ jobs:
             - name: Get new rc tag name
               run: node ./scripts/get-next-version.js ${{github.ref_name}} rc >> ./next-version
             - name: Write new rc tag name as version
-              run: cat ./next-version | node ./scripts/write-version.js
+              run: node ./scripts/write-version.js $(cat ./next-version)
             - name: Tag
               run: |
                 git add fxmanifest.lua
@@ -23,4 +23,4 @@ jobs:
                 node ./scripts/write-commit-messsage.js >> ./commit-msg
                 git commit -F ./commit-msg
                 git tag -s -F ./next-version
-                cat ./next-version | git push origin tag 
+                git push origin tag $(cat ./next-version)
