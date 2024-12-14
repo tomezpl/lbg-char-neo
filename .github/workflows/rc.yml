@@ -18,6 +18,8 @@ jobs:
               run: node ./scripts/write-version.js $(cat ./next-version)
             - name: Tag
               run: |
+                git config user.name "${{github.actor}}"
+                git config user.email "${{github.actor}}@users.noreply.github.com"
                 git add fxmanifest.lua
                 git add package.json
                 node ./scripts/write-commit-message.js >> ./commit-msg
