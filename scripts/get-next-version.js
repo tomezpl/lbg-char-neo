@@ -6,10 +6,10 @@ const branch = process.argv[2];
 const tagType = process.argv[3];
 
 if (tagType === 'hotfix' || tagType === 'release') {
-    console.log(branch);
+    console.log(branch.slice(1));
 }
 else if (tagType === 'rc' || tagType === 'alpha') {
-    let version = branch;
+    let version = branch.slice(1);
     if (tagType === 'alpha') {
         const { version: packageVersion } = JSON.parse(readFileSync(path.resolve(__dirname, '..', 'package.json'), { encoding: 'utf-8' }));
         version = packageVersion;
