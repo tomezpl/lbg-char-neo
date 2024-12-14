@@ -2,7 +2,7 @@ name: CI
 
 on:
     push:
-        branches: ['[0-9]+-*']
+        branches: ['**']
 
 jobs:
     lint:
@@ -24,19 +24,7 @@ jobs:
             - uses: actions/checkout@v4
             - name: Clone deps
               run: |
-                mkdir deps
-                cd deps
-                mkdir temp
-                echo "Cloning NativeUILua"
-                git clone -b 1-js-support https://github.com/tomezpl/NativeUILua.git temp/NativeUILua
-                echo "Extracting NativeUI code from NativeUILua repo"
-                cp -r temp/NativeUILua/NativeUI NativeUI
-                echo "Cloning alertbox"
-                git clone https://github.com/tomezpl/alertbox alertbox
-                echo "Cleaning up"
-                rm -r temp
-                cd ../
-                git submodule update --init --recursive
+                ./scripts/clone-deps.sh
             - name: Install NPM deps
               run: |
                 npm install
@@ -45,12 +33,7 @@ jobs:
                 npm run build
             - name: Package
               run: |
-                mkdir build
-                mkdir build/lbg-char-neo
-                cp fxmanifest.lua build/lbg-char-neo
-                cp -r assets build/lbg-char-neo/assets
-                cp -r dist build/lbg-char-neo/dist
-                cp -r deps/* build
+                ./scripts/package.sh
             - name: Upload build artifact
               uses: actions/upload-artifact@v4
               with:

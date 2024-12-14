@@ -1,0 +1,53 @@
+name: "Release"
+
+on:
+    push:
+        tags: [
+            '[0-9]+.[0-9]+.[0-9]',
+            '[0-9]+.[0-9]+.[0-9]-rc.[0-9]+',
+            '[0-9]+.[0-9]+.[0-9]-hotfix[0-9]+',
+            '[0-9]+.[0-9]+.[0-9]-alpha.[0-9]+'
+        ]
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Clone deps
+              run: |
+                ./scripts/clone-deps.sh
+            - name: Install NPM deps
+              run: |
+                npm install
+            - name: Build
+              run: |
+                npm run build
+            - name: Package
+              run: |
+                ./scripts/package.sh
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: build
+                path: build
+            - name: Create release
+              run: |
+                apt install zip
+                zip -r ${{github.ref_name}}.zip ./build/
+            - name: Upload dev release
+              if: ${{ contains(github.ref_name, '-alpha.')}}
+              run: |
+                gh release create ${{github.ref_name}} -p --verify-tag --notes-from-tag './${{github.ref_name}}.zip#lbg-char-neo ${{github.ref_name}} and dependencies'
+            - name: Upload hotfix
+              if: ${{ contains(github.ref_name, '-hotfix')}}
+              run: |
+                gh release create ${{github.ref_name}} --verify-tag --notes-from-tag './${{github.ref_name}}.zip#lbg-char-neo ${{github.ref_name}} and dependencies'
+            - name: Upload RC
+              if: ${{ contains(github.ref_name, '-rc.')}}
+              run: |
+                gh release create ${{github.ref_name}} -p --verify-tag --notes-from-tag './${{github.ref_name}}.zip#lbg-char-neo ${{github.ref_name}} and dependencies'
+            - name: Upload release
+              if: ${{ !contains(github.ref_name, '-rc.') && !contains(github.ref_name, '-hotfix') && !contains(github.ref_name, '-alpha.') }}
+              run: |
+                gh release create ${{github.ref_name}} --verify-tag --notes-from-tag './${{github.ref_name}}.zip#lbg-char-neo ${{github.ref_name}} and dependencies'

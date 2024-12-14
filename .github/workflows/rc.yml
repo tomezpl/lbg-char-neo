@@ -1,0 +1,26 @@
+name: "RC tag"
+
+on:
+    push: 
+        branches: ['v[0-9]+.[0-9]+.[0-9]']
+
+jobs:
+    create-tag:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Install NPM deps
+              run: |
+                npm install
+            - name: Get new rc tag name
+              run: node ./scripts/get-next-version.js ${{github.ref_name}} rc >> ./next-version
+            - name: Write new rc tag name as version
+              run: cat ./next-version | node ./scripts/write-version.js
+            - name: Tag
+              run: |
+                git add fxmanifest.lua
+                git add package.json
+                node ./scripts/write-commit-messsage.js >> ./commit-msg
+                git commit -F ./commit-msg
+                git tag -s -F ./next-version
+                cat ./next-version | git push origin tag 
