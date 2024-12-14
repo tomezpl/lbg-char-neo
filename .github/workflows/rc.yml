@@ -64,4 +64,4 @@ jobs:
                 NEXT_VERSION: ${{needs.create-tag.outputs.version_output}}
                 GH_TOKEN: ${{github.token}}
               run: |
-                gh release create $NEXT_VERSION -p --verify-tag --notes-from-tag './$NEXT_VERSION.zip#lbg-char-neo $NEXT_VERSION and dependencies'
+                gh release create $NEXT_VERSION -p --verify-tag --notes-from-tag "./$NEXT_VERSION.zip#lbg-char-neo $NEXT_VERSION and dependencies"
