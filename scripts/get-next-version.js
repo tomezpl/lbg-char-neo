@@ -15,6 +15,7 @@ else if (tagType === 'rc' || tagType === 'alpha') {
         version = packageVersion;
 
     }
+    spawnSync('git fetch --all --tags');
     const lastTag = spawnSync(`git tag -l ${version}-${tagType}.*`, { encoding: 'utf8' })?.stdout?.split('\n')?.at(-1);
     const lastBuildNum = lastTag?.slice?.(lastTag.lastIndexOf('.') + 1) || 0;
     const newBuildNum = Number(lastBuildNum) + 1;
