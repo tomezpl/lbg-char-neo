@@ -16,7 +16,7 @@ jobs:
             - uses: actions/checkout@v4
             - name: Clone deps
               run: |
-                ./scripts/clone-deps.sh
+                bash ./scripts/clone-deps.sh
             - name: Install NPM deps
               run: |
                 npm install
@@ -25,7 +25,7 @@ jobs:
                 npm run build
             - name: Package
               run: |
-                ./scripts/package.sh
+                bash ./scripts/package.sh
             - name: Upload build artifact
               uses: actions/upload-artifact@v4
               with:
