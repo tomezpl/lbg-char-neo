@@ -3,10 +3,10 @@ name: "Release"
 on:
     push:
         tags: 
-            - *.*.*
-            - *.*.*-rc.*
-            - *.*.*-alpha.*
-            - *.*.*-hotfix*
+            - '*.*.*'
+            - '*.*.*-rc.*'
+            - '*.*.*-alpha.*'
+            - '*.*.*-hotfix*'
 
 jobs:
     release:
