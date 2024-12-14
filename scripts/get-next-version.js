@@ -15,7 +15,11 @@ else if (tagType === 'rc' || tagType === 'alpha') {
         version = packageVersion;
 
     }
-    const lastTag = execSync(`git tag -l ${version}-${tagType}.*`, { encoding: 'utf8' })?.split('\n')?.filter((line) => !!line)?.at(-1);
+    const lastTag = execSync(`git tag -l ${version}-${tagType}.*`, { encoding: 'utf8' })
+        ?.split('\n')
+        ?.filter((line) => !!line)
+        ?.sort((a, b) => Math.min(1, Math.max(-1, Number(a.slice(a.lastIndexOf('.') + 1) - Number(b.slice(b.lastIndexOf('.') + 1))))))
+        ?.at(-1);
     const lastBuildNum = lastTag?.slice?.(lastTag.lastIndexOf('.') + 1) || 0;
     const newBuildNum = Number(lastBuildNum) + 1;
 
