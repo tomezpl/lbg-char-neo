@@ -1,4 +1,4 @@
-const { spawnSync } = require("child_process");
+const { spawnSync, execSync } = require("child_process");
 const { readFileSync } = require('fs');
 const path = require("path");
 
@@ -16,7 +16,7 @@ else if (tagType === 'rc' || tagType === 'alpha') {
 
     }
     spawnSync('git fetch --all --tags');
-    const lastTag = spawnSync(`git tag -l ${version}-${tagType}.*`, { encoding: 'utf8' })?.stdout?.split('\n')?.at(-1);
+    const lastTag = execSync(`git tag -l ${version}-${tagType}.*`, { encoding: 'utf8' })?.split('\n')?.filter((line) => !!line)?.at(-1);
     const lastBuildNum = lastTag?.slice?.(lastTag.lastIndexOf('.') + 1) || 0;
     const newBuildNum = Number(lastBuildNum) + 1;
 
