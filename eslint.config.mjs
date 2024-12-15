@@ -5,7 +5,7 @@ import { ESLint } from "eslint";
 
 export default tseslint.config(
   {
-    ignores: ["assets/**/*.js", "**/*.mjs", "dist/**/*", "build.js"],
+    ignores: ["assets/**/*.js", "**/*.mjs", "dist/**/*", "build.js", "scripts/**/*"],
   },
   pluginJs.configs.recommended,
   tseslint.configs.recommended,
