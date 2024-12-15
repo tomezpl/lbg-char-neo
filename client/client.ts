@@ -1,5 +1,5 @@
 import { Character, MPFemale, MPMale } from 'constants/character';
-import { ActiveCharacterKvpName, OldLbgCharKvpName } from 'constants/misc';
+import { ActiveCharacterKvpName, ChangeModelOnSpawnConvar, CreateCommandConvar, CreateKeybindingConvar, OldLbgCharKvpName } from 'constants/misc';
 import { RefreshModel } from 'ped';
 import { store } from 'state';
 import { CharacterStoreActions } from 'state/character-store';
@@ -51,18 +51,33 @@ on('lbg-openChar', () => {
     NativeUI.Menu.Visible(UIContext.mainMenu, true);
 });
 
-// TODO: add an (optional) key binding too
-RegisterCommand('charedit', () => {
-    emit('lbg-openChar');
-}, false);
-
-RegisterCommand('die', () => {
-    SetEntityHealth(PlayerPedId(), 0);
-}, false);
+if (BUILD_ENVIRONMENT === 'dev') {
+    RegisterCommand('die', () => {
+        SetEntityHealth(PlayerPedId(), 0);
+    }, false);
+}
 
 on('playerSpawned', () => {
-    RefreshModel(true, store.character);
+    if (GetConvar(ChangeModelOnSpawnConvar, 'true').match(/^("true"|true)$/i)) {
+        RefreshModel(true, store.character);
+    }
 });
 
-RegisterKeyMapping('charedit', 'Open lbg-char-neo character menu.', 'keyboard', 'm');
-RegisterKeyMapping('charedit', 'Open lbg-char-neo character menu.', 'pad_digitalbutton', 'select_index');
+on('onClientResourceStart', () => {
+    const shouldCreateCommand = !!GetConvar(CreateCommandConvar, 'true').match(/^("true"|true)$/i);
+
+    if (shouldCreateCommand) {
+        RegisterCommand('charedit', () => {
+            emit('lbg-openChar');
+        }, false);
+
+        RegisterCommand('keybindcharedit', () => {
+            // eslint-disable-next-line no-extra-boolean-cast
+            if (!!GetConvar(CreateKeybindingConvar, 'true').match(/^("true"|true)$/i)) {
+                emit('lbg-openChar');
+            }
+        }, false);
+    }
+
+    RegisterKeyMapping('keybindcharedit', 'Open lbg-char-neo character menu.', 'keyboard', 'm');
+});

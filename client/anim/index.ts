@@ -16,7 +16,7 @@ let cam2: number, cam3: number, camSkin: number;
 let initPos: [number, number, number] = [0, 0, 0];
 
 /**
- * Plays the character creator entrance animation on the player ped model and animates the camer.
+ * Plays the character creator entrance animation on the player ped model and animates the camera.
  */
 async function playIntroAnim() {
     // Disable gameplay controls.

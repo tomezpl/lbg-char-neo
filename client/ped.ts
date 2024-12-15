@@ -1,6 +1,7 @@
 import { PropsCollection } from 'constants/character';
 import { ComponentVariation, PedComponents } from 'constants/clothing';
 import { DefaultHairDecor, HairDecor } from 'constants/hair';
+import { PedChangedEventName } from 'constants/misc';
 import { FemaleOutfits, MaleOutfits, Outfit } from 'constants/outfit';
 import { store } from 'state'
 import { Logger } from 'utils/logger';
@@ -137,7 +138,7 @@ export function RefreshModel(force = false, character = store.character) {
 			else {
 				Logger.log('Changing player ped model');
 				SetPlayerModel(PlayerId(), mdhash);
-				emit('lbg-char-neo:pedChanged');
+				emit(PedChangedEventName);
 				Logger.log(`setting resemblance to ${resemblance} and skin tone to ${skintone}`);
 				SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, resemblance, skintone, 0, true);
 				ChangeComponents(character || store.character);
