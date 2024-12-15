@@ -1,0 +1,28 @@
+{
+  "name": "lbg-char",
+  "version": "2.0.0",
+  "main": "index.js",
+  "private": "true",
+  "author": "you",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.js --mode=production",
+    "build-dev": "node build.js --mode=development",
+    "watch": "node build.js --mode=development",
+    "type-check": "npx tsc --noEmit --project client/tsconfig.json",
+    "lint": "npx eslint",
+    "lint-only-errors": "npx eslint --quiet",
+    "lint-fix": "npx eslint --fix"
+  },
+  "devDependencies": {
+    "@citizenfx/client": "latest",
+    "@citizenfx/server": "latest",
+    "@eslint/js": "^9.15.0",
+    "@types/node": "^16.3.1",
+    "esbuild": "^0.20.2",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0"
+  }
+}

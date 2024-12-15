@@ -1,0 +1,1 @@
+console.log('[lbg-char] Server Resource Started');

@@ -1,0 +1,41 @@
+name: CI
+
+on:
+    push:
+        branches: ['**']
+
+jobs:
+    lint:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - name: Run NPM install
+          run: |
+            npm install
+        - name: Run type-checking
+          run: |
+            npm run type-check
+        - name: Run eslint
+          run: |
+            npm run lint
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Clone deps
+              run: |
+                bash ./scripts/clone-deps.sh
+            - name: Install NPM deps
+              run: |
+                npm install
+            - name: Build
+              run: |
+                npm run build
+            - name: Package
+              run: |
+                bash ./scripts/package.sh
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: build
+                path: build

@@ -1,0 +1,1 @@
+export type Texture = [txd: string, txn: string];

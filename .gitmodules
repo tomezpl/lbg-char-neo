@@ -1,0 +1,3 @@
+[submodule "assets/clothesdump"]
+	path = assets/clothesdump
+	url = https://github.com/tomezpl/gtav-clothing-dumper/
