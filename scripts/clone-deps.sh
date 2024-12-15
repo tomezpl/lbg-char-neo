@@ -2,7 +2,7 @@ mkdir deps
 cd deps
 mkdir temp
 echo "Cloning NativeUILua"
-git clone -b 1-js-support https://github.com/tomezpl/NativeUILua.git temp/NativeUILua
+git clone -b main https://github.com/tomezpl/NativeUILua.git temp/NativeUILua
 echo "Extracting NativeUI code from NativeUILua repo"
 cp -r temp/NativeUILua/NativeUI NativeUI
 echo "Cloning alertbox"
