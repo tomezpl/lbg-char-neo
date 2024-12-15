@@ -1,7 +1,6 @@
 # lbg-char-neo
-![GitHub branch status](https://img.shields.io/github/checks-status/tomezpl/lbg-char-neo/develop)
-![GitHub Tag](https://img.shields.io/github/v/tag/tomezpl/lbg-char-neo)
-
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/tomezpl/lbg-char-neo/build.yml?branch=develop)
+![GitHub Release](https://img.shields.io/github/v/release/tomezpl/lbg-char-neo?include_prereleases)
 
 ## GTAO-like character creation for FiveM.
 ### Overview
