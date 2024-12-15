@@ -3,7 +3,18 @@ const { readFileSync } = require('fs');
 const path = require("path");
 
 const branch = process.argv[2];
-const tagType = process.argv[3];
+
+let tagType = 'alpha';
+
+if (branch.match(/^v\d+\.\d+\.\d+$/)) {
+    tagType = 'rc';
+} else if (branch.match(/^v\d+\.\d+\.\d+-hotfix\d+$/)) {
+    tagType = 'hotfix';
+} else if (branch.match(/^main$/)) {
+    tagType = 'release';
+} else if (branch.match(/^develop$/)) {
+    tagType = 'alpha';
+}
 
 if (tagType === 'hotfix' || tagType === 'release') {
     console.log(branch.slice(1));
