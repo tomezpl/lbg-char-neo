@@ -24,6 +24,8 @@ This project started as a fork of [lbg-char](https://github.com/lambits/lbg-char
 
 ### Features
 - Character creation experience akin to vanilla GTAO, including the police station interior and animations.
+  - This takes networked players into consideration, hiding other players' peds and disabling their collision on the creator screen.
+  - This will not work with OneSync servers above 48 players. Support for OneSync will be added in the future.
 - Native UI look for a consistent style.
 - 20 slots to save characters, which can be loaded at any time
 - Key binding for quickly accessing the menu during gameplay
@@ -35,6 +37,19 @@ This project started as a fork of [lbg-char](https://github.com/lambits/lbg-char
 - Support for importing MP Characters from vMenu.
   - While this feature largely works straightaway, you might need to make minor tweaks to your character's appearance after importing - it's advised that you save them for quick access.
 - Ability to integrate with other resources through convars and events (see [Integration](#integration))
+
+### Usage
+
+1. Download the latest [release](https://github.com/tomezpl/lbg-char-neo/releases).
+    - The build includes two dependencies - NativeUILua and alertbox.
+2. Extract the archive into your Cfx server's `server-data/resources/`
+3. In your Cfx server's config file (typically `server.cfg`), add `ensure lbg-char-neo`
+4. Start FiveM and connect to your server
+5. Press the 'M' key on your keyboard to access the character menu.
+   - From here, you can choose to head into the Character Creator screen. You can save a character by going to Character Creator -> Saved Characters, selecting a character slot and hitting Spacebar.
+   - You can also access the Saved Characters menu to quickly load a previously saved character at any moment.
+   - If you have any saved MP characters created using vMenu, an "Import from vMenu" button will appear, allowing you to load your vMenu characters.
+6. You can change some settings of this resource via [Convars](#convars).
 
 ### Integration
 #### Convars
