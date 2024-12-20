@@ -3,6 +3,8 @@
 ![GitHub Release](https://img.shields.io/github/v/release/tomezpl/lbg-char-neo?include_prereleases)
 
 ## GTAO-like character creation for FiveM.
+[Overview](#overview) | [Features](#features) | [Installation & Usage](#usage) | [Configuration and integrating with other resources](#integration)
+
 ### Overview
 This is a FiveM resource to provide a character creation menu, complete with a GTAO-like interior environment, native UI, character saving, vMenu imports, localised clothing items and more.
 
