@@ -1,4 +1,4 @@
-import { PropsCollection } from 'constants/character';
+import { MPFemale, MPMale, PropsCollection } from 'constants/character';
 import { ComponentVariation, PedComponents } from 'constants/clothing';
 import { DefaultHairDecor, HairDecor } from 'constants/hair';
 import { PedChangedEventName } from 'constants/misc';
@@ -16,6 +16,7 @@ export function ChangeComponents(Character = store.character) {
 
 	const immediate = setImmediate(() => {
 		SetPedDefaultComponentVariation(PlayerPedId());
+		ClearAllPedProps(PlayerPedId());
 		SetPedHeadBlendData(PlayerPedId(), Character['mom'], Character['dad'], 0, Character['mom'], Character['dad'], 0, Character['resemblance'], Character['skintone'], 0, true);
 		SetPedComponentVariation(PlayerPedId(), 2, Character['hair'], 0, 2);
 		SetPedHairColor(PlayerPedId(), Character['hair_color_1'], 0);
@@ -128,22 +129,25 @@ export function ChangeComponents(Character = store.character) {
  */
 export function RefreshModel(force = false, character = store.character) {
 	Logger.log(`Refreshing player ped (force: ${force === true})`);
-	const { mdhash } = store;
+	const modelHash = GetHashKey(character.ogd === 'M' ? MPMale : MPFemale);
 	const { mom, dad, resemblance, skintone } = character || store.character;
+	let needsToChangePed = GetEntityModel(PlayerPedId()) !== modelHash;
 	const tickerHandle = setTick(() => {
-		if (force || GetEntityModel(PlayerPedId()) !== mdhash) {
-			if (!HasModelLoaded(mdhash)) {
-				RequestModel(mdhash)
+		if (needsToChangePed) {
+			if (!HasModelLoaded(modelHash)) {
+				RequestModel(modelHash)
+			} else {
+				needsToChangePed = false;
+				SetPlayerModel(PlayerId(), modelHash);
 			}
-			else {
-				Logger.log('Changing player ped model');
-				SetPlayerModel(PlayerId(), mdhash);
-				emit(PedChangedEventName);
-				Logger.log(`setting resemblance to ${resemblance} and skin tone to ${skintone}`);
-				SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, resemblance, skintone, 0, true);
-				ChangeComponents(character || store.character);
-				clearTick(tickerHandle);
-			}
+		}
+		else {
+			Logger.log('Changing player ped model');
+			emit(PedChangedEventName);
+			Logger.log(`setting resemblance to ${resemblance} and skin tone to ${skintone}`);
+			SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, resemblance, skintone, 0, true);
+			ChangeComponents(character || store.character);
+			clearTick(tickerHandle);
 		}
 	});
 }
