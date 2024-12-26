@@ -16,7 +16,11 @@ if (branch.match(/^v\d+\.\d+\.\d+$/)) {
     tagType = 'alpha';
 }
 
-if (tagType === 'hotfix' || tagType === 'release') {
+if (tagType === 'release') {
+    const { version: packageVersion } = JSON.parse(readFileSync(path.resolve(__dirname, '..', 'package.json'), { encoding: 'utf-8' }));
+    console.log(packageVersion);
+}
+else if(tagType === 'hotfix') {
     console.log(branch.slice(1));
 }
 else if (tagType === 'rc' || tagType === 'alpha') {
