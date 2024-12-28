@@ -44,6 +44,26 @@ export async function RunUI() {
     const mainMenu = NativeUI.CreateMenu('Appearance', '~HUD_COLOUR_FREEMODE~EDIT CHARACTER', 47.5, 47.5);;
     const creatorMainMenu = NativeUI.MenuPool.AddSubMenu(menuPool, mainMenu, 'Character Creator', 'Create a GTA Online character.', true, false);
 
+    const rotateLeftLabel = 'INPUT_CREATOR_ROTATE_LEFT_DISPLAYONLY';
+    const rotateRightLabel = 'INPUT_CREATOR_ROTATE_RIGHT_DISPLAYONLY';
+    NativeUI.Menu.AddInstructionButton(creatorMainMenu, GetControlInstructionalButton(2, 205, true), GetLabelText(rotateLeftLabel));
+    NativeUI.Menu.AddInstructionButton(creatorMainMenu, GetControlInstructionalButton(2, 206, true), GetLabelText(rotateRightLabel));
+
+    setTick(() => {
+        if (inputState.inCreator) {
+            const playerPed = PlayerPedId();
+            const controlScales = [[205, 300], [206, -300]] as const;
+            for (const [controlId, scale] of controlScales) {
+                if (IsControlPressed(2, controlId) || IsDisabledControlPressed(2, controlId)) {
+                    const speed = scale * GetFrameTime();
+                    const [rotX, rotY, rotZ] = GetEntityRotation(playerPed, 2);
+                    SetEntityRotation(playerPed, rotX, rotY, rotZ + speed, 2, false);
+                    SetPedDesiredHeading(playerPed, rotZ + speed);
+                }
+            }
+        }
+    });
+
     NativeUI.setEventListener(mainMenu, 'OnMenuChanged', (parent, menu) => {
         const blocked = !!GetConvar(BlockCharCreatorConvar, 'false').match(/"?true"?/i);
 
