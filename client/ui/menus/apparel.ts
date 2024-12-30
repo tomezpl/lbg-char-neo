@@ -6,7 +6,7 @@ import { Menu, MenuPool, NativeUI } from 'ui';
 import { addRotateButtonsToMenu } from 'ui/utils';
 import { createClothingCategorySubmenu } from './apparel/clothing-category-menu';
 
-export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Menu {
+export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Promise<Menu> {
     const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Apparel', 'Select to change your Apparel.', true, true);
 
     const { character } = store;
