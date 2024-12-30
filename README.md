@@ -3,7 +3,7 @@
 ![GitHub Release](https://img.shields.io/github/v/release/tomezpl/lbg-char-neo?include_prereleases)
 
 ## GTAO-like character creation for FiveM.
-[Overview](#overview) | [Features](#features) | [Installation & Usage](#usage) | [Configuration and integrating with other resources](#integration)
+[Overview](#overview) | [Features](#features) | [Installation & Usage](#usage) | [Configuration and integrating with other resources](#integration) | [Changelog](#changelog)
 
 ### Overview
 This is a FiveM resource to provide a character creation menu, complete with a GTAO-like interior environment, native UI, character saving, vMenu imports, localised clothing items and more.
@@ -93,3 +93,14 @@ This event can be triggered by any client resource to show the character menu - 
 - Character Creator
 - Saved Characters
 - Import from vMenu
+
+### Changelog
+#### 2.1.0
+- Added Rotate Right/Left controls to the character creator menus. (#11)
+- Updated the ped change logic to only change the ped model if the MP character gender changed. (#7)
+- Added MPMale/Female model request on load to prevent invisible character models displayed for other clients on load.
+
+#### 2.0.0
+- Complete rewrite of the project in TypeScript. (#4)
+- Added Saved Character slots. (#3)
+- Added a clothes menu. (#2)
