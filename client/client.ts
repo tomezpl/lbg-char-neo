@@ -80,4 +80,10 @@ on('onClientResourceStart', () => {
     }
 
     RegisterKeyMapping('keybindcharedit', 'Open lbg-char-neo character menu.', 'keyboard', 'm');
+
+    // "Prefetch" the mp character models.
+    setImmediate(() => {
+        RequestModel(MPMale);
+        RequestModel(MPFemale);
+    });
 });
