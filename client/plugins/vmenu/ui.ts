@@ -12,7 +12,7 @@ import { applyVMenuCharacter, IVMenuCharacter } from './ped';
  * @param parentMenu 
  * @param store 
  */
-export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
+export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Menu | undefined {
     const characters = getVMenuCharacters();
 
     if (characters && Object.keys(characters).length > 0) {
@@ -33,6 +33,8 @@ export function addvMenuCharacterList(menuPool: MenuPool, parentMenu: Menu, stor
             console.log(JSON.stringify(store.character));
             updateMenuItemValues(characters[charName], store.character);
         });
+
+        return submenu;
     }
 }
 

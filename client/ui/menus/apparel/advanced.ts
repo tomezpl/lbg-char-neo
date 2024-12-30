@@ -3,7 +3,7 @@ import { CharacterStore } from 'state/character-store';
 import { Menu, MenuPool, NativeUI } from 'ui';
 import { Logger } from 'utils/logger';
 
-export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
+export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Menu {
     const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Advanced Apparel Options', 'Select to manually tweak character component slots.', true, true);
 
     const compNames = [
@@ -102,4 +102,6 @@ export function addAdvancedApparelMenu(menuPool: MenuPool, parentMenu: Menu, sto
             createLists(menu, compNames[menuIndex] as never);
         }
     });
+
+    return submenu;
 }

@@ -83,7 +83,7 @@ export const UISavedCharactersMenuContext: IUISavedCharactersMenuContext = {
     }
 };
 
-export function addSavedCharactersMenu(menuPool: MenuPool, parentMenu: Menu, menuIndex: Extract<keyof IUISavedCharactersMenuContext, 'menu' | 'menuQuick'>) {
+export function addSavedCharactersMenu(menuPool: MenuPool, parentMenu: Menu, menuIndex: Extract<keyof IUISavedCharactersMenuContext, 'menu' | 'menuQuick'>): Menu {
     const menu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Saved Characters', 'Apply one of your saved character appearance presets.', false, false);
 
     UISavedCharactersMenuContext[menuIndex] = menu;

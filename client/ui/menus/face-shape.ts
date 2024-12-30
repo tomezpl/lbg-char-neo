@@ -31,7 +31,7 @@ export const FaceFeatureNameMap: ReadonlyArray<[name: string, featureName: keyof
 	['Neck Thickness', 'neck_thick']
 ];
 
-export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
+export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Menu {
 	const listItems = new Array<string>();
 	for (let i = -1.0; i <= 1.0; i += 0.1) {
 		listItems.push(`${i.toFixed(1)}`);
@@ -75,6 +75,8 @@ export function addMenuFaceShape(menuPool: MenuPool, parentMenu: Menu, store: Ch
 		createSkinCamera(cameraShots.body);
 		// CreateSkinCam('body');
 	});
+
+	return submenu;
 }
 
 export function resetMenuFaceShape({ character }: Pick<CharacterStore, 'character'> = store) {
