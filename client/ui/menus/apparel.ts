@@ -3,9 +3,10 @@ import { ChangeComponents } from 'ped';
 import { CharacterStore } from 'state/character-store';
 import { clothingStore } from 'state/clothing-store';
 import { Menu, MenuPool, NativeUI } from 'ui';
+import { addRotateButtonsToMenu } from 'ui/utils';
 import { createClothingCategorySubmenu } from './apparel/clothing-category-menu';
 
-export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
+export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Promise<Menu> {
     const submenu = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Apparel', 'Select to change your Apparel.', true, true);
 
     const { character } = store;
@@ -38,6 +39,7 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
                 const textLabel = `CSHOP_ITEM${value as number}` as const;
                 const labelText = DoesTextLabelExist(textLabel) ? GetLabelText(textLabel) : (value as string);
                 menus[textLabel] = NativeUI.MenuPool.AddSubMenu(menuPool, submenu, labelText, '', true, false);
+                addRotateButtonsToMenu(menus[textLabel]);
             }
 
             return menus;
@@ -92,4 +94,6 @@ export async function addMenuApparel(menuPool: MenuPool, parentMenu: Menu, store
         }
         */
     });
+
+    return submenu;
 }

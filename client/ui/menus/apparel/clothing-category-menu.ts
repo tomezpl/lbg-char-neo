@@ -6,6 +6,7 @@ import { Menu, MenuPool, NativeUI } from 'ui';
 import { iterateDrawables } from './stupid-drawable-index-fix';
 import { Outfit } from 'constants/outfit';
 import { Logger } from 'utils/logger';
+import { addRotateButtonsToMenu } from 'ui/utils';
 
 /**
  * Creates a submenu of clothing categories for a top-level category.
@@ -72,6 +73,8 @@ export function createClothingCategorySubmenu(menuPool: MenuPool, parentMenu: Me
                             menu: NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, labelText, '', true, true),
                             items: [] as typeof menus[typeof locateLabel]['items']
                         };
+
+                        addRotateButtonsToMenu(menus[locateLabel].menu);
 
                         // Add a "Force Apply" button in the bottom-right when this submenu is open.
                         NativeUI.Menu.AddInstructionButton(menus[locateLabel].menu, GetControlInstructionalButton(2, ForceApplyControlId, true), 'Force Apply');

@@ -20,7 +20,7 @@ export const UIHeritageMenuContext: Partial<IUIHeritageMenuContext> = {
 
 };
 
-export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
+export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Menu {
     const parents = [...Array<number>(46)].map((_, i) => `${i}`.padStart(2, '0'));
 
     const moms = FemaleParentIds;
@@ -126,6 +126,8 @@ export function addMenuHeritage(menuPool: MenuPool, parentMenu: Menu, store: Cha
         createSkinCamera(cameraShots.body);
         // CreateSkinCam('body')
     });
+
+    return submenu;
 }
 
 /**
