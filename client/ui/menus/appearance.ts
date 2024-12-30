@@ -63,7 +63,7 @@ function hasOverlay(overlayValues: [number, number] | [number, number, number]):
 	return overlayValues.some((v) => v !== 0);
 }
 
-export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore) {
+export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: CharacterStore): Menu {
 	if (submenu) {
 		NativeUI.Menu.Clear(submenu);
 	} else {
@@ -584,6 +584,8 @@ export function addMenuAppearance(menuPool: MenuPool, parentMenu: Menu, store: C
 	submenu.OnMenuClosed = function()
 		CreateSkinCam('body')
 	end*/
+
+	return submenu;
 }
 
 export function resetMenuAppearance({ character }: Pick<CharacterStore, 'character'> = store) {

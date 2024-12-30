@@ -12,6 +12,7 @@ import { addMenuGender, resetMenuGender } from './menus/gender';
 import { addMenuHeritage, resetMenuHeritage } from './menus/heritage';
 import { addSavedCharactersMenu, UISavedCharactersMenuContext } from './menus/saved-characters';
 import { Menu, MenuPool, NativeUI } from './native-ui-wrapper';
+import { addRotateButtonsToMenu } from './utils';
 export * from './native-ui-wrapper';
 
 export const UIContext = {
@@ -21,7 +22,6 @@ export const UIContext = {
 };
 
 export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
-
     const finishButton = NativeUI.MenuPool.AddSubMenu(menuPool, parentMenu, 'Save & Continue', 'Ready to play?', true, false);
     const sureButton = NativeUI.CreateItem('Are you sure?', 'Press Enter to continue');
     NativeUI.Menu.AddItem(finishButton, sureButton);
@@ -43,6 +43,23 @@ export async function RunUI() {
     const menuPool = NativeUI.CreatePool();
     const mainMenu = NativeUI.CreateMenu('Appearance', '~HUD_COLOUR_FREEMODE~EDIT CHARACTER', 47.5, 47.5);;
     const creatorMainMenu = NativeUI.MenuPool.AddSubMenu(menuPool, mainMenu, 'Character Creator', 'Create a GTA Online character.', true, false);
+
+    addRotateButtonsToMenu(creatorMainMenu);
+
+    setTick(() => {
+        if (inputState.inCreator) {
+            const playerPed = PlayerPedId();
+            const controlScales = [[205, 300], [206, -300]] as const;
+            for (const [controlId, scale] of controlScales) {
+                if (IsControlPressed(2, controlId) || IsDisabledControlPressed(2, controlId)) {
+                    const speed = scale * GetFrameTime();
+                    const [rotX, rotY, rotZ] = GetEntityRotation(playerPed, 2);
+                    SetEntityRotation(playerPed, rotX, rotY, rotZ + speed, 2, false);
+                    SetPedDesiredHeading(playerPed, rotZ + speed);
+                }
+            }
+        }
+    });
 
     NativeUI.setEventListener(mainMenu, 'OnMenuChanged', (parent, menu) => {
         const blocked = !!GetConvar(BlockCharCreatorConvar, 'false').match(/"?true"?/i);
@@ -116,15 +133,19 @@ export async function RunUI() {
     });
 
     addMenuGender(creatorMainMenu, store);
-    addMenuHeritage(menuPool, creatorMainMenu, store);
-    addMenuFaceShape(menuPool, creatorMainMenu, store);
-    addMenuAppearance(menuPool, creatorMainMenu, store);
+    addRotateButtonsToMenu(addMenuHeritage(menuPool, creatorMainMenu, store));
+    addRotateButtonsToMenu(addMenuFaceShape(menuPool, creatorMainMenu, store));
+    addRotateButtonsToMenu(addMenuAppearance(menuPool, creatorMainMenu, store));
     // addMenuUpperBody(menuPool, creatorMainMenu, store);
-    addAdvancedApparelMenu(menuPool, creatorMainMenu, store);
-    await addMenuApparel(menuPool, creatorMainMenu, store);
-    addSavedCharactersMenu(menuPool, creatorMainMenu, 'menu');
+    addRotateButtonsToMenu(addAdvancedApparelMenu(menuPool, creatorMainMenu, store));
+    addRotateButtonsToMenu(await addMenuApparel(menuPool, creatorMainMenu, store));
+    addRotateButtonsToMenu(addSavedCharactersMenu(menuPool, creatorMainMenu, 'menu'));
     addSavedCharactersMenu(menuPool, mainMenu, 'menuQuick');
-    vMenuPlugin.ui.addvMenuCharacterList(menuPool, creatorMainMenu, store);
+    const charListMenu = vMenuPlugin.ui.addvMenuCharacterList(menuPool, creatorMainMenu, store);
+    if (typeof charListMenu !== 'undefined') {
+        addRotateButtonsToMenu(charListMenu);
+    }
+
     vMenuPlugin.ui.addvMenuCharacterList(menuPool, mainMenu, store);
     addFinishButton(menuPool, creatorMainMenu);
 
