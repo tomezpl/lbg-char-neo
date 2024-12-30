@@ -1,4 +1,4 @@
-import { Menu, NativeUI } from "./native-ui-wrapper";
+import { Menu, NativeUI } from './native-ui-wrapper';
 
 /**
  * Adds Rotate Left/Right instructional buttons to a menu.
