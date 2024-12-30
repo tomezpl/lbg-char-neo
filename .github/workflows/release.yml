@@ -30,7 +30,7 @@ jobs:
                 git add fxmanifest.lua
                 git add package.json
                 node ./scripts/write-commit-message.js >> ./commit-msg
-                git commit -F ./commit-msg
+                git commit --allow-empty -F ./commit-msg
                 git tag -a -F ./next-version $(cat ./next-version)
                 git push origin tag $(cat ./next-version)
     release:
