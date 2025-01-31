@@ -94,7 +94,12 @@ This event can be triggered by any client resource to show the character menu - 
 - Saved Characters
 - Import from vMenu
 
+This event takes an optional parameter which can be a client event name. The event provided in this parameter will be triggered when the player closes the Interaction Menu.
+
 ### Changelog
+
+- Added an optional event name param to `lbg-openChar` listener to allow triggering an event when the character menu is closed.
+
 #### 2.1.0
 - Added Rotate Right/Left controls to the character creator menus. (#11)
 - Updated the ped change logic to only change the ped model if the MP character gender changed. (#7)

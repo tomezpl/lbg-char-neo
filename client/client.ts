@@ -47,7 +47,8 @@ RestoreSavedCharacter();
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 RunUI();
 
-on('lbg-openChar', () => {
+on('lbg-openChar', (exitEvent?: string) => {
+    UIContext.exitEvent = exitEvent || '';
     NativeUI.Menu.Visible(UIContext.mainMenu, true);
 });
 
