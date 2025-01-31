@@ -98,6 +98,8 @@ This event takes an optional parameter which can be a client event name. The eve
 
 ### Changelog
 
+#### 2.2.0
+
 - Added an optional event name param to `lbg-openChar` listener to allow triggering an event when the character menu is closed.
 
 #### 2.1.0
