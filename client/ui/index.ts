@@ -19,6 +19,9 @@ export const UIContext = {
     menuPool: undefined as MenuPool,
     creatorMainMenu: undefined as Menu,
     mainMenu: undefined as Menu,
+
+    // Client event to trigger upon exiting the main menu
+    exitEvent: ''
 };
 
 export function addFinishButton(menuPool: MenuPool, parentMenu: Menu) {
@@ -66,6 +69,7 @@ export async function RunUI() {
 
         Logger.log(`${BlockCharCreatorConvar} is currently set to ${blocked}`);
         if (menu === creatorMainMenu && !inputState.blockMenuButtons && blocked !== true) {
+            UIContext.exitEvent = '';
             const immediate = setImmediate(() => {
                 NativeUI.Menu.Visible(creatorMainMenu, false);
                 inputState.setInCreator(true);
@@ -88,6 +92,13 @@ export async function RunUI() {
             NativeUI.setEventListener(UISavedCharactersMenuContext.menuQuick, 'OnMenuClosed', () => {
                 clearTick(tick);
             });
+        }
+    });
+
+    NativeUI.setEventListener(mainMenu, 'OnMenuClosed', () => {
+        if (UIContext.exitEvent) {
+            TriggerEvent(UIContext.exitEvent);
+            UIContext.exitEvent = '';
         }
     });
 
