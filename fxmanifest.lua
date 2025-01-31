@@ -2,7 +2,7 @@ fx_version 'bodacious'
 game 'gta5'
 
 author 'lambups, tomezpl'
-version '2.1.0'
+version '2.2.0'
 
 client_script 'dist/client.js'
 server_script 'dist/server.js'
