@@ -1,7 +1,7 @@
 import { hidePeds } from 'utils/ped-hider';
 import { CharacterStore } from './character-store';
 import {EnteredCharCreatorEventName, ExitedCharCreatorEventName, HidePlayersConvar} from 'constants/misc';
-import {Logger} from "../utils/logger";
+import {Logger} from 'utils/logger';
 
 export const store: CharacterStore = new CharacterStore();
 
