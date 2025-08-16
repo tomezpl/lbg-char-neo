@@ -5,6 +5,7 @@ export const BlockCharCreatorConvar = 'lbg-char-neo_blockCreator';
 export const ChangeModelOnSpawnConvar = 'lbg-char-neo_restoreModelOnSpawn';
 export const CreateCommandConvar = 'lbg-char-neo_createCommand';
 export const CreateKeybindingConvar = 'lbg-char-neo_createKeybind';
+export const HidePlayersConvar = 'lbg-char-neo_hidePlayers';
 
 export const ForceCharCreatorExitEventName = 'lbg-char-neo:forceExit';
 export const ExitedCharCreatorEventName = 'lbg-char-neo:creatorExited';

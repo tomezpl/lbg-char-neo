@@ -1,6 +1,7 @@
 import { hidePeds } from 'utils/ped-hider';
 import { CharacterStore } from './character-store';
-import { EnteredCharCreatorEventName, ExitedCharCreatorEventName } from 'constants/misc';
+import {EnteredCharCreatorEventName, ExitedCharCreatorEventName, HidePlayersConvar} from 'constants/misc';
+import {Logger} from 'utils/logger';
 
 export const store: CharacterStore = new CharacterStore();
 
@@ -41,7 +42,8 @@ export const inputState: IInputState = {
             hidePedsTick = null;
         }
 
-        if (inCreator) {
+        if (inCreator && GetConvar(HidePlayersConvar, 'true').match(/^("true"|'true'|true)$/i)) {
+            Logger.log('Hiding players');
             hidePedsTick = setTick(() => {
                 hidePeds();
             });
