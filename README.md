@@ -61,12 +61,13 @@ You can provide your own values for these convars in your `server.cfg` file. Thi
 
 This character creator resource exposes the following convars:
 
-| Convar | Description | Default value |
-| --- | --- | --- |
-| `lbg-char-neo_blockCreator` | Should the "Character Creator" button in the lbg-char-neo menu be blocked? | false |
-| `lbg-char-neo_restoreModelOnSpawn` | Should the player ped's model be set to the current saved character on each `playerSpawned` event? | true | 
-| `lbg-char-neo_createCommand` | Should the /charedit console command be created to open the character menu? This requires a resource restart to apply. | true |
-| `lbg-char-neo_createKeybind` | Should a key binding be created to open the character menu? This requires `lbg-char-neo_createCommand` to be `true`. | true |
+| Convar                             | Description                                                                                                                                                                                                                                  | Default value |
+|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| `lbg-char-neo_blockCreator`        | Should the "Character Creator" button in the lbg-char-neo menu be blocked?                                                                                                                                                                   | false |
+| `lbg-char-neo_restoreModelOnSpawn` | Should the player ped's model be set to the current saved character on each `playerSpawned` event?                                                                                                                                           | true | 
+| `lbg-char-neo_createCommand`       | Should the /charedit console command be created to open the character menu? This requires a resource restart to apply.                                                                                                                       | true |
+| `lbg-char-neo_createKeybind`       | Should a key binding be created to open the character menu? This requires `lbg-char-neo_createCommand` to be `true`.                                                                                                                         | true |
+| `lbg-char-neo_hidePlayers`         | Should the script hide other players when the creator is active? This only works properly on non-OneSync servers. Even then, on more complex servers it's advised to disable this and handle player visibility from your gamemode script(s). | true |
 
 These are supposed to be server-replicated, so you'll want to use the `setr` command, like so: `setr lbg-char-neo_restoreModelOnSpawn false`.
 
