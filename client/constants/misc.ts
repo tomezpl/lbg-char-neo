@@ -11,6 +11,7 @@ export const ForceCharCreatorExitEventName = 'lbg-char-neo:forceExit';
 export const ExitedCharCreatorEventName = 'lbg-char-neo:creatorExited';
 export const EnteredCharCreatorEventName = 'lbg-char-neo:creatorEntered';
 export const PedChangedEventName = 'lbg-char-neo:pedChanged';
+export const ApplyCharacterEventName = 'lbg-char-neo:applyCharacter';
 
 export const ForceApplyControlId = 75;
 

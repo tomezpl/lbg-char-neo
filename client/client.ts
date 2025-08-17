@@ -1,5 +1,12 @@
 import { Character, MPFemale, MPMale } from 'constants/character';
-import { ActiveCharacterKvpName, ChangeModelOnSpawnConvar, CreateCommandConvar, CreateKeybindingConvar, OldLbgCharKvpName } from 'constants/misc';
+import {
+    ActiveCharacterKvpName,
+    ApplyCharacterEventName,
+    ChangeModelOnSpawnConvar,
+    CreateCommandConvar,
+    CreateKeybindingConvar,
+    OldLbgCharKvpName
+} from 'constants/misc';
 import { RefreshModel } from 'ped';
 import { store } from 'state';
 import { CharacterStoreActions } from 'state/character-store';
@@ -87,4 +94,26 @@ on('onClientResourceStart', () => {
         RequestModel(MPMale);
         RequestModel(MPFemale);
     });
+});
+
+on(ApplyCharacterEventName, (index?: number) => {
+    Logger.log(`Received ${ApplyCharacterEventName}, selecting character (passed index: ${index})`);
+
+    let character: Character | null = store.character;
+    if(typeof index === 'number') {
+        const savedChar = store.getSavedCharacter(index);
+        character = savedChar?.character ?? null;
+        if(savedChar) {
+            Logger.log(`Selected character from slot ${savedChar.slotName}`);
+        } else {
+            Logger.warn(`Could not find saved character ${index}`);
+        }
+    }
+
+    if(character != null) {
+        Logger.log('Applying character');
+        RefreshModel(true, character);
+    } else {
+        Logger.error(`${ApplyCharacterEventName} failed: could not find character data to apply`);
+    }
 });

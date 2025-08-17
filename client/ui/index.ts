@@ -1,5 +1,10 @@
 import { animateCharCreatorIntro, animateCharCreatorOutro } from 'anim';
-import { ActiveCharacterKvpName, BlockCharCreatorConvar, ForceCharCreatorExitEventName } from 'constants/misc';
+import {
+    ActiveCharacterKvpName,
+    ApplyCharacterEventName,
+    BlockCharCreatorConvar,
+    ForceCharCreatorExitEventName
+} from 'constants/misc';
 import vMenuPlugin from 'plugins/vmenu';
 import { inputState, store } from 'state';
 import { CharacterStore } from 'state/character-store';
@@ -175,6 +180,7 @@ export async function RunUI() {
             });
         }
     });
+
 }
 
 export function resetMenus(charStore: Pick<CharacterStore, 'character'>) {

@@ -97,7 +97,15 @@ This event can be triggered by any client resource to show the character menu - 
 
 This event takes an optional parameter which can be a client event name. The event provided in this parameter will be triggered when the player closes the Interaction Menu.
 
+#### `lbg-char-neo:applyCharacter` listener
+This event can be triggered by any client resource to apply a saved character to the player ped.
+
+This event takes an optional parameter which can be the index of the saved character slot to apply. If it's not provided, the most recently used saved character will be applied.
+
 ### Changelog
+
+- Added a `lbg-char-neo_hidePlayers` convar to avoid OneSync issues (#17)
+- Added an `lbg-char-neo:applyCharacter` event listener to allow applying saved characters programmatically (#18)
 
 #### 2.2.0
 

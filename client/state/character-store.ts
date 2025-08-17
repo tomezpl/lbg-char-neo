@@ -29,6 +29,10 @@ export class CharacterStore implements ICharacterStore {
 
     mdhash: number;
 
+    public getSavedCharacter(index: number): SavedCharacter | null {
+        return this._savedCharacters[index] ?? null;
+    }
+
     public constructor() {
         // Autogenerate setter actions for most properties.
         this.actions = Object.fromEntries((Object.keys(DefaultCharacter) as Array<keyof Character>).map((prop: keyof Character) => {
